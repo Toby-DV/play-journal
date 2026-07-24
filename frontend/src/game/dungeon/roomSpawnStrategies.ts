@@ -5,7 +5,7 @@ import EnemyAI from "../entities/EnemyAI";
 import EnemyCombat from "../combat/EnemyCombat";
 import EntityLabel from "../ui/EntityLabel";
 import { RoomSpawnStrategy, SpawnedEnemy } from "./EnemySpawner";
-import { DungeonRoom } from "./DungeonRoom";
+import { DungeonRoom } from "./types";
 
 const SWARM_MIN_ENEMIES = 3;
 const SWARM_MAX_ENEMIES = 6;

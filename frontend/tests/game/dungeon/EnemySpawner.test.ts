@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import type Phaser from "phaser";
 import EnemySpawner, { RoomSpawnContext, SpawnedEnemy } from "@/game/dungeon/EnemySpawner";
-import { RoomKind } from "@/game/dungeon/RoomKind";
-import { DungeonRoom } from "@/game/dungeon/DungeonRoom";
+import { RoomKind, DungeonRoom } from "@/game/dungeon/types";
 import Health from "@/game/combat/Health";
 import type Enemy from "@/game/entities/Enemy";
 import type EnemyAI from "@/game/entities/EnemyAI";

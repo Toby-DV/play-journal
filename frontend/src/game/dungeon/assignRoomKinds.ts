@@ -1,4 +1,4 @@
-import { RoomKind } from "./RoomKind";
+import { RoomKind } from "./types";
 
 export interface RoomKindQuota {
   kind: RoomKind;

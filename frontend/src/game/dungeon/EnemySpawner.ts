@@ -1,14 +1,13 @@
 import type Phaser from "phaser";
 import { GameConfig } from "@/types/game";
 import { SpriteManifest } from "../animation/SpriteManifest";
-import { CombatEntity } from "../combat/CombatEntity";
+import { CombatEntity } from "../combat/AttackComponent";
 import { LineOfSightBlocker } from "../combat/lineOfSight";
 import EnemyCombat from "../combat/EnemyCombat";
 import EntityLabel from "../ui/EntityLabel";
 import Enemy from "../entities/Enemy";
 import EnemyAI from "../entities/EnemyAI";
-import { DungeonRoom } from "./DungeonRoom";
-import { RoomKind } from "./RoomKind";
+import { DungeonRoom, RoomKind } from "./types";
 import RoomEncounter, { TileBounds } from "./RoomEncounter";
 import buildRoomDoors from "./buildRoomDoors";
 

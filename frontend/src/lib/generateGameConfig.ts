@@ -9,8 +9,6 @@ const MOOD_KEYWORDS: Record<string, string[]> = {
 
 const DEFAULT_MOOD = "balanced";
 
-// Themed flavor text per mood - purely cosmetic (page heading, boss/weapon labels), no gameplay
-// effect. theme_id keys into lib/theme.ts's palette map.
 const MOOD_THEMES: Record<
   string,
   { theme_id: string; theme_name: string; bosses: string[]; weapons: string[]; enemy_color: string }
@@ -70,8 +68,7 @@ function detectMood(text: string): string {
   return bestMood;
 }
 
-// Longer entries generate longer dungeons - a couple of sentences is a short run, a full page is
-// the max length. Clamped to the [1, 10] range DungeonScene/MemorySpread both expect.
+// Longer entries generate longer dungeons
 function estimateLengthOfDay(text: string): number {
   const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.min(10, Math.max(1, Math.round(wordCount / 15)));
@@ -81,10 +78,8 @@ function pick<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-// Deterministic, local stand-in for the old Gemini pipeline: maps a journal entry to a
-// GameConfig via keyword mood detection and small themed flavor-text pools, with no network call
-// and no AI in the loop. Placeholder sprites only for now - richer per-entry asset selection can
-// come back later without changing this function's shape.
+// Deterministic mood detection with no network call. 
+// Placeholder sprites only for now.
 export function generateGameConfig(text: string): GameConfig {
   const mood = detectMood(text);
   const theme = MOOD_THEMES[mood];

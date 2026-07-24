@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import PlayerCombat, { AttackInput } from "@/game/combat/PlayerCombat";
-import { CombatEntity } from "@/game/combat/CombatEntity";
+import { CombatEntity } from "@/game/combat/AttackComponent";
 import StatusEffectController from "@/game/combat/StatusEffectController";
 import Health from "@/game/combat/Health";
 import { LineOfSightBlocker } from "@/game/combat/lineOfSight";

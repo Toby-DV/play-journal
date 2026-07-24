@@ -2,7 +2,7 @@ import type Phaser from "phaser";
 import StatusEffectController from "../combat/StatusEffectController";
 import { Weapon } from "../combat/Weapon";
 import Health from "../combat/Health";
-import { CombatEntity } from "../combat/CombatEntity";
+import { CombatEntity } from "../combat/AttackComponent";
 import { SpriteManifest } from "../animation/SpriteManifest";
 import { resolveClip } from "../animation/resolveAnimation";
 import AnimationController from "../animation/AnimationController";

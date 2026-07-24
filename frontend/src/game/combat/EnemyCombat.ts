@@ -1,6 +1,5 @@
 import { ATTACKS, AttackDefinition } from "./EnemyAttack";
-import { CombatEntity, AggressiveCombatEntity } from "./CombatEntity";
-import { resolveAttackComponents } from "./AttackComponent";
+import { CombatEntity, AggressiveCombatEntity, resolveAttackComponents } from "./AttackComponent";
 import CooldownTracker from "./CooldownTracker";
 import { LineOfSightBlocker, isWithinRange, hasLineOfSight } from "./lineOfSight";
 import { TILE_SIZE } from "../constants";

@@ -1,6 +1,6 @@
 import type Phaser from "phaser";
 import TILE_MAPPING from "../tileMapping";
-import { DungeonRoom } from "./DungeonRoom";
+import { DungeonRoom } from "./types";
 
 // Structures stay 2 tiles clear of the walls so they can never block a doorway (doors are punched
 // into the walls, so the tile just inside a door is 1 tile from the wall) or pin the player

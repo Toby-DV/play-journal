@@ -1,7 +1,7 @@
 import type Phaser from "phaser";
 import Door from "./Door";
 import TILE_MAPPING from "../tileMapping";
-import { DungeonRoom } from "./DungeonRoom";
+import { DungeonRoom } from "./types";
 
 // One Door per connection point on a room's boundary, used to seal a special room (boss, swarm,
 // ...) shut once the player enters. A door local to the top/bottom wall (door.y is 0 or

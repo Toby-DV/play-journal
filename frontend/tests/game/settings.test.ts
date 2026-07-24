@@ -9,21 +9,12 @@ describe("sanitizeSettings", () => {
   });
 
   it("keeps valid values", () => {
-    expect(sanitizeSettings({ showPlayerName: false, difficulty: 8 })).toEqual({
+    expect(sanitizeSettings({ showPlayerName: false })).toEqual({
       showPlayerName: false,
-      difficulty: 8,
     });
   });
 
-  it("clamps difficulty into the 1-10 range and rounds it", () => {
-    expect(sanitizeSettings({ difficulty: 42 }).difficulty).toBe(10);
-    expect(sanitizeSettings({ difficulty: -3 }).difficulty).toBe(1);
-    expect(sanitizeSettings({ difficulty: 6.6 }).difficulty).toBe(7);
-  });
-
   it("replaces wrong-typed fields with defaults", () => {
-    expect(sanitizeSettings({ showPlayerName: "yes", difficulty: "hard" })).toEqual(
-      DEFAULT_SETTINGS
-    );
+    expect(sanitizeSettings({ showPlayerName: "yes" })).toEqual(DEFAULT_SETTINGS);
   });
 });

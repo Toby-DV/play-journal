@@ -40,7 +40,6 @@ function buildGenericManifest(spriteId: string): SpriteManifest {
   };
 }
 
-export const GENERIC_HUMANOID_MANIFEST: SpriteManifest = buildGenericManifest("generic_humanoid");
 export const GENERIC_ENEMY_MANIFEST: SpriteManifest = buildGenericManifest("generic_enemy");
 
 // Sprite cut from sliced_rogues character sheets (see public/sprites/sliced_knight/,

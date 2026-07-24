@@ -1,8 +1,8 @@
 import type Phaser from "phaser";
 import StatusEffectController from "../combat/StatusEffectController";
 import Health from "../combat/Health";
-import { AggressiveCombatEntity } from "../combat/CombatEntity";
-import { hexToNumber } from "@/lib/color";
+import { AggressiveCombatEntity } from "../combat/AttackComponent";
+import { hexToNumber } from "@/lib/format";
 import { SpriteManifest } from "../animation/SpriteManifest";
 import { resolveClip } from "../animation/resolveAnimation";
 import AnimationController from "../animation/AnimationController";

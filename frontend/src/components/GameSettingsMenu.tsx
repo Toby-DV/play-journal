@@ -37,26 +37,6 @@ export default function GameSettingsMenu() {
               className="h-4 w-4 accent-sky-500 cursor-pointer"
             />
           </label>
-
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-sm">
-              <span>Difficulty</span>
-              <span className="text-slate-400 tabular-nums">{settings.difficulty}</span>
-            </div>
-            <input
-              type="range"
-              min={1}
-              max={10}
-              step={1}
-              value={settings.difficulty}
-              onChange={(e) => apply({ difficulty: Number(e.target.value) })}
-              aria-label="Difficulty"
-              className="w-full accent-sky-500"
-            />
-            <p className="text-[11px] text-slate-500">
-              Placeholder — doesn&apos;t affect gameplay yet.
-            </p>
-          </div>
         </div>
       )}
     </div>

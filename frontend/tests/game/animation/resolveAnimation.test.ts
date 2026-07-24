@@ -1,16 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { pickManifest, resolveClip, shouldInterrupt } from "@/game/animation/resolveAnimation";
-import { GENERIC_HUMANOID_MANIFEST, GENERIC_ENEMY_MANIFEST, SLICED_KNIGHT_MANIFEST } from "@/game/animation/SpriteProvider";
+import { GENERIC_ENEMY_MANIFEST, SLICED_KNIGHT_MANIFEST } from "@/game/animation/SpriteProvider";
 import { SpriteManifest } from "@/game/animation/SpriteManifest";
 
 describe("pickManifest", () => {
   it("uses the fetched manifest when it has an idle clip", () => {
-    const fetched: SpriteManifest = { spriteId: "custom", clips: { idle: GENERIC_HUMANOID_MANIFEST.clips.idle! } };
+    const fetched: SpriteManifest = { spriteId: "custom", clips: { idle: GENERIC_ENEMY_MANIFEST.clips.idle! } };
     expect(pickManifest("player", fetched)).toBe(fetched);
   });
 
   it("uses the fetched manifest when it only has a walk clip", () => {
-    const fetched: SpriteManifest = { spriteId: "custom", clips: { walk: GENERIC_HUMANOID_MANIFEST.clips.walk! } };
+    const fetched: SpriteManifest = { spriteId: "custom", clips: { walk: GENERIC_ENEMY_MANIFEST.clips.walk! } };
     expect(pickManifest("player", fetched)).toBe(fetched);
   });
 
@@ -23,48 +23,48 @@ describe("pickManifest", () => {
   });
 
   it("falls back to the sliced knight when the fetched manifest has neither idle nor walk", () => {
-    const fetched: SpriteManifest = { spriteId: "custom", clips: { attack: GENERIC_HUMANOID_MANIFEST.clips.attack! } };
+    const fetched: SpriteManifest = { spriteId: "custom", clips: { attack: GENERIC_ENEMY_MANIFEST.clips.attack! } };
     expect(pickManifest("player", fetched)).toBe(SLICED_KNIGHT_MANIFEST);
   });
 });
 
 describe("resolveClip", () => {
   it("returns the exact clip when present", () => {
-    expect(resolveClip(GENERIC_HUMANOID_MANIFEST, "walk")).toBe(GENERIC_HUMANOID_MANIFEST.clips.walk);
+    expect(resolveClip(GENERIC_ENEMY_MANIFEST, "walk")).toBe(GENERIC_ENEMY_MANIFEST.clips.walk);
   });
 
   it("falls back to walk when the requested state is missing", () => {
-    const manifest: SpriteManifest = { spriteId: "custom", clips: { walk: GENERIC_HUMANOID_MANIFEST.clips.walk! } };
+    const manifest: SpriteManifest = { spriteId: "custom", clips: { walk: GENERIC_ENEMY_MANIFEST.clips.walk! } };
     expect(resolveClip(manifest, "attack")).toBe(manifest.clips.walk);
   });
 
   it("falls back to idle when both the requested state and walk are missing", () => {
-    const manifest: SpriteManifest = { spriteId: "custom", clips: { idle: GENERIC_HUMANOID_MANIFEST.clips.idle! } };
+    const manifest: SpriteManifest = { spriteId: "custom", clips: { idle: GENERIC_ENEMY_MANIFEST.clips.idle! } };
     expect(resolveClip(manifest, "attack")).toBe(manifest.clips.idle);
   });
 
   it("resolves an exact per-ability attack clip when present", () => {
-    const abilityClip = GENERIC_HUMANOID_MANIFEST.clips.attack!;
+    const abilityClip = GENERIC_ENEMY_MANIFEST.clips.attack!;
     const manifest: SpriteManifest = {
       spriteId: "custom",
-      clips: { idle: GENERIC_HUMANOID_MANIFEST.clips.idle!, "attack:puncture": abilityClip },
+      clips: { idle: GENERIC_ENEMY_MANIFEST.clips.idle!, "attack:puncture": abilityClip },
     };
     expect(resolveClip(manifest, "attack:puncture")).toBe(abilityClip);
   });
 
   it("falls back to the generic attack clip when a per-ability clip is missing", () => {
-    const genericAttack = GENERIC_HUMANOID_MANIFEST.clips.attack!;
-    const manifest: SpriteManifest = { spriteId: "custom", clips: { idle: GENERIC_HUMANOID_MANIFEST.clips.idle!, attack: genericAttack } };
+    const genericAttack = GENERIC_ENEMY_MANIFEST.clips.attack!;
+    const manifest: SpriteManifest = { spriteId: "custom", clips: { idle: GENERIC_ENEMY_MANIFEST.clips.idle!, attack: genericAttack } };
     expect(resolveClip(manifest, "attack:puncture")).toBe(genericAttack);
   });
 
   it("falls further back to walk when a per-ability clip and the generic attack clip are both missing", () => {
-    const manifest: SpriteManifest = { spriteId: "custom", clips: { walk: GENERIC_HUMANOID_MANIFEST.clips.walk! } };
+    const manifest: SpriteManifest = { spriteId: "custom", clips: { walk: GENERIC_ENEMY_MANIFEST.clips.walk! } };
     expect(resolveClip(manifest, "attack:puncture")).toBe(manifest.clips.walk);
   });
 
   it("throws when a manifest has neither the requested state nor walk nor idle", () => {
-    const manifest: SpriteManifest = { spriteId: "custom", clips: { attack: GENERIC_HUMANOID_MANIFEST.clips.attack! } };
+    const manifest: SpriteManifest = { spriteId: "custom", clips: { attack: GENERIC_ENEMY_MANIFEST.clips.attack! } };
     expect(() => resolveClip(manifest, "hit")).toThrow();
   });
 });

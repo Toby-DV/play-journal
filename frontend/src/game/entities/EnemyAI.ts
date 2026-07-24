@@ -1,15 +1,13 @@
 import type Phaser from "phaser";
 import Enemy from "./Enemy";
-import { CombatEntity } from "../combat/CombatEntity";
+import { CombatEntity } from "../combat/AttackComponent";
 import { LineOfSightBlocker, hasLineOfSight, isWithinRange } from "../combat/lineOfSight";
 import { TILE_SIZE } from "../constants";
 
 export interface EnemyAIOptions {
-  /** World units per second. */
   speed?: number;
-  /** How far away the enemy notices the target. */
   aggroRangeTiles?: number;
-  /** Chase stops once this close, so the enemy crowds the target without jittering on top of it. */
+  // Chase stops once this close, so the enemy crowds the target without jittering on top of it.
   standoffTiles?: number;
 }
 

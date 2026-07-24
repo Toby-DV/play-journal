@@ -5,13 +5,10 @@
 export interface GameSettings {
   /** Show the character's name above their head in the dungeon. */
   showPlayerName: boolean;
-  /** Difficulty placeholder (1-10); stored but not wired to gameplay yet. */
-  difficulty: number;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
   showPlayerName: true,
-  difficulty: 5,
 };
 
 const STORAGE_KEY = "play_journal_game_settings";
@@ -26,10 +23,6 @@ export function sanitizeSettings(raw: unknown): GameSettings {
   return {
     showPlayerName:
       typeof obj.showPlayerName === "boolean" ? obj.showPlayerName : DEFAULT_SETTINGS.showPlayerName,
-    difficulty:
-      typeof obj.difficulty === "number" && Number.isFinite(obj.difficulty)
-        ? Math.min(10, Math.max(1, Math.round(obj.difficulty)))
-        : DEFAULT_SETTINGS.difficulty,
   };
 }
 
