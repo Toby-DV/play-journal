@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
+import type Phaser from "phaser";
 import RoomEncounter, { EncounterHealth, TileBounds } from "@/game/dungeon/RoomEncounter";
-import Door, { DoorTileLayer } from "@/game/dungeon/Door";
+import Door from "@/game/dungeon/Door";
 
 const INTERIOR: TileBounds = { left: 5, right: 9, top: 5, bottom: 9 };
 const OUTSIDE_POINT = { x: 0, y: 0 };
@@ -9,7 +10,7 @@ const INSIDE_POINT = { x: 7, y: 7 };
 const BOUNDARY_POINT = { x: 5, y: 4 };
 
 function createDoor(): Door {
-  const noopLayer: DoorTileLayer = { putTileAt: () => {}, removeTileAt: () => {} };
+  const noopLayer = { putTileAt: () => {}, removeTileAt: () => {} } as unknown as Phaser.Tilemaps.TilemapLayer;
   return new Door(noopLayer, 0, 0, 39);
 }
 

@@ -10,12 +10,10 @@ export default function assignRoomKinds<T>(
   rooms: readonly T[],
   quotas: readonly RoomKindQuota[]
 ): Map<T, RoomKind> {
-  // Candidates exclude the first room (player start) and the last room (holds the stairs), so a
-  // special room can never be the spawn room or seal the player out of the exit.
+  // Protect the spawn and finish rooms
   const candidates = rooms.slice(1, -1).slice();
 
-  // Fisher-Yates shuffle so which rooms get picked doesn't depend on generation order, and so
-  // earlier quotas in the list don't systematically get first pick of "better" rooms.
+  // Fisher-Yates shuffle
   for (let i = candidates.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [candidates[i], candidates[j]] = [candidates[j], candidates[i]];

@@ -39,8 +39,7 @@ export function paintRooms(groundLayer: Phaser.Tilemaps.TilemapLayer, dungeon: D
   });
 }
 
-// Places the stairs at the center of the given room and clears collision on that tile so it's
-// walkable.
+// Places the stairs at the center of the given room and clears collision on that tile so it's walkable.
 export function placeStairs(map: Phaser.Tilemaps.Tilemap, stuffLayer: Phaser.Tilemaps.TilemapLayer, room: DungeonRoom) {
   stuffLayer.putTileAt(TILE_MAPPING.STAIRS, room.centerX, room.centerY);
   stuffLayer.setCollision(TILE_MAPPING.STAIRS, false);

@@ -12,12 +12,8 @@ export interface EncounterHealth {
   readonly isDead: boolean;
 }
 
-// Drives the doors guarding a special room (boss, swarm, ...). Doors start open. Once the player
-// steps past them into the room's interior, they seal shut behind the player. They open again for
-// good once every enemy spawned into the room dies - re-entering an already-cleared room never
-// re-triggers the trap. A room spawned with zero enemies is considered cleared immediately
-// (vacuously true), so it's never actually sealed - callers should always spawn at least one
-// enemy for a real encounter.
+// Drives combat room doors which close upon first entering and open once the room is clear.
+// Callers should always spawn at least one enemy. 
 export default class RoomEncounter {
   private triggered = false;
   private cleared = false;

@@ -53,15 +53,8 @@ function placeInRoom(stuffLayer: Phaser.Tilemaps.TilemapLayer, room: DungeonRoom
   }
 }
 
-// Scatters a few solid structures (towers, pots) around each given room to break up the open
-// floor. They're placed on the stuff layer and registered as colliding, so they both block
-// movement and - via the line-of-sight blocker built from layer collision flags in DungeonScene -
-// serve as cover the player can break enemy sight lines behind. Callers pass only the rooms that
-// should get structures (i.e. not the start or stairs rooms). Small rooms (7x7, the generator's
-// minimum) have no tiles satisfying the margins, so they naturally stay empty.
+// Scatters a few solid structures (towers, pots) around each given room
 export default function placeRoomStructures(stuffLayer: Phaser.Tilemaps.TilemapLayer, rooms: readonly DungeonRoom[]): void {
   rooms.forEach((room) => placeInRoom(stuffLayer, room));
-  // Explicit registration for the same reason as the closed-door tiles in DungeonScene: the
-  // layer's setCollisionByExclusion only covers indexes present when it runs.
   stuffLayer.setCollision([...POT_INDEXES, ...TOWER_INDEXES], true);
 }
