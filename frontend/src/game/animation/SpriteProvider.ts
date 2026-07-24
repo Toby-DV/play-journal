@@ -1,5 +1,4 @@
 import { AnimationState, ClipDef, SpriteManifest } from "./SpriteManifest";
-import { AssetSelection } from "@/types/game";
 
 export interface SpriteProvider {
   getManifest(spriteId: string): Promise<SpriteManifest | null>;
@@ -65,8 +64,7 @@ export const SLICED_KNIGHT_MANIFEST: SpriteManifest = {
 // Dev/test implementation - a couple of hardcoded, deliberately sparse manifests (matching
 // mockGameConfig's player_sprite: "sliced_knight" and enemy_type: "bug"), reusing the generic
 // manifests' clips/art so no extra placeholder assets are needed. Unknown ids resolve null so
-// the fallback path is exercised. The real DB-backed provider implements this same interface
-// later - no other code changes required to swap it in.
+// the fallback path is exercised (see resolveAnimation.ts's pickManifest).
 export class LocalSpriteProvider implements SpriteProvider {
   private manifests: Record<string, SpriteManifest> = {
     sliced_knight: SLICED_KNIGHT_MANIFEST,
@@ -80,53 +78,7 @@ export class LocalSpriteProvider implements SpriteProvider {
     },
   };
 
-  constructor(private assetUrls?: AssetSelection[]) {}
-
   async getManifest(spriteId: string): Promise<SpriteManifest | null> {
-    if (this.assetUrls && Array.isArray(this.assetUrls)) {
-      const isPlayer = spriteId === "sliced_knight" || spriteId === "generic_humanoid";
-      const isBoss = spriteId === BOSS_SPRITE_ID;
-      const customAsset = isPlayer
-        ? (this.assetUrls.find((a) => a.type === "weapon") || this.assetUrls.find((a) => a.type === "player"))
-        : isBoss
-          ? (this.assetUrls.find((a) => a.type === "boss") || this.assetUrls.find((a) => a.type === "enemy"))
-          : (this.assetUrls.find((a) => a.type === "enemy") || this.assetUrls.find((a) => a.type === "boss"));
-
-      if (customAsset) {
-        return {
-          spriteId,
-          clips: {
-            idle: {
-              textureKey: `${spriteId}_idle`,
-              textureUrl: customAsset.url,
-              frameWidth: 32,
-              frameHeight: 32,
-              frameCount: 2,
-              frameRate: 4,
-              repeat: -1,
-            },
-            walk: {
-              textureKey: `${spriteId}_walk`,
-              textureUrl: customAsset.url,
-              frameWidth: 32,
-              frameHeight: 32,
-              frameCount: 4,
-              frameRate: 8,
-              repeat: -1,
-            },
-            death: {
-              textureKey: `${spriteId}_death`,
-              textureUrl: customAsset.url,
-              frameWidth: 32,
-              frameHeight: 32,
-              frameCount: 4,
-              frameRate: 6,
-              repeat: 0,
-            },
-          },
-        };
-      }
-    }
     return this.manifests[spriteId] ?? null;
   }
 }

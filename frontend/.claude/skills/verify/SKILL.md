@@ -20,29 +20,24 @@ installed at `%LOCALAPPDATA%\ms-playwright`. Run scripts with cwd =
 `require(path.join(process.cwd(), "node_modules", "playwright"))` if the
 script lives outside the repo.
 
-Bypass auth (client-side check only) with an init script:
+Everything is local-only (no backend) - set a display name up front with an
+init script so the journal page skips the name-prompt overlay:
 
 ```js
 await page.addInitScript(() => {
-  localStorage.setItem("play_journal_auth_token", "fake-token-for-ui-testing");
-  localStorage.setItem("play_journal_user",
-    JSON.stringify({ full_name: "Toby", email: "toby@example.com" }));
+  localStorage.setItem("play_journal_display_name", "Toby");
 });
 ```
 
 ## Flows worth driving
 
-- `/` — the journal book; "Practice run (mock data)" starts a game with no
-  backend (uses `mockGameConfig`), "Relive this day" needs the FastAPI
-  backend at :8000.
+- `/` — the journal book; "Practice run (mock data)" starts a game from
+  `mockGameConfig`, "Relive this day" runs the local `generateGameConfig()`
+  heuristic on whatever's in the textarea. Both are instant, no network.
 - `/play` — Phaser dungeon; wait for `canvas` plus ~1.5s for the scene to
   render before screenshotting. Player is the yellow dot.
 
 ## Gotchas
 
-- The backend WebSocket (`ws://localhost:8000/ws/live-feed`) logs console
-  errors when the backend is down/unauthed — pre-existing, not a finding.
 - `.tome-scene` is `position: fixed` → it's a stacking context; overlays
   meant to cover the NavBar (z-50) must be rendered outside it.
-- Pre-existing failures (not caused by your change): `tsc --noEmit` errors
-  in `src/app/journal/page.tsx`; `npm run lint` reports ~20 problems.

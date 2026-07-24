@@ -1,33 +1,30 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { isAuthenticated, getUser, clearAuthToken, StoredUser } from "@/lib/auth";
+import { getDisplayName, setDisplayName } from "@/lib/auth";
 import { loadMemories } from "@/lib/journal";
 
 export default function AccountPage() {
-  const router = useRouter();
-  const [user, setLocalUser] = useState<StoredUser | null>(null);
+  const [name, setName] = useState<string | null>(null);
+  const [nameInput, setNameInput] = useState("");
   const [stats, setStats] = useState({ totalJournals: 0 });
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      router.push("/login");
-      return;
-    }
-    setLocalUser(getUser());
-    const memories = loadMemories();
-    setStats({
-      totalJournals: memories.length,
-    });
-  }, [router]);
+    const stored = getDisplayName() ?? "";
+    setName(stored);
+    setNameInput(stored);
+    setStats({ totalJournals: loadMemories().length });
+  }, []);
 
-  const handleLogout = () => {
-    clearAuthToken();
-    router.push("/login");
+  const handleSaveName = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = nameInput.trim();
+    if (!trimmed) return;
+    setDisplayName(trimmed);
+    setName(trimmed);
   };
 
-  if (!user) {
+  if (name === null) {
     return (
       <div className="tome-scene flex items-center justify-center min-h-screen">
         <span className="text-sm font-semibold uppercase tracking-widest" style={{ color: "var(--torch)" }}>
@@ -39,7 +36,7 @@ export default function AccountPage() {
 
   return (
     <div className="tome-scene flex flex-col items-center justify-start min-h-screen px-4 pt-28 pb-12 overflow-y-auto">
-      <div 
+      <div
         className="w-full max-w-md p-8 border-2 rounded-lg shadow-2xl relative z-10 flex flex-col gap-6"
         style={{
           background: "linear-gradient(145deg, #1f120a 0%, #170d07 100%)",
@@ -48,11 +45,11 @@ export default function AccountPage() {
         }}
       >
         <div className="text-center border-b pb-4" style={{ borderColor: "#3e271a" }}>
-          <h1 
+          <h1
             className="text-3xl font-extrabold uppercase tracking-widest"
-            style={{ 
-              color: "var(--torch)", 
-              textShadow: "0 0 15px rgba(251, 191, 36, 0.3)" 
+            style={{
+              color: "var(--torch)",
+              textShadow: "0 0 15px rgba(251, 191, 36, 0.3)"
             }}
           >
             Hero Profile
@@ -62,36 +59,30 @@ export default function AccountPage() {
           </p>
         </div>
 
-        {/* User Stats Card */}
-        <div 
-          className="p-5 border rounded flex flex-col gap-4"
-          style={{
-            background: "#120804",
-            borderColor: "#3e271a",
-          }}
-        >
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#8a7550" }}>
-              Registered Name
-            </span>
-            <span className="text-lg font-bold" style={{ color: "#d9c69e" }}>
-              {user.user_metadata?.full_name || "Anonymous Hero"}
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#8a7550" }}>
-              Email
-            </span>
-            <span className="text-sm font-semibold" style={{ color: "#a18262", fontFamily: "var(--font-mono)" }}>
-              {user.email}
-            </span>
-          </div>
-        </div>
+        <form onSubmit={handleSaveName} className="p-5 border rounded flex flex-col gap-3" style={{ background: "#120804", borderColor: "#3e271a" }}>
+          <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#8a7550" }}>
+            Registered Name
+          </label>
+          <input
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            className="w-full px-3 py-2 border rounded focus:outline-none"
+            style={{ background: "#1a0f08", borderColor: "#5c4033", color: "#d9c69e" }}
+          />
+          <button
+            type="submit"
+            disabled={!nameInput.trim() || nameInput.trim() === name}
+            className="self-start px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider cursor-pointer"
+            style={{ background: "var(--torch)", color: "#1a1005" }}
+          >
+            Save
+          </button>
+        </form>
 
         {/* Journal Stats Grid */}
         <div className="grid grid-cols-2 gap-4">
-          <div 
+          <div
             className="p-4 border rounded text-center flex flex-col gap-1"
             style={{
               background: "#120804",
@@ -107,7 +98,7 @@ export default function AccountPage() {
             </span>
           </div>
 
-          <div 
+          <div
             className="p-4 border rounded text-center flex flex-col gap-1"
             style={{
               background: "#120804",
@@ -123,17 +114,6 @@ export default function AccountPage() {
             </span>
           </div>
         </div>
-
-        <button
-          onClick={handleLogout}
-          className="w-full py-2.5 rounded font-bold uppercase tracking-wider text-xs border transition-all cursor-pointer hover:bg-red-950/20"
-          style={{
-            borderColor: "rgba(220, 38, 38, 0.4)",
-            color: "#f87171"
-          }}
-        >
-          Relinquish Identity (Logout)
-        </button>
       </div>
     </div>
   );

@@ -1,28 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { clearAuthToken, isAuthenticated } from "@/lib/auth";
 
 import { motion } from "framer-motion";
 
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Do not render NavBar on the login or play pages
-  if (pathname === "/login" || pathname === "/play") return null;
-
-  const handleLogout = () => {
-    clearAuthToken();
-    router.push("/login");
-  };
+  // Do not render NavBar on the play page
+  if (pathname === "/play") return null;
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -92,32 +81,6 @@ export default function NavBar() {
         })}
       </div>
 
-      {/* Action Buttons */}
-      <div className="ml-auto flex items-center gap-4">
-        {mounted && isAuthenticated() ? (
-          <button
-            onClick={handleLogout}
-            className="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer border hover:bg-amber-950/20"
-            style={{
-              borderColor: "rgba(138, 117, 80, 0.4)",
-              color: "#a18262"
-            }}
-          >
-            Log out
-          </button>
-        ) : (
-          <Link
-            href="/login"
-            className="px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition-all duration-300 cursor-pointer"
-            style={{
-              background: "var(--torch)",
-              color: "#1a1005"
-            }}
-          >
-            Enter Tome
-          </Link>
-        )}
-      </div>
     </nav>
   );
 }

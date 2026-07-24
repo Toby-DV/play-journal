@@ -256,7 +256,7 @@ export function createDungeonScene(
       this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
       this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-      const spriteProvider = new LocalSpriteProvider(config.asset_urls);
+      const spriteProvider = new LocalSpriteProvider();
       const { player: playerManifest, enemy: enemyManifest, boss: bossManifest } = await this.loadEntityManifests(spriteProvider);
 
       const playerX = map.tileToWorldX(startRoom.centerX)!;

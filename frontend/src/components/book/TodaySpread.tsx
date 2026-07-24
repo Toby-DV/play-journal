@@ -7,8 +7,6 @@ interface TodaySpreadProps {
   spreadIndex: number;
   journalText: string;
   onJournalTextChange: (text: string) => void;
-  loading: boolean;
-  error: string | null;
   onGenerate: () => void;
   onPreviewMock: () => void;
 }
@@ -19,8 +17,6 @@ export default function todaySpread({
   spreadIndex,
   journalText,
   onJournalTextChange,
-  loading,
-  error,
   onGenerate,
   onPreviewMock,
 }: TodaySpreadProps): Spread {
@@ -51,16 +47,6 @@ export default function todaySpread({
         aria-label="Today's journal entry"
       />
 
-      {error && (
-        <p
-          className="tome-hand"
-          style={{ color: "var(--ink-blood)", marginTop: "0.6rem" }}
-          role="alert"
-        >
-          {error}
-        </p>
-      )}
-
       <div
         style={{
           display: "flex",
@@ -73,9 +59,9 @@ export default function todaySpread({
         <button
           className="tome-btn tome-btn-slide"
           onClick={onGenerate}
-          disabled={loading || !journalText.trim()}
+          disabled={!journalText.trim()}
         >
-          {loading ? "Conjuring the dungeon…" : "Relive this day"}
+          Relive this day
         </button>
         <button
           className="tome-eyebrow"

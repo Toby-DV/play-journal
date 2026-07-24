@@ -7,6 +7,7 @@ import { GameConfig } from "@/types/game";
 import { loadGameConfig, clearGameConfig } from "@/lib/gameSession";
 import GameSettingsMenu from "@/components/GameSettingsMenu";
 
+
 // Dynamically import the Phaser component with SSR disabled
 const GameComponent = dynamic(() => import("../../components/GameComponent"), {
   ssr: false,
@@ -29,7 +30,6 @@ export default function PlayPage() {
   const [gameConfig, setGameConfigState] = useState<GameConfig | null>(null);
   const [checkedStorage, setCheckedStorage] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
-  const socketRef = useRef<WebSocket | null>(null);
   const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load the config handed off from the journal page; bounce back if there isn't one
@@ -41,23 +41,6 @@ export default function PlayPage() {
       router.replace("/");
     }
   }, [router]);
-
-  // Keep the backend event feed connected while playing. There's no feed UI
-  // yet, so messages just go to the console.
-  useEffect(() => {
-    if (!gameConfig || socketRef.current) return;
-    try {
-      const socket = new WebSocket("ws://localhost:8000/ws/live-feed");
-      socketRef.current = socket;
-      socket.onmessage = (event) => console.debug("[live-feed]", event.data);
-      socket.onerror = () => console.debug("[live-feed] connection error");
-    } catch {
-      console.debug("[live-feed] failed to initialize WebSocket");
-    }
-    return () => {
-      socketRef.current?.close();
-    };
-  }, [gameConfig]);
 
   // Fade the whole game view to black first, then navigate - covers both the Back button and
   // level completion, so leaving the game never hard-cuts back to the book.
