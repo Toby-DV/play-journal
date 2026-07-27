@@ -6,6 +6,9 @@ export interface StatusEffectComponent {
   effectId: string;
   target: "self" | "target";
   durationMs: number;
+  // Overrides the effect definition's default magnitude (StatusEffect.ts) - lets attacks like
+  // puncture vs. slowing_attack share the "slow" effect at different strengths.
+  magnitude?: number;
 }
 
 export interface DamageComponent {
@@ -44,7 +47,7 @@ export function resolveAttackComponents(
     if (component.kind === "damage") {
       recipient.health.takeDamage(component.amount ?? fallbackDamage);
     } else {
-      recipient.statusEffects.apply(component.effectId, component.durationMs);
+      recipient.statusEffects.apply(component.effectId, component.durationMs, component.magnitude);
     }
   }
 }

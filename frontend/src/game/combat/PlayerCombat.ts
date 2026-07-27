@@ -55,6 +55,10 @@ export default class PlayerCombat {
     }
   }
 
+  get cooldownTracker(): CooldownTracker {
+    return this.cooldowns;
+  }
+
   private tryBasicAttack(): void {
     if (!this.cooldowns.isReady(BASIC_ATTACK.id)) return;
     this.cooldowns.start(BASIC_ATTACK.id, this.weapon.attackSpeedMs);

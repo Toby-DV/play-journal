@@ -209,7 +209,7 @@ export function createDungeonScene(
         { onAttack: (attackId) => this.player.animationController.play("attack", { abilityId: attackId }) }
       );
 
-      this.debugOverlay = new DebugOverlay(this, this.player.weapon.id);
+      this.debugOverlay = new DebugOverlay(this, this.player, this.playerCombat);
 
       // Full-screen mood tint over the whole level, so the run feels different depending on
       // whether the journal entry read as a good day or a bad one (see src/lib/moodTint.ts).

@@ -11,12 +11,12 @@ export interface Weapon {
 
 export const WEAPONS: Weapon[] = [
   {
-    id: "tobysSword",
+    id: "tobys_sword",
     category: "melee",
     damage: 20,
     attackSpeedMs: 1000,
     rangeTiles: 3,
-    attackIds: ["slowing_attack"],
+    attackIds: ["slowing_attack", "unstoppable_slash"],
   },
   {
     id: "shortsword",
@@ -24,46 +24,6 @@ export const WEAPONS: Weapon[] = [
     damage: 15,
     attackSpeedMs: 500,
     rangeTiles: 1.5,
-    attackIds: ["quick_slash"],
-  },
-  {
-    id: "rapier",
-    category: "melee",
-    damage: 15,
-    attackSpeedMs: 500,
-    rangeTiles: 1.5,
-    attackIds: ["puncture", "quick_slash"],
-  },
-  {
-    id: "warhammer",
-    category: "melee",
-    damage: 15,
-    attackSpeedMs: 500,
-    rangeTiles: 1.5,
-    attackIds: ["heavy_strike", "power_swing"],
-  },
-  {
-    id: "spear",
-    category: "longMelee",
-    damage: 10,
-    attackSpeedMs: 800,
-    rangeTiles: 3,
-    attackIds: ["puncture"],
-  },
-  {
-    id: "polearm",
-    category: "longMelee",
-    damage: 10,
-    attackSpeedMs: 800,
-    rangeTiles: 3,
-    attackIds: ["intimidating_strike", "battle_focus"],
-  },
-  {
-    id: "greatsword",
-    category: "longMelee",
-    damage: 10,
-    attackSpeedMs: 800,
-    rangeTiles: 3,
-    attackIds: ["heavy_strike", "power_swing", "battle_focus"],
-  },
+    attackIds: [],
+  }
 ];

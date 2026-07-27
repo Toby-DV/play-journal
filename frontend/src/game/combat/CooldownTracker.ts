@@ -19,4 +19,8 @@ export default class CooldownTracker {
   isReady(id: string): boolean {
     return !this.remaining.has(id);
   }
+
+  get cooldowns(): Map<string, number> {
+    return this.remaining;
+  }
 }

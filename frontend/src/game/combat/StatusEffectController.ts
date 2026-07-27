@@ -4,12 +4,15 @@ interface ActiveEffect {
   def: StatusEffectDefinition;
   remainingMs: number;
   totalMs: number;
+  // Per-application override of def.magnitude, e.g. so puncture and slowing_attack can share
+  // the "slow" effect at different strengths (see AttackComponent.magnitude).
+  magnitude?: number;
 }
 
 export default class StatusEffectController {
   private active: Map<string, ActiveEffect> = new Map();
 
-  apply(effectId: string, durationMs: number): boolean {
+  apply(effectId: string, durationMs: number, magnitude?: number): boolean {
     const def = STATUS_EFFECTS[effectId];
     if (!def) return false;
 
@@ -19,7 +22,7 @@ export default class StatusEffectController {
       }
     }
 
-    this.active.set(effectId, { def, remainingMs: durationMs, totalMs: durationMs });
+    this.active.set(effectId, { def, remainingMs: durationMs, totalMs: durationMs, magnitude });
     return true;
   }
 
@@ -29,7 +32,7 @@ export default class StatusEffectController {
 
   getMagnitude(effectId: string, fallback = 1): number {
     const effect = this.active.get(effectId);
-    return effect?.def.magnitude ?? fallback;
+    return effect?.magnitude ?? effect?.def.magnitude ?? fallback;
   }
 
   getRemainingRatio(effectId: string): number {

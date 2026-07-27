@@ -10,11 +10,11 @@ export interface AttackDefinition extends WeaponAttackDefinition {
 
 export const ATTACKS: AttackDefinition[] = [
   {
-    id: "brace",
-    name: "Brace",
+    id: "splash",
+    name: "Splash",
     minAggression: 1,
     cooldownMs: 5000,
-    effects: [{ kind: "status", effectId: "unstoppable", target: "self", durationMs: 3000 }],
+    effects: [],
     requiresLineOfSight: true,
     maxRangeTiles: 8,
   },
@@ -24,7 +24,7 @@ export const ATTACKS: AttackDefinition[] = [
     minAggression: 2,
     cooldownMs: 4000,
     effects: [
-      { kind: "status", effectId: "slow", target: "target", durationMs: 2000 },
+      { kind: "status", effectId: "slow", target: "target", durationMs: 2000, magnitude: 0.5 },
       { kind: "damage", target: "target", amount: 10 },
     ],
     requiresLineOfSight: true,
