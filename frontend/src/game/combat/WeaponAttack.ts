@@ -9,6 +9,12 @@ export interface WeaponAttackDefinition {
 
 export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
   {
+    id: "slowing_attack",
+    name: "Slowing attack",
+    cooldownMs: 5000,
+    effects: [{kind: "status", effectId: "slow", target: "target", durationMs: 2500}]
+  },
+  {
     id: "quick_slash",
     name: "Quick Slash",
     cooldownMs: 2000,

@@ -2,7 +2,7 @@ import type Phaser from "phaser";
 import Dungeon from "@mikewesthad/dungeon";
 import { TILE_SIZE } from "../constants";
 import Player from "../entities/Player";
-import { generateWeapon, randomWeaponCategory } from "../combat/Weapon";
+import { WEAPONS } from "../combat/Weapon";
 import TILE_MAPPING from "../tileMapping";
 import { GameConfig } from "@/types/game";
 import { getMoodTint } from "@/lib/moodTint";
@@ -25,28 +25,24 @@ import { paintRooms, placeStairs } from "../dungeon/paintRooms";
 import placeRoomStructures from "../dungeon/placeRoomStructures";
 import Door from "../dungeon/Door";
 import TutorialBanner from "../ui/TutorialBanner";
+import DebugOverlay from "../ui/DebugOverlay";
 
-// Room count scales length_of_day (Min: 5, Max: 10)
+// Room count scales with length_of_day (Min: 5, Max: 10)
 function getRoomCount(lengthOfDay: number): number {
   if (!Number.isFinite(lengthOfDay)) return 5;
   return Math.round(Math.min(10, Math.max(5, lengthOfDay)));
 }
 
-// One boss room per every 5 generated rooms (minimum 1), so bigger dungeons get more boss
-// encounters instead of always just one regardless of size.
+// One boss room per every 5 generated rooms (minimum 1)
 function getBossRoomCount(totalRooms: number): number {
   return Math.max(1, Math.floor(totalRooms / 5));
 }
 
-// Swarm rooms are a bit more common than boss rooms - lighter encounters that pad out the run
-// without every special room being a boss fight.
 function getSwarmRoomCount(totalRooms: number): number {
   return Math.max(1, Math.floor(totalRooms / 4));
 }
 
 const LEVEL_COMPLETE_DELAY_MS = 1500;
-// How close the player needs to be to the stairs' tile origin to trigger completion -
-// generous enough that walking onto the tile from any side counts, without needing exact overlap.
 const STAIRS_REACH_RADIUS = TILE_SIZE * 0.75;
 
 export function createDungeonScene(
@@ -63,6 +59,7 @@ export function createDungeonScene(
     private isPlayerDead = false;
     private isLevelComplete = false;
     private tutorialBanner?: TutorialBanner;
+    private debugOverlay!: DebugOverlay;
     private stairsPosition!: { x: number; y: number };
     private map!: Phaser.Tilemaps.Tilemap;
     private groundLayer!: Phaser.Tilemaps.TilemapLayer;
@@ -126,15 +123,8 @@ export function createDungeonScene(
       const finalRoom = dungeon.rooms[dungeon.rooms.length - 1];
       this.stairsPosition = placeStairs(map, this.stuffLayer, finalRoom);
 
-      // Solid cover structures in every room except the start room (a clean spawn) and the
-      // stairs room (keeps the exit approach clear). Placed before enemies spawn so swarm spawn
-      // picks can see (and avoid) the occupied tiles.
       placeRoomStructures(this.stuffLayer, dungeon.rooms.slice(1, -1));
 
-      // Special rooms are assigned strictly between the start and end rooms, so the player can
-      // neither spawn in one nor find the stairs sealed inside one - see assignRoomKinds and
-      // EnemySpawner for the door-sealing logic. Dungeons that generate too few rooms for a
-      // valid middle choice simply get fewer (or zero) special rooms.
       const roomKindAssignments = assignRoomKinds(dungeon.rooms, [
         { kind: "boss", count: getBossRoomCount(dungeon.rooms.length) },
         { kind: "swarm", count: getSwarmRoomCount(dungeon.rooms.length) },
@@ -147,7 +137,7 @@ export function createDungeonScene(
 
       const playerX = map.tileToWorldX(startRoom.centerX)!;
       const playerY = map.tileToWorldY(startRoom.centerY)!;
-      const weapon = generateWeapon(randomWeaponCategory());
+      const weapon = WEAPONS[0];
       this.player = new Player(this, playerX, playerY, weapon, playerManifest);
       this.cameras.main.startFollow(this.player.sprite, true);
 
@@ -193,9 +183,7 @@ export function createDungeonScene(
       this.roomEncounters = spawnResults.map((result) => result.encounter);
 
       // Enemies collide with the same layers as the player (walls, structures, closed doors) and
-      // each other, so a chasing swarm crowds around cover instead of stacking into a single
-      // sprite - but not with the player itself, so a chasing enemy never physically blocks or
-      // shoves the player around; combat (PlayerCombat/EnemyCombat) is what makes contact matter.
+      // each other
       const enemySprites = this.enemyInstances.map(({ enemy }) => enemy.sprite);
       enemySprites.forEach((sprite) => {
         this.physics.add.collider(sprite, this.groundLayer);
@@ -205,11 +193,7 @@ export function createDungeonScene(
         this.physics.add.collider(enemySprites, enemySprites);
       }
 
-      // The stairs room's own doors (distinct from a boss room's - those seal shut once the
-      // player steps in and only reopen once that room's own enemies die, via RoomEncounter).
-      // These start closed, the same closed-door tiles boss rooms use, and stay that way for the
-      // whole level regardless of the player's position, until every boss in the dungeon is dead -
-      // simply gating progress, not a trap the player can trigger.
+      // The stairs room's own doors
       this.bossEncounters = spawnResults.filter((result) => result.kind === "boss").map((result) => result.encounter);
       this.finalRoomDoors = buildRoomDoors(this.stuffLayer, finalRoom);
       if (this.bossEncounters.length > 0) {
@@ -224,6 +208,8 @@ export function createDungeonScene(
         new PhaserAttackInput(this),
         { onAttack: (attackId) => this.player.animationController.play("attack", { abilityId: attackId }) }
       );
+
+      this.debugOverlay = new DebugOverlay(this, this.player.weapon.id);
 
       // Full-screen mood tint over the whole level, so the run feels different depending on
       // whether the journal entry read as a good day or a bad one (see src/lib/moodTint.ts).
@@ -277,6 +263,8 @@ export function createDungeonScene(
       // create() resolves sprite manifests asynchronously; guard against Phaser calling update()
       // on an earlier frame before it has finished.
       if (!this.player) return;
+
+      this.debugOverlay.update();
 
       if (this.tutorialBanner) {
         this.tutorialBanner.update();
