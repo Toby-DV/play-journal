@@ -15,20 +15,16 @@ const DEFAULT_SPEED = 170;
 const DEFAULT_AGGRO_RANGE_TILES = 7;
 const DEFAULT_STANDOFF_TILES = 1.25;
 
-// Basic chase AI: move straight at the target whenever it's within aggro range AND visible, stop
-// otherwise. Requiring line of sight every frame (the same blocker EnemyCombat uses to gate
-// attacks) means breaking sight lines - ducking behind a room structure or around a wall - drops
-// the chase, so cover actually works. Movement is velocity-only; the arcade colliders registered
-// in DungeonScene handle sliding along walls and structures.
+// Basic chase AI: move straight at the target whenever it's within aggro range AND visible
 export default class EnemyAI {
-  private readonly speed: number;
-  private readonly aggroRange: number;
-  private readonly standoff: number;
+  private speed: number;
+  private aggroRange: number;
+  private standoff: number;
 
   constructor(
     private readonly enemy: Enemy,
-    private readonly getTarget: () => CombatEntity,
-    private readonly blocker: LineOfSightBlocker,
+    private getTarget: () => CombatEntity,
+    private blocker: LineOfSightBlocker,
     options?: EnemyAIOptions
   ) {
     this.speed = options?.speed ?? DEFAULT_SPEED;

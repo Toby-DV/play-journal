@@ -11,16 +11,13 @@ function hasFallbackBase(manifest: SpriteManifest): boolean {
 }
 
 // Player fallback is the sliced knight (real art) rather than the generic placeholder humanoid;
-// enemies still fall back to the generic placeholder since there's no equivalent real enemy art.
 export function pickManifest(spriteKind: SpriteKind, fetched: SpriteManifest | null): SpriteManifest {
   const fallback = spriteKind === "player" ? SLICED_KNIGHT_MANIFEST : GENERIC_ENEMY_MANIFEST;
   if (fetched && hasFallbackBase(fetched)) return fetched;
   return fallback;
 }
 
-// Missing-state fallback chain: exact match -> (for attack:${abilityId}) generic "attack" ->
-// "walk" -> "idle". pickManifest guarantees every manifest reaching this has idle or walk, so
-// this only throws if called directly on a manifest that skipped pickManifest.
+// Missing-state fallback chain
 export function resolveClip(manifest: SpriteManifest, requested: ManifestKey): ClipDef {
   const exact = manifest.clips[requested];
   if (exact) return exact;
@@ -38,9 +35,6 @@ export function resolveClip(manifest: SpriteManifest, requested: ManifestKey): C
 
   throw new Error(`Sprite "${manifest.spriteId}" has no idle or walk clip to fall back to`);
 }
-
-// death > attack > hit > walk/idle/dash. death latches (handled by the current === "death"
-// check); hit doesn't interrupt an in-progress attack, but a new attack does interrupt hit.
 const STATE_PRIORITY: Record<AnimationState, number> = {
   idle: 0,
   walk: 0,

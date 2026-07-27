@@ -371,9 +371,9 @@ body {
 .tome-corner--next { right: 26px; }
 
 /* --- Falling asleep -------------------------------------------------------
-   Full-screen fade to black when a run begins: eyelids droop, fight it for a
-   blink or two, then close. The page navigates once the animation lands
-   (SLEEP_FADE_MS in app/page.tsx must cover the duration here). */
+   Full-screen fade to black when a run begins, matching the smooth fade used
+   when exiting a run back to the journal. The page navigates once the
+   animation lands (SLEEP_FADE_MS in app/page.tsx must cover the duration here). */
 
 .sleep-fade {
   position: fixed;
@@ -381,16 +381,12 @@ body {
   z-index: 60;
   background: #000;
   opacity: 0;
-  animation: fall-asleep 2100ms ease-in forwards;
+  animation: fall-asleep 2100ms ease-out forwards;
 }
 
 @keyframes fall-asleep {
-  0%   { opacity: 0; }
-  28%  { opacity: 0.7; }   /* eyelids droop */
-  42%  { opacity: 0.4; }   /* jolt half-awake */
-  62%  { opacity: 0.88; }  /* drooping again */
-  72%  { opacity: 0.72; }  /* one last flutter */
-  100% { opacity: 1; }     /* out cold */
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

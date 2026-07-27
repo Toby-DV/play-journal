@@ -10,14 +10,11 @@ import { DungeonRoom } from "./types";
 const SWARM_MIN_ENEMIES = 3;
 const SWARM_MAX_ENEMIES = 6;
 const SWARM_ENEMY_HP = 30;
-// Spawn tiles stay 2 tiles clear of the walls so an enemy can never sit right on top of the tile
-// the player steps through when entering the room (doors are punched into the walls themselves).
+// Spawn tiles stay x tiles clear of the walls
 const SPAWN_WALL_MARGIN = 2;
 const SPAWN_ATTEMPTS = 30;
 
-// Random interior tile with a wall margin, skipping tiles already holding stuff (structures,
-// stairs) or already used by an earlier pick. Returns null when the room is too cluttered/small
-// to find one - callers just spawn fewer enemies then.
+// Returns null when the room is too cluttered/small
 function pickSpawnTile(
   room: DungeonRoom,
   stuffLayer: Phaser.Tilemaps.TilemapLayer,
@@ -40,11 +37,7 @@ function pickSpawnTile(
   return null;
 }
 
-// Single placeholder boss, well above a regular enemy's HP and aggressive enough to reach every
-// example attack (see combat/EnemyAttack.ts) over the course of the fight. Sprite comes from
-// bossManifest, which prefers a "boss"-typed asset over the regular enemy one (see
-// SpriteProvider's BOSS_SPRITE_ID handling) so the boss actually looks distinct when the journal's
-// matched assets include one.
+// Single placeholder boss
 export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bossManifest, fontFamily, getPlayer, blocker }) => {
   const x = map.tileToWorldX(room.centerX)!;
   const y = map.tileToWorldY(room.centerY)!;
@@ -58,8 +51,7 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
     health: boss.health,
   });
 
-  // Slower than swarm enemies but sees further - a lumbering threat that's hard to fully escape
-  // inside its own sealed room.
+  // Slower than swarm enemies but sees further
   const ai = new EnemyAI(boss, getPlayer, blocker, { speed: 140, aggroRangeTiles: 9 });
 
   const combat = new EnemyCombat(boss, getPlayer, blocker, {

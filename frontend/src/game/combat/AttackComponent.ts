@@ -21,8 +21,7 @@ export interface ResolvableEntity {
   health: Health;
 }
 
-// Anything that can fight or be fought: attack *targeting* needs a world position on top of the
-// status/health hooks attack *resolution* needs.
+// Anything that can fight or be fought also needs a known position for range calculations
 export interface CombatEntity extends ResolvableEntity {
   x: number;
   y: number;
