@@ -15,6 +15,13 @@ export interface DamageComponent {
   amount?: number;
 }
 
+export interface HitInfo {
+  damage: number,
+  dirX: number,
+  dirY: number,
+  knockback: number
+}
+
 export type AttackComponent = StatusEffectComponent | DamageComponent;
 
 export interface CombatEntity {
@@ -23,7 +30,7 @@ export interface CombatEntity {
   x: number;
   y: number;
   // Optional hit reaction - lets sprite-owning entities play feedback without the combat layer knowing about rendering
-  onDamaged?(amount: number, dirX: number, dirY: number): void;
+  onDamaged?(hit: HitInfo): void;
 }
 
 export interface AggressiveCombatEntity extends CombatEntity {
@@ -34,7 +41,9 @@ export function resolveAttackComponents(
   components: AttackComponent[],
   self: CombatEntity,
   target: CombatEntity | null,
-  fallbackDamage: number
+  fallbackDamage: number,
+  // Per-attack feel modifiers. Optional so enemy attacks and tests, which don't tune feel, can omit it.
+  modifiers: { knockback?: number } = {}
 ): void {
   for (const component of components) {
     const recipient = component.target === "self" ? self : target;
@@ -46,7 +55,12 @@ export function resolveAttackComponents(
       const dx = recipient.x - self.x
       const dy = recipient.y - self.y
       const len = Math.hypot(dx, dy) || 1 // guard against self targetting abilities
-      recipient.onDamaged?.(amount, dx/len, dy/len);
+      recipient.onDamaged?.({
+        damage: amount,
+        dirX: dx / len,
+        dirY: dy / len,
+        knockback: modifiers.knockback ?? 1,
+      });
     } else {
       recipient.statusEffects.apply(component.effectId, component.durationMs, component.magnitude);
     }

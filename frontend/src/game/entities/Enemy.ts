@@ -1,7 +1,7 @@
 import type Phaser from "phaser";
 import StatusEffectController from "../combat/StatusEffectController";
 import Health from "../combat/Health";
-import { AggressiveCombatEntity } from "../combat/AttackComponent";
+import { AggressiveCombatEntity, HitInfo } from "../combat/AttackComponent";
 import { hexToNumber } from "@/lib/format";
 import { SpriteManifest } from "../animation/SpriteManifest";
 import { resolveClip } from "../animation/resolveAnimation";
@@ -18,6 +18,11 @@ const KNOCKBACK_MS = 150;
 // Fraction of speed surviving one full second; applied as decay^(deltaMs/1000) to stay frame-rate independent
 const KNOCKBACK_DECAY_PER_SECOND = 0.01;
 
+export interface EnemyOptions {
+  // Scales incoming knockback. 1 takes it in full, 0 makes the enemy immovable.
+  knockbackScale?: number;
+}
+
 export default class Enemy implements AggressiveCombatEntity {
   public sprite: Phaser.GameObjects.Sprite;
   public statusEffects: StatusEffectController = new StatusEffectController();
@@ -27,6 +32,7 @@ export default class Enemy implements AggressiveCombatEntity {
   private baseTint: number;
   private hitFlashMs = 0;
   private knockbackMs = 0;
+  private knockbackScale: number;
 
   get x(): number {
     return this.sprite.x;
@@ -46,29 +52,34 @@ export default class Enemy implements AggressiveCombatEntity {
     color: string,
     aggressionLevel: number,
     maxHp: number,
-    manifest: SpriteManifest
+    manifest: SpriteManifest,
+    options: EnemyOptions = {}
   ) {
+    this.knockbackScale = options.knockbackScale ?? 1;
     const idleClip = resolveClip(manifest, "idle");
     this.sprite = scene.add.sprite(x, y, idleClip.textureKey, 0);
     this.baseTint = hexToNumber(color);
-    // Fill (not multiply) so the walk cycle's own frame-to-frame shading can't show through.
-    // Mode persists across later setTint calls, so it only needs setting once.
     this.sprite.setTint(this.baseTint).setTintMode(TINT_MODE_FILL);
     this.aggressionLevel = aggressionLevel;
     this.health = new Health(maxHp);
     this.animationController = new AnimationController(scene, this.sprite, manifest);
     scene.physics.add.existing(this.sprite);
-    (this.sprite.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
+    this.body.setCollideWorldBounds(true);
   }
 
-  // dirX/dirY point from attacker to this enemy, already normalised by resolveAttackComponents
-  onDamaged(_amount: number, dirX: number, dirY: number) {
+  private get body(): Phaser.Physics.Arcade.Body {
+    return this.sprite.body as Phaser.Physics.Arcade.Body;
+  }
+
+  // hit.dirX/dirY point from attacker to this enemy, already normalised by resolveAttackComponents
+  onDamaged(hit: HitInfo) {
     this.hitFlashMs = HIT_FLASH_MS;
     this.sprite.setTint(HIT_FLASH_TINT);
 
+    const speed = KNOCKBACK_SPEED * hit.knockback * this.knockbackScale;
+    if (speed === 0) return; // a 0-knockback weapon or immovable enemy shouldn't suspend the AI for KNOCKBACK_MS
     this.knockbackMs = KNOCKBACK_MS;
-    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
-    body.setVelocity(dirX * KNOCKBACK_SPEED, dirY * KNOCKBACK_SPEED);
+    this.body.setVelocity(hit.dirX * speed, hit.dirY * speed);
   }
 
   update(deltaMs: number) {
@@ -79,23 +90,20 @@ export default class Enemy implements AggressiveCombatEntity {
       if (this.hitFlashMs <= 0) this.sprite.setTint(this.baseTint);
     }
 
-    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
-
-    // Runs after EnemyAI.update (see DungeonScene's update order), which yields entirely while
-    // isKnockedBack, so nothing overwrites the impulse before it decays.
+    // Runs after EnemyAI.update yields movement control
     if (this.knockbackMs > 0) {
       this.knockbackMs -= deltaMs;
-      if (this.knockbackMs <= 0) body.setVelocity(0); // hand a clean slate back to the AI
-      else body.velocity.scale(Math.pow(KNOCKBACK_DECAY_PER_SECOND, deltaMs / 1000));
+      if (this.knockbackMs <= 0) this.body.setVelocity(0); // hand a clean slate back to the AI
+      else this.body.velocity.scale(Math.pow(KNOCKBACK_DECAY_PER_SECOND, deltaMs / 1000));
     }
 
-    if (this.health.isDead) body.setVelocity(0);
+    if (this.health.isDead) this.body.setVelocity(0);
 
-    const isMoving = body.velocity.x !== 0 || body.velocity.y !== 0;
-    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, body.velocity.x < 0);
+    const isMoving = this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
+    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, this.body.velocity.x < 0);
   }
 
   stop() {
-    (this.sprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+    this.body.setVelocity(0);
   }
 }

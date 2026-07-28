@@ -9,4 +9,5 @@ export interface GameConfig {
   game_rules: string[];
   bosses: string[];
   weapon: string; // flavor text only - actual combat weapon is randomly generated per run
+  weapon_no: number
 }

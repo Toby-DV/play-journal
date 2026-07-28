@@ -95,5 +95,6 @@ export function generateGameConfig(text: string): GameConfig {
     game_rules: GAME_RULES,
     bosses: [pick(theme.bosses)],
     weapon: pick(theme.weapons),
+    weapon_no: 0 // TODO change at some point
   };
 }

@@ -10,6 +10,8 @@ import { DungeonRoom } from "./types";
 const SWARM_MIN_ENEMIES = 3;
 const SWARM_MAX_ENEMIES = 6;
 const SWARM_ENEMY_HP = 30;
+// Bosses still visibly react to a hit, but don't get shoved around like swarm enemies
+const BOSS_KNOCKBACK_SCALE = 0.35;
 // Spawn tiles stay x tiles clear of the walls
 const SPAWN_WALL_MARGIN = 2;
 const SPAWN_ATTEMPTS = 30;
@@ -42,7 +44,9 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
   const x = map.tileToWorldX(room.centerX)!;
   const y = map.tileToWorldY(room.centerY)!;
 
-  const boss = new Enemy(scene, x, y, config.enemy_color, 3, 150, bossManifest);
+  const boss = new Enemy(scene, x, y, config.enemy_color, 3, 150, bossManifest, {
+    knockbackScale: BOSS_KNOCKBACK_SCALE,
+  });
   boss.sprite.setScale(1.4);
 
   const label = new EntityLabel(scene, fontFamily, boss.sprite, {

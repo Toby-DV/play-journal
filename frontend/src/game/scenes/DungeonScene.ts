@@ -141,7 +141,7 @@ export function createDungeonScene(
 
       const playerX = map.tileToWorldX(startRoom.centerX)!;
       const playerY = map.tileToWorldY(startRoom.centerY)!;
-      const weapon = WEAPONS[1];
+      const weapon = WEAPONS[config.weapon_no];
       this.player = new Player(this, playerX, playerY, weapon, playerManifest);
       this.cameras.main.startFollow(this.player.sprite, true);
 

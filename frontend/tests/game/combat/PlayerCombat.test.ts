@@ -20,6 +20,7 @@ function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
     damage: 15,
     attackSpeedMs: 500,
     rangeTiles: 1.5,
+    knockback: 1,
     attackIds: ["puncture", "battle_focus"],
     ...overrides,
   };

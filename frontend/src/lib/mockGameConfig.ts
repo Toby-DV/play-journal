@@ -15,4 +15,5 @@ export const mockGameConfig: GameConfig = {
   bosses: ["The Merge Conflict", "Big John"],
   weapon: "Mechanical Keyboard",
   length_of_day: 8,
+  weapon_no: 2,
 };

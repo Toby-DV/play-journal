@@ -70,7 +70,9 @@ export default class PlayerCombat {
       this.blocker
     );
     if (!target) return;
-    resolveAttackComponents(BASIC_ATTACK.effects, this.self, target, this.weapon.damage);
+    resolveAttackComponents(BASIC_ATTACK.effects, this.self, target, this.weapon.damage, {
+      knockback: this.weapon.knockback,
+    });
     this.options.onAttack?.(BASIC_ATTACK.id);
   }
 
@@ -90,7 +92,9 @@ export default class PlayerCombat {
       : null;
     if (requiresTarget && !target) return;
 
-    resolveAttackComponents(definition.effects, this.self, target, this.weapon.damage);
+    resolveAttackComponents(definition.effects, this.self, target, this.weapon.damage, {
+      knockback: this.weapon.knockback,
+    });
     this.options.onAttack?.(attackId);
   }
 }

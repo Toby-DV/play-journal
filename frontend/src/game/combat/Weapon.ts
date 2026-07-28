@@ -6,6 +6,8 @@ export interface Weapon {
   damage: number;
   attackSpeedMs: number;
   rangeTiles: number;
+  // Multiplier on Enemy's KNOCKBACK_SPEED. 0 disables the shove for this weapon entirely.
+  knockback: number;
   attackIds: string[];
 }
 
@@ -13,17 +15,19 @@ export const WEAPONS: Weapon[] = [
   {
     id: "tobys_sword",
     category: "melee",
-    damage: 20,
+    damage: 25,
     attackSpeedMs: 1000,
     rangeTiles: 4.5,
-    attackIds: ["slowing_attack", "unstoppable_slash, speed_buff"],
+    knockback: 1,
+    attackIds: ["slowing_attack", "unstoppable_slash", "speed_buff"],
   },
   {
     id: "cannibals_sword",
     category: "melee",
-    damage: 20,
-    attackSpeedMs: 1000,
+    damage: 18,
+    attackSpeedMs: 800,
     rangeTiles: 3,
+    knockback: 2,
     attackIds: ["slowing_attack", "unstoppable_slash", "speed_buff"],
   },
   {
@@ -32,6 +36,7 @@ export const WEAPONS: Weapon[] = [
     damage: 15,
     attackSpeedMs: 500,
     rangeTiles: 1.5,
+    knockback: 0.5,
     attackIds: [],
   }
 ];
