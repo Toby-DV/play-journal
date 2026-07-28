@@ -48,7 +48,7 @@ export default class Player implements CombatEntity {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(0);
 
-    const speed = PLAYER_SPEED * this.statusEffects.getMagnitude("slow", 1);
+    const speed = PLAYER_SPEED * this.statusEffects.getMagnitude("speed", 1) * this.statusEffects.getMagnitude("slow", 1);
 
     if (this.cursors.left.isDown) body.setVelocityX(-speed);
     else if (this.cursors.right.isDown) body.setVelocityX(speed);

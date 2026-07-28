@@ -44,6 +44,9 @@ function getSwarmRoomCount(totalRooms: number): number {
 
 const LEVEL_COMPLETE_DELAY_MS = 1500;
 const STAIRS_REACH_RADIUS = TILE_SIZE * 0.75;
+// Freeze on impact; 0 disables it. Past ~120ms this stops reading as weight and starts reading as
+// a frame hitch. 60 is a good starting value.
+const HITSTOP_MS = 0;
 
 export function createDungeonScene(
   PhaserLib: typeof Phaser,
@@ -56,6 +59,7 @@ export function createDungeonScene(
     private playerLabel!: EntityLabel;
     private enemyInstances: SpawnedEnemy[] = [];
     private playerCombat!: PlayerCombat;
+    private hitstopMs = 0;
     private isPlayerDead = false;
     private isLevelComplete = false;
     private tutorialBanner?: TutorialBanner;
@@ -137,7 +141,7 @@ export function createDungeonScene(
 
       const playerX = map.tileToWorldX(startRoom.centerX)!;
       const playerY = map.tileToWorldY(startRoom.centerY)!;
-      const weapon = WEAPONS[0];
+      const weapon = WEAPONS[1];
       this.player = new Player(this, playerX, playerY, weapon, playerManifest);
       this.cameras.main.startFollow(this.player.sprite, true);
 
@@ -206,7 +210,15 @@ export function createDungeonScene(
         () => this.enemyInstances.map(({ enemy }) => enemy),
         blocker,
         new PhaserAttackInput(this),
-        { onAttack: (attackId) => this.player.animationController.play("attack", { abilityId: attackId }) }
+        {
+          onAttack: (attackId) => {
+            this.player.animationController.play("attack", { abilityId: attackId });
+            // Fires only once a target was found, so this already means "hit landed" - except for
+            // self-targeted abilities, which shouldn't freeze at all. Moving the trigger to
+            // Enemy.onDamaged fixes that.
+            this.freezeFor(HITSTOP_MS);
+          },
+        }
       );
 
       this.debugOverlay = new DebugOverlay(this, this.player, this.playerCombat);
@@ -271,6 +283,13 @@ export function createDungeonScene(
         return;
       }
 
+      if (this.hitstopMs > 0) {
+        this.hitstopMs -= delta;
+        if (this.hitstopMs > 0) return;
+        this.physics.world.resume();
+        this.anims.resumeAll();
+      }
+
       if (this.isPlayerDead || this.isLevelComplete) return;
 
       this.player.update(delta);
@@ -314,6 +333,20 @@ export function createDungeonScene(
       const dx = this.player.x - this.stairsPosition.x;
       const dy = this.player.y - this.stairsPosition.y;
       return dx * dx + dy * dy < STAIRS_REACH_RADIUS * STAIRS_REACH_RADIUS;
+    }
+
+    // Skipping the per-entity update() calls isn't enough on its own - Phaser steps the physics
+    // world and the animation manager itself, so both have to be paused or frozen enemies keep
+    // gliding and animating.
+    private freezeFor(ms: number) {
+      // Guard, not an optimisation: without it a 0 would pause both systems and then skip the
+      // resume below (gated on hitstopMs > 0), leaving the game permanently frozen.
+      if (ms <= 0) return;
+      if (this.hitstopMs <= 0) {
+        this.physics.world.pause();
+        this.anims.pauseAll();
+      }
+      this.hitstopMs = Math.max(this.hitstopMs, ms); // longest wins; overlapping hits don't stack
     }
 
     private removeDeadEnemies() {

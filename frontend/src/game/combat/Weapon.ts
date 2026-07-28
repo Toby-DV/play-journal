@@ -15,8 +15,16 @@ export const WEAPONS: Weapon[] = [
     category: "melee",
     damage: 20,
     attackSpeedMs: 1000,
+    rangeTiles: 4.5,
+    attackIds: ["slowing_attack", "unstoppable_slash, speed_buff"],
+  },
+  {
+    id: "cannibals_sword",
+    category: "melee",
+    damage: 20,
+    attackSpeedMs: 1000,
     rangeTiles: 3,
-    attackIds: ["slowing_attack", "unstoppable_slash"],
+    attackIds: ["slowing_attack", "unstoppable_slash", "speed_buff"],
   },
   {
     id: "shortsword",

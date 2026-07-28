@@ -1,3 +1,4 @@
+import { Darumadrop_One } from "next/font/google";
 import { AttackComponent } from "./AttackComponent";
 
 export interface WeaponAttackDefinition {
@@ -12,14 +13,22 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     id: "slowing_attack",
     name: "Slowing attack",
     cooldownMs: 5000,
-    effects: [{ kind: "status", effectId: "slow", target: "target", durationMs: 2500, magnitude: 0.2 }],
+    effects: [{kind: "status", effectId: "slow", target: "target", durationMs: 2500, magnitude: 0.2}, 
+              {kind: "damage", target: "target"}
+    ],
   },
   {
     id: "unstoppable_slash",
     name: "Unstoppable Slash",
     cooldownMs: 2000,
-    effects: [{ kind: "status", effectId: "unstoppable", target: "self", durationMs: 2000}],
+    effects: [{kind: "status", effectId: "unstoppable", target: "self", durationMs: 2000}],
   },
+  {
+    id: "speed_buff",
+    name: "Speed Up",
+    cooldownMs: 7000,
+    effects:[{kind: "status", effectId: "speed", magnitude: 1.2, target: "self", durationMs: 4000}]
+  }
 ];
 
 // Damage undefined - PlayerCombat resolves it against the wielder's weapon.damage

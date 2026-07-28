@@ -22,6 +22,8 @@ export type AttackComponent = StatusEffectComponent | DamageComponent;
 export interface ResolvableEntity {
   statusEffects: StatusEffectController;
   health: Health;
+  // Optional hit reaction - lets sprite-owning entities play feedback without the combat layer knowing about rendering
+  onDamaged?(amount: number): void;
 }
 
 // Anything that can fight or be fought also needs a known position for range calculations
@@ -45,7 +47,9 @@ export function resolveAttackComponents(
     if (!recipient) continue;
 
     if (component.kind === "damage") {
-      recipient.health.takeDamage(component.amount ?? fallbackDamage);
+      const amount = component.amount ?? fallbackDamage;
+      recipient.health.takeDamage(amount);
+      recipient.onDamaged?.(amount);
     } else {
       recipient.statusEffects.apply(component.effectId, component.durationMs, component.magnitude);
     }

@@ -35,6 +35,8 @@ export default class EnemyAI {
   update(_deltaMs: number): void {
     const body = this.enemy.sprite.body as Phaser.Physics.Arcade.Body;
 
+    if (this.enemy.isKnockedBack) return;
+
     if (this.enemy.health.isDead) {
       body.setVelocity(0);
       return;

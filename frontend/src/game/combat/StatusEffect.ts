@@ -18,10 +18,17 @@ export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
     tags: ["cc", "debuff"],
     magnitude: 0.5,
   },
+  speed: {
+    id: "speed",
+    label: "SPEED",
+    color: "#e96f2d",
+    tags: ["buff"],
+    magnitude: 1.3
+  },
   unstoppable: {
     id: "unstoppable",
     label: "UNSTOPPABLE",
-    color: "#facc15",
+    color: "#faa215",
     tags: ["buff"],
     blocksTags: ["cc"],
   },
