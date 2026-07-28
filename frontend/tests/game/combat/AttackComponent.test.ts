@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { resolveAttackComponents, AttackComponent, ResolvableEntity } from "@/game/combat/AttackComponent";
+import { resolveAttackComponents, AttackComponent, CombatEntity } from "@/game/combat/AttackComponent";
 import StatusEffectController from "@/game/combat/StatusEffectController";
 import Health from "@/game/combat/Health";
 
-function makeEntity(): ResolvableEntity {
-  return { statusEffects: new StatusEffectController(), health: new Health(100) };
+function makeEntity(): CombatEntity {
+  return { statusEffects: new StatusEffectController(), health: new Health(100), x: 0, y: 0 };
 }
 
 describe("resolveAttackComponents", () => {

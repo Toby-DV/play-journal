@@ -42,6 +42,10 @@ export default class EnemyAI {
       return;
     }
 
+    // Every path below assigns velocity outright, so without this the knockback impulse would be
+    // erased the frame after it lands. Enemy.update decays it and clears the flag.
+    if (this.enemy.isKnockedBack) return;
+
     const target = this.getTarget();
     const dx = target.x - this.enemy.x;
     const dy = target.y - this.enemy.y;
