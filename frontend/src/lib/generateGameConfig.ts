@@ -44,7 +44,7 @@ const MOOD_THEMES: Record<
 };
 
 const GAME_RULES = [
-  "Use ARROW keys or WASD to move.",
+  "Use the ARROW keys to move.",
   "Press SPACE to attack nearby enemies.",
   "Clear every room to reach the stairs.",
 ];

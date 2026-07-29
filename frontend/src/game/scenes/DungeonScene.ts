@@ -27,6 +27,7 @@ import placeRoomStructures from "../dungeon/placeRoomStructures";
 import Door from "../dungeon/Door";
 import { DungeonRoom, RoomKind } from "../dungeon/types";
 import TutorialBanner from "../ui/TutorialBanner";
+import { hasSeenTutorial, markTutorialSeen } from "../tutorialSeen";
 import DebugOverlay from "../ui/DebugOverlay";
 
 // Room count scales with length_of_day (Min: 5, Max: 10)
@@ -274,9 +275,11 @@ export function createDungeonScene(
 
     // Level-start tutorial, sourced from the journal entry's own game_rules - freezes gameplay
     // (see the update() gate below) until the player has stepped through every line, so SPACE
-    // advancing text can never also fire the player's SPACE-triggered basic attack.
+    // advancing text can never also fire the player's SPACE-triggered basic attack. First run
+    // only; marked seen on show rather than on completion so a mid-tutorial reload doesn't replay it.
     private createTutorial() {
-      if (config.game_rules.length === 0) return;
+      if (config.game_rules.length === 0 || hasSeenTutorial()) return;
+      markTutorialSeen();
       this.tutorialBanner = new TutorialBanner(this, fontFamily, config.game_rules, () => {
         this.tutorialBanner = undefined;
       });
