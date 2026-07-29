@@ -19,8 +19,8 @@ export const ATTACKS: AttackDefinition[] = [
     maxRangeTiles: 8,
   },
   {
-    id: "nagging_reminder",
-    name: "Nagging Reminder",
+    id: "slowing_attack",
+    name: "Slowing Attack",
     minAggression: 2,
     cooldownMs: 4000,
     effects: [

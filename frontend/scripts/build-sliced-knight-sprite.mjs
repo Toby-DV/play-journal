@@ -6,7 +6,9 @@ import pngjs from "pngjs";
 const { PNG } = pngjs;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const OUTPUT_DIR = path.resolve(__dirname, "../public/sprites");
+// Cut frames live in sprites/source-sheets/; the assembled strips the game loads go in sprites/sliced_knight/
+const SOURCE_DIR = path.resolve(__dirname, "../public/sprites/source-sheets");
+const OUTPUT_DIR = path.resolve(__dirname, "../public/sprites/sliced_knight");
 const FRAME_SIZE = 32;
 
 // Frame files pulled from the sliced_rogues sheets, keyed by output state. idle/walk come from
@@ -33,7 +35,7 @@ const STATES = {
 };
 
 function readFramePng(sourceDir, fileName) {
-  const data = fs.readFileSync(path.resolve(__dirname, "../public/sprites", sourceDir, fileName));
+  const data = fs.readFileSync(path.join(SOURCE_DIR, sourceDir, fileName));
   return PNG.sync.read(data);
 }
 
@@ -55,7 +57,8 @@ function writeStrip(state, sourceDir, fileNames) {
     }
   });
 
-  const outPath = path.join(OUTPUT_DIR, `sliced_knight_${state}.png`);
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  const outPath = path.join(OUTPUT_DIR, `${state}.png`);
   strip.pack().pipe(fs.createWriteStream(outPath));
   console.log(`wrote ${outPath}`);
 }

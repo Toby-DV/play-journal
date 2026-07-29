@@ -12,12 +12,26 @@ export const BOSS_SPRITE_ID = "__boss__";
 function clip(spriteId: string, state: AnimationState, opts: { frameCount: number; frameRate: number; repeat: number }): ClipDef {
   return {
     textureKey: `${spriteId}_${state}`,
-    textureUrl: `/sprites/${spriteId}_${state}.png`,
+    textureUrl: `/sprites/${spriteId}/${state}.png`,
     frameWidth: 32,
     frameHeight: 32,
     frameCount: opts.frameCount,
     frameRate: opts.frameRate,
     repeat: opts.repeat,
+  };
+}
+
+// Backs an "attack:<attackId>" clip key, which resolveClip prefers over the shared attack clip.
+// Colons aren't filename-safe, so the art is named attack_<attackId>.png in the sprite's folder.
+function attackVariantClip(spriteId: string, attackId: string, opts: { frameCount: number; frameRate: number }): ClipDef {
+  return {
+    textureKey: `${spriteId}_attack_${attackId}`,
+    textureUrl: `/sprites/${spriteId}/attack_${attackId}.png`,
+    frameWidth: 32,
+    frameHeight: 32,
+    frameCount: opts.frameCount,
+    frameRate: opts.frameRate,
+    repeat: 0, // one-shot, like every attack clip
   };
 }
 
@@ -34,6 +48,7 @@ function buildGenericManifest(spriteId: string): SpriteManifest {
       walk: clip(spriteId, "walk", { frameCount: 4, frameRate: 8, repeat: -1 }),
       dash: clip(spriteId, "dash", { frameCount: 3, frameRate: 12, repeat: -1 }),
       attack: clip(spriteId, "attack", { frameCount: 3, frameRate: 10, repeat: 0 }),
+      "attack:slowing_attack": attackVariantClip(spriteId, "slowing_attack", { frameCount: 3, frameRate: 10 }),
       hit: clip(spriteId, "hit", { frameCount: 2, frameRate: 10, repeat: 0 }),
       death: clip(spriteId, "death", { frameCount: 4, frameRate: 6, repeat: 0 }),
     },
@@ -42,14 +57,7 @@ function buildGenericManifest(spriteId: string): SpriteManifest {
 
 export const GENERIC_ENEMY_MANIFEST: SpriteManifest = buildGenericManifest("generic_enemy");
 
-// Sprite cut from sliced_rogues character sheets (see public/sprites/sliced_knight/,
-// sliced_knight2/, and scripts/build-sliced-knight-sprite.mjs). idle/walk/attack/death are real
-// frames from the sheets; hit intentionally has no clip here and falls back to walk/idle via
-// resolveAnimation.ts's resolveClip rather than guessing which sheet rows mean what. Walking left
-// is just the walk clip mirrored (AnimationController flips the sprite via flipX), not separate art.
-// Doubles as pickManifest's player-side fallback (see resolveAnimation.ts) when a sprite id can't
-// be fetched or resolved - idle/walk/death is enough for hasFallbackBase to accept it, and it's
-// real art rather than a placeholder box.
+// fallback player
 export const SLICED_KNIGHT_MANIFEST: SpriteManifest = {
   spriteId: "sliced_knight",
   clips: {
@@ -75,6 +83,7 @@ export class LocalSpriteProvider implements SpriteProvider {
         // Placeholder attack art, so enemy attacks are visible while testing; hit/dash stay absent
         // to keep resolveClip's fallback path exercised.
         attack: GENERIC_ENEMY_MANIFEST.clips.attack!,
+        "attack:slowing_attack": GENERIC_ENEMY_MANIFEST.clips["attack:slowing_attack"]!,
         death: GENERIC_ENEMY_MANIFEST.clips.death!,
       },
     },

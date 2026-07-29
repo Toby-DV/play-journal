@@ -20,11 +20,17 @@ const STATES = [
   { name: "death", frameCount: 4 },
 ];
 
-// [R, G, B] base color per sprite, so the two generic sprites are visually distinguishable.
+// [R, G, B] base color per sprite. Only generic_enemy is still generated - the old
+// generic_humanoid placeholder is referenced by no manifest and now lives in sprites/unused/.
 const SPRITE_BASE_COLOR = {
-  generic_humanoid: [56, 130, 246], // blue-ish
   generic_enemy: [220, 60, 60], // red-ish
 };
+
+// Per-attack sheets: the shared attack silhouette in a different color, written as
+// <spriteId>_attack_<attackId>.png to back SpriteProvider's "attack:<attackId>" clip keys.
+const ATTACK_VARIANTS = [
+  { attackId: "slowing_attack", color: [70, 140, 240] }, // blue
+];
 
 function frameColor(base, frameIndex, frameCount) {
   const brightness = 0.55 + 0.45 * (frameCount === 1 ? 0 : frameIndex / (frameCount - 1));
@@ -46,8 +52,8 @@ function isOpaque(state, frameIndex, x, y) {
   return x >= inset && y >= inset && x < FRAME_SIZE - inset && y < FRAME_SIZE - inset;
 }
 
-function writeSpritesheet(spriteId, state, frameCount) {
-  const base = SPRITE_BASE_COLOR[spriteId];
+function writeSpritesheet(spriteId, state, frameCount, options = {}) {
+  const base = options.baseColor ?? SPRITE_BASE_COLOR[spriteId];
   const width = FRAME_SIZE * frameCount;
   const png = new PNG({ width, height: FRAME_SIZE });
 
@@ -77,8 +83,10 @@ function writeSpritesheet(spriteId, state, frameCount) {
     }
   }
 
-  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  const outPath = path.join(OUTPUT_DIR, `${spriteId}_${state}.png`);
+  // One folder per sprite id, matching SpriteProvider's /sprites/<spriteId>/<clip>.png URLs
+  const spriteDir = path.join(OUTPUT_DIR, spriteId);
+  fs.mkdirSync(spriteDir, { recursive: true });
+  const outPath = path.join(spriteDir, `${options.fileName ?? state}.png`);
   png.pack().pipe(fs.createWriteStream(outPath));
   console.log(`wrote ${outPath}`);
 }
@@ -86,5 +94,11 @@ function writeSpritesheet(spriteId, state, frameCount) {
 for (const spriteId of Object.keys(SPRITE_BASE_COLOR)) {
   for (const { name, frameCount } of STATES) {
     writeSpritesheet(spriteId, name, frameCount);
+  }
+  for (const { attackId, color } of ATTACK_VARIANTS) {
+    writeSpritesheet(spriteId, "attack", ATTACK_FRAME_INSETS.length, {
+      baseColor: color,
+      fileName: `attack_${attackId}`,
+    });
   }
 }
