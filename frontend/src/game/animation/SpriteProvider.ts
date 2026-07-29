@@ -72,6 +72,9 @@ export class LocalSpriteProvider implements SpriteProvider {
       clips: {
         idle: GENERIC_ENEMY_MANIFEST.clips.idle!,
         walk: GENERIC_ENEMY_MANIFEST.clips.walk!,
+        // Placeholder attack art, so enemy attacks are visible while testing; hit/dash stay absent
+        // to keep resolveClip's fallback path exercised.
+        attack: GENERIC_ENEMY_MANIFEST.clips.attack!,
         death: GENERIC_ENEMY_MANIFEST.clips.death!,
       },
     },

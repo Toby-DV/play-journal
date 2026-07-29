@@ -47,9 +47,6 @@ export async function loadEntityManifests(
 
   let playerManifest = pickManifest("player", playerFetched);
   let enemyManifest = pickManifest("enemy", enemyFetched);
-  // Boss falls back through the same generic enemy placeholder as regular enemies - there's
-  // no dedicated "generic boss" art, and a distinct boss-typed asset (see SpriteProvider's
-  // BOSS_SPRITE_ID handling) is preferred over it whenever one is available.
   let bossManifest = pickManifest("enemy", bossFetched);
 
   const failedKeys = new Set<string>();

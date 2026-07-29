@@ -3,9 +3,7 @@ import { GENERIC_ENEMY_MANIFEST, SLICED_KNIGHT_MANIFEST } from "./SpriteProvider
 
 export type SpriteKind = "player" | "enemy";
 
-// A manifest is safe to resolve against only if it has at least one of the two states
-// resolveClip's fallback chain bottoms out on. The fallback manifests below always qualify; this
-// also catches a fetched manifest missing both (falls back rather than resolveClip throwing).
+// A manifest is safe to resolve against only if it has an idle or walk state
 function hasFallbackBase(manifest: SpriteManifest): boolean {
   return manifest.clips.idle !== undefined || manifest.clips.walk !== undefined;
 }

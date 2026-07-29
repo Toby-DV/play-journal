@@ -7,6 +7,7 @@ export default class AnimationController {
   private lastHealthRatio = 1;
   private lastIsMoving = false;
   private diedAlready = false;
+  private facingLeft = false;
 
   constructor(
     private scene: Phaser.Scene,
@@ -31,28 +32,14 @@ export default class AnimationController {
     this.playInternal(state, options);
   }
 
-  // Shared by play() (gated by shouldInterrupt) and the animationcomplete handler below (which
-  // must bypass that gate - it's not an external interrupt request, it's a one-shot clip like
-  // "attack" handing control back once it's done. Since shouldInterrupt only lets a *higher*
-  // priority state override the current one, and the clip that just finished IS the current
-  // state, gating this call the same way as play() would always block it (attack/hit can never
-  // out-rank themselves) and strand the controller on the last frame forever.
   private playInternal(state: AnimationState, options?: { abilityId?: string }): void {
     const requestedKey: ManifestKey = options?.abilityId ? `attack:${options.abilityId}` : state;
     const clip = resolveClip(this.manifest, requestedKey);
 
-    // hit/attack are always authored with repeat: 0 (one-shot). If resolveClip had to fall back
-    // to a looping walk/idle clip because this manifest has no dedicated art for `state` (e.g.
-    // sliced_knight has no hit clip), there's nothing to actually show for it - leave the sprite
-    // playing whatever it already was rather than switching to a clip with no way back (its
-    // animationcomplete never fires, since it loops forever), which would otherwise strand the
-    // controller in `state` and block walk/idle from ever taking back over.
     if ((state === "hit" || state === "attack") && clip.repeat !== 0) return;
 
     this.currentState = state;
-    // Clears any listener left behind by a clip that got interrupted before it could naturally
-    // complete (animationcomplete never fires for an interrupted clip, so `once` never
-    // self-removed it) - otherwise it fires alongside this clip's own listener later.
+    // Clears any listener left behind by a clip that got interrupted before it could complete
     this.sprite.off("animationcomplete");
     this.sprite.play(clip.textureKey);
 
@@ -64,12 +51,11 @@ export default class AnimationController {
     }
   }
 
-  // movingLeft only matters while isMoving; defaults false so non-directional callers don't need
-  // to pass it. Set every frame (not gated by shouldInterrupt like play() is) so a direction
-  // reversal mid-walk flips immediately instead of waiting for a state change.
-  update(healthRatio: number, isDead: boolean, isMoving: boolean, movingLeft = false): void {
+  // Facing latches: standing still or moving straight up/down keeps the last horizontal direction
+  update(healthRatio: number, isDead: boolean, isMoving: boolean, velocityX = 0): void {
     this.lastIsMoving = isMoving;
-    this.sprite.setFlipX(isMoving && movingLeft);
+    if (velocityX !== 0) this.facingLeft = velocityX < 0;
+    this.sprite.setFlipX(this.facingLeft);
 
     if (isDead) {
       if (!this.diedAlready) {

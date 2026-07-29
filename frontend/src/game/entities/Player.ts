@@ -63,8 +63,7 @@ export default class Player implements CombatEntity {
     body.velocity.normalize().scale(speed);
 
     const isMoving = body.velocity.x !== 0 || body.velocity.y !== 0;
-    const movingLeft = body.velocity.x < 0;
-    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, movingLeft);
+    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, body.velocity.x);
   }
 
   stop() {

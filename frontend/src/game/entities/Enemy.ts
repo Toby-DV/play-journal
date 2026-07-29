@@ -100,7 +100,7 @@ export default class Enemy implements AggressiveCombatEntity {
     if (this.health.isDead) this.body.setVelocity(0);
 
     const isMoving = this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
-    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, this.body.velocity.x < 0);
+    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, this.body.velocity.x);
   }
 
   stop() {
