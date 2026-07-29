@@ -12,14 +12,10 @@ interface GameComponentProps {
   onLevelComplete: () => void;
 }
 
-// Thin React/Phaser bootstrap: owns the container, the Phaser.Game lifecycle, and resizing.
-// Actual gameplay lives in scene modules under src/game/, mirroring the module split used by
 // https://github.com/mikewesthad/phaser-3-tilemap-blog-posts.
 export default function GameComponent({ config, onLevelComplete }: GameComponentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
-  // Read via ref inside the effect so a fresh onLevelComplete identity each render doesn't
-  // recreate the Phaser game (the effect only depends on config).
   const onLevelCompleteRef = useRef(onLevelComplete);
   onLevelCompleteRef.current = onLevelComplete;
 
@@ -27,6 +23,7 @@ export default function GameComponent({ config, onLevelComplete }: GameComponent
     if (!containerRef.current) return;
 
     let isDestroyed = false;
+    let resizeObserver: ResizeObserver | null = null;
 
     import("phaser").then((Phaser) => {
       if (isDestroyed) return;
@@ -53,7 +50,7 @@ export default function GameComponent({ config, onLevelComplete }: GameComponent
       const game = new Phaser.Game(gameConfig);
       gameRef.current = game;
 
-      const resizeObserver = new ResizeObserver((entries) => {
+      resizeObserver = new ResizeObserver((entries) => {
         if (!game || isDestroyed) return;
         const entry = entries[0];
         if (!entry) return;
@@ -65,19 +62,11 @@ export default function GameComponent({ config, onLevelComplete }: GameComponent
       if (containerRef.current) {
         resizeObserver.observe(containerRef.current);
       }
-
-      return () => {
-        isDestroyed = true;
-        resizeObserver.disconnect();
-        if (gameRef.current) {
-          gameRef.current.destroy(true);
-          gameRef.current = null;
-        }
-      };
     });
 
     return () => {
       isDestroyed = true;
+      resizeObserver?.disconnect();
       if (gameRef.current) {
         gameRef.current.destroy(true);
         gameRef.current = null;

@@ -16,10 +16,10 @@ export interface DamageComponent {
 }
 
 export interface HitInfo {
-  damage: number,
-  dirX: number,
-  dirY: number,
-  knockback: number
+  damage: number;
+  dirX: number;
+  dirY: number;
+  knockback: number;
 }
 
 export type AttackComponent = StatusEffectComponent | DamageComponent;
@@ -52,9 +52,9 @@ export function resolveAttackComponents(
     if (component.kind === "damage") {
       const amount = component.amount ?? fallbackDamage;
       recipient.health.takeDamage(amount);
-      const dx = recipient.x - self.x
-      const dy = recipient.y - self.y
-      const len = Math.hypot(dx, dy) || 1 // guard against self targetting abilities
+      const dx = recipient.x - self.x;
+      const dy = recipient.y - self.y;
+      const len = Math.hypot(dx, dy) || 1; // guard against self-targeting abilities
       recipient.onDamaged?.({
         damage: amount,
         dirX: dx / len,

@@ -27,6 +27,12 @@ interface FlipState {
 // Keep in sync with --leaf-turn-ms in globals.css
 const LEAF_TURN_MS = 650;
 
+// Leaf rotation classes, by turn direction and whether the turn has started
+const LEAF_CLASSES = {
+  next: { start: "tome-leaf tome-leaf--start", turned: "tome-leaf tome-leaf--turned" },
+  prev: { start: "tome-leaf tome-leaf--start-flipped", turned: "tome-leaf tome-leaf--turned-flipped" },
+} as const;
+
 export default function Book({ spreads, index, onIndexChange, isOpen, onOpenChange }: BookProps) {
   const [isCoverFullyOpen, setIsCoverFullyOpen] = useState(false);
   const [flip, setFlip] = useState<FlipState | null>(null);
@@ -90,37 +96,16 @@ export default function Book({ spreads, index, onIndexChange, isOpen, onOpenChan
   const current = spreads[index];
   if (!current) return null;
 
-  const leftContent = flip
-    ? flip.dir === "next"
-      ? spreads[flip.from].left
-      : spreads[flip.to].left
-    : current.left;
-  const rightContent = flip
-    ? flip.dir === "next"
-      ? spreads[flip.to].right
-      : spreads[flip.from].right
-    : current.right;
+  // A turn spans two adjacent spreads either way it goes, so the leaf's front is always the
+  // earlier spread's right page and its back the later spread's left page.
+  const earlier = flip ? spreads[Math.min(flip.from, flip.to)] : null;
+  const later = flip ? spreads[Math.max(flip.from, flip.to)] : null;
 
-  const leafFront = flip
-    ? flip.dir === "next"
-      ? spreads[flip.from].right
-      : spreads[flip.to].right
-    : null;
-  const leafBack = flip
-    ? flip.dir === "next"
-      ? spreads[flip.to].left
-      : spreads[flip.from].left
-    : null;
-
-  const leafClass = flip
-    ? flip.dir === "next"
-      ? flip.turned
-        ? "tome-leaf tome-leaf--turned"
-        : "tome-leaf tome-leaf--start"
-      : flip.turned
-        ? "tome-leaf tome-leaf--turned-flipped"
-        : "tome-leaf tome-leaf--start-flipped"
-    : "";
+  const leftContent = earlier ? earlier.left : current.left;
+  const rightContent = later ? later.right : current.right;
+  const leafFront = earlier ? earlier.right : null;
+  const leafBack = later ? later.left : null;
+  const leafClass = flip ? LEAF_CLASSES[flip.dir][flip.turned ? "turned" : "start"] : "";
 
   const shownIndex = flip ? flip.to : index;
 
@@ -149,132 +134,132 @@ export default function Book({ spreads, index, onIndexChange, isOpen, onOpenChan
                 "0 45px 80px -10px rgba(0, 0, 0, 0.95), 0 0 110px -10px rgba(251, 191, 36, 0.35)",
             }
           : undefined
-        }
-        transition={{
-          width: { type: "spring", stiffness: 80, damping: 20 },
-          x: isOpen
-            ? {
-                times: [0, 0.2, 1],
-                duration: 1.1,
-                ease: "easeInOut",
-              }
-            : { type: "spring", stiffness: 90, damping: 18 },
-          layout: { type: "spring", stiffness: 80, damping: 20 },
-          boxShadow: { type: "tween", duration: 0.5, ease: "easeOut" },
-        }}
-      >
-        {/* Open pages layer */}
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, filter: "blur(4px)" }}
-            animate={{ opacity: 1, filter: "blur(0px)" }}
-            transition={{ delay: 0.3, duration: 0.5, ease: "easeOut" }}
-            className="h-full w-full flex flex-col relative"
-          >
-            <div className="tome-page-stack tome-page-stack--left" aria-hidden />
-            <div className="tome-page-stack tome-page-stack--right" aria-hidden />
+      }
+      transition={{
+        width: { type: "spring", stiffness: 80, damping: 20 },
+        x: isOpen
+          ? {
+              times: [0, 0.2, 1],
+              duration: 1.1,
+              ease: "easeInOut",
+            }
+          : { type: "spring", stiffness: 90, damping: 18 },
+        layout: { type: "spring", stiffness: 80, damping: 20 },
+        boxShadow: { type: "tween", duration: 0.5, ease: "easeOut" },
+      }}
+    >
+      {/* Open pages layer */}
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, filter: "blur(4px)" }}
+          animate={{ opacity: 1, filter: "blur(0px)" }}
+          transition={{ delay: 0.3, duration: 0.5, ease: "easeOut" }}
+          className="h-full w-full flex flex-col relative"
+        >
+          <div className="tome-page-stack tome-page-stack--left" aria-hidden />
+          <div className="tome-page-stack tome-page-stack--right" aria-hidden />
 
-            <div className="tome-spread">
-              <div className="tome-page tome-page--left">{leftContent}</div>
-              <div className="tome-page tome-page--right">{rightContent}</div>
+          <div className="tome-spread">
+            <div className="tome-page tome-page--left">{leftContent}</div>
+            <div className="tome-page tome-page--right">{rightContent}</div>
 
-              {flip && (
-                <div className={leafClass} aria-hidden>
-                  <div className="tome-leaf-face">
-                    <div className="tome-page tome-page--right">{leafFront}</div>
-                  </div>
-                  <div className="tome-leaf-face tome-leaf-face--back">
-                    <div className="tome-page tome-page--left">{leafBack}</div>
-                  </div>
+            {flip && (
+              <div className={leafClass} aria-hidden>
+                <div className="tome-leaf-face">
+                  <div className="tome-page tome-page--right">{leafFront}</div>
                 </div>
-              )}
-            </div>
+                <div className="tome-leaf-face tome-leaf-face--back">
+                  <div className="tome-page tome-page--left">{leafBack}</div>
+                </div>
+              </div>
+            )}
+          </div>
 
-            <button
-              className="tome-corner tome-corner--prev"
-              onClick={() => startFlip("prev")}
-              disabled={shownIndex <= 0}
-              aria-label="Previous page"
-            >
-              ◄
-            </button>
-            <button
-              className="tome-corner tome-corner--next"
-              onClick={() => startFlip("next")}
-              disabled={shownIndex >= spreads.length - 1}
-              aria-label="Next page"
-            >
-              ►
-            </button>
-          </motion.div>
-        )}
-
-        {/* Cover Overlay Layer */}
-        {!isCoverFullyOpen && (
-          <motion.div
-            key="closed-cover"
-            initial={{ rotateY: 0, left: 0 }}
-            animate={{
-              rotateY: isOpen ? -180 : 0,
-              left: isOpen ? "50%" : 0,
-            }}
-            transition={{
-              rotateY: { duration: 1.1, ease: [0.4, 0, 0.2, 1] },
-              left: { type: "spring", stiffness: 80, damping: 20 },
-            }}
-            style={{
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              left: isOpen ? "50%" : 0,
-              right: 0,
-              transformOrigin: "left center",
-              transformStyle: "preserve-3d",
-              backfaceVisibility: "hidden",
-              zIndex: 50,
-              background: "linear-gradient(145deg, #3a2517 0%, var(--leather) 45%, #1f1109 100%)",
-              border: "2px solid var(--leather-edge)",
-              borderRadius: "0 6px 6px 0",
-              boxShadow: "0 30px 60px -12px rgba(0, 0, 0, 0.85)",
-            }}
-            onAnimationComplete={() => {
-              if (isOpen) {
-                setIsCoverFullyOpen(true);
-              }
-            }}
-            className="h-full flex items-center justify-center p-8 overflow-hidden cursor-pointer select-none"
-            onClick={!isOpen ? () => onOpenChange(true) : undefined}
+          <button
+            className="tome-corner tome-corner--prev"
+            onClick={() => startFlip("prev")}
+            disabled={shownIndex <= 0}
+            aria-label="Previous page"
           >
-            {/* Subtle Glowing Center Background Effect */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.15)_0%,transparent_60%)] pointer-events-none" />
+            ◄
+          </button>
+          <button
+            className="tome-corner tome-corner--next"
+            onClick={() => startFlip("next")}
+            disabled={shownIndex >= spreads.length - 1}
+            aria-label="Next page"
+          >
+            ►
+          </button>
+        </motion.div>
+      )}
 
-            {/* Elegant Thin Border */}
-            <div className="absolute inset-4 border border-[#fbbf24]/20 pointer-events-none rounded-sm" />
+      {/* Cover Overlay Layer */}
+      {!isCoverFullyOpen && (
+        <motion.div
+          key="closed-cover"
+          initial={{ rotateY: 0, left: 0 }}
+          animate={{
+            rotateY: isOpen ? -180 : 0,
+            left: isOpen ? "50%" : 0,
+          }}
+          transition={{
+            rotateY: { duration: 1.1, ease: [0.4, 0, 0.2, 1] },
+            left: { type: "spring", stiffness: 80, damping: 20 },
+          }}
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: isOpen ? "50%" : 0,
+            right: 0,
+            transformOrigin: "left center",
+            transformStyle: "preserve-3d",
+            backfaceVisibility: "hidden",
+            zIndex: 50,
+            background: "linear-gradient(145deg, #3a2517 0%, var(--leather) 45%, #1f1109 100%)",
+            border: "2px solid var(--leather-edge)",
+            borderRadius: "0 6px 6px 0",
+            boxShadow: "0 30px 60px -12px rgba(0, 0, 0, 0.85)",
+          }}
+          onAnimationComplete={() => {
+            if (isOpen) {
+              setIsCoverFullyOpen(true);
+            }
+          }}
+          className="h-full flex items-center justify-center p-8 overflow-hidden cursor-pointer select-none"
+          onClick={!isOpen ? () => onOpenChange(true) : undefined}
+        >
+          {/* Subtle Glowing Center Background Effect */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.15)_0%,transparent_60%)] pointer-events-none" />
 
-            {/* Corner Ornaments */}
-            <div className="absolute top-6 left-6 w-3 h-3 border-t border-l border-[#fbbf24]/40 pointer-events-none" />
-            <div className="absolute top-6 right-6 w-3 h-3 border-t border-r border-[#fbbf24]/40 pointer-events-none" />
-            <div className="absolute bottom-6 left-6 w-3 h-3 border-b border-l border-[#fbbf24]/40 pointer-events-none" />
-            <div className="absolute bottom-6 right-6 w-3 h-3 border-b border-r border-[#fbbf24]/40 pointer-events-none" />
+          {/* Elegant Thin Border */}
+          <div className="absolute inset-4 border border-[#fbbf24]/20 pointer-events-none rounded-sm" />
 
-            <div className="flex flex-col items-center justify-center z-10">
-              {/* Simple Cursive Serif Title */}
-              <h1 
-                className="text-5xl tracking-wide text-center"
-                style={{ 
-                  color: "#fbbf24", 
-                  textShadow: "0 2px 8px rgba(0,0,0,0.8), 0 0 15px rgba(251,191,36,0.3)",
-                  fontFamily: "Caveat, var(--font-caveat), cursive"
-                }}
-              >
-                Play-Journal
-              </h1>
-              
-              {/* Gold foil ribbon divider */}
-              <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#fbbf24]/50 to-transparent mt-4" />
-            </div>
-          </motion.div>
-        )}
-      </motion.div>
+          {/* Corner Ornaments */}
+          <div className="absolute top-6 left-6 w-3 h-3 border-t border-l border-[#fbbf24]/40 pointer-events-none" />
+          <div className="absolute top-6 right-6 w-3 h-3 border-t border-r border-[#fbbf24]/40 pointer-events-none" />
+          <div className="absolute bottom-6 left-6 w-3 h-3 border-b border-l border-[#fbbf24]/40 pointer-events-none" />
+          <div className="absolute bottom-6 right-6 w-3 h-3 border-b border-r border-[#fbbf24]/40 pointer-events-none" />
+
+          <div className="flex flex-col items-center justify-center z-10">
+            {/* Simple Cursive Serif Title */}
+            <h1 
+              className="text-5xl tracking-wide text-center"
+              style={{ 
+                color: "#fbbf24", 
+                textShadow: "0 2px 8px rgba(0,0,0,0.8), 0 0 15px rgba(251,191,36,0.3)",
+                fontFamily: "Caveat, var(--font-caveat), cursive"
+              }}
+            >
+              Play-Journal
+            </h1>
+            
+            {/* Gold foil ribbon divider */}
+            <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#fbbf24]/50 to-transparent mt-4" />
+          </div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 }

@@ -10,6 +10,16 @@ import { DungeonRoom } from "./types";
 const SWARM_MIN_ENEMIES = 3;
 const SWARM_MAX_ENEMIES = 6;
 const SWARM_ENEMY_HP = 30;
+const SWARM_SPEED = 200;
+const SWARM_MIN_AGGRESSION = 1;
+const SWARM_MAX_AGGRESSION = 2;
+
+const BOSS_HP = 150;
+const BOSS_AGGRESSION = 3;
+const BOSS_SPRITE_SCALE = 1.4;
+// Slower than swarm enemies but sees further
+const BOSS_SPEED = 140;
+const BOSS_AGGRO_RANGE_TILES = 9;
 // Bosses still visibly react to a hit, but don't get shoved around like swarm enemies
 const BOSS_KNOCKBACK_SCALE = 0.35;
 // Spawn tiles stay x tiles clear of the walls
@@ -44,10 +54,10 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
   const x = map.tileToWorldX(room.centerX)!;
   const y = map.tileToWorldY(room.centerY)!;
 
-  const boss = new Enemy(scene, x, y, config.enemy_color, 3, 150, bossManifest, {
+  const boss = new Enemy(scene, x, y, config.enemy_color, BOSS_AGGRESSION, BOSS_HP, bossManifest, {
     knockbackScale: BOSS_KNOCKBACK_SCALE,
   });
-  boss.sprite.setScale(1.4);
+  boss.sprite.setScale(BOSS_SPRITE_SCALE);
 
   const label = new EntityLabel(scene, fontFamily, boss.sprite, {
     name: config.bosses[0] ?? `Boss ${prettifyName(config.enemy_type)}`,
@@ -55,8 +65,10 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
     health: boss.health,
   });
 
-  // Slower than swarm enemies but sees further
-  const ai = new EnemyAI(boss, getPlayer, blocker, { speed: 140, aggroRangeTiles: 9 });
+  const ai = new EnemyAI(boss, getPlayer, blocker, {
+    speed: BOSS_SPEED,
+    aggroRangeTiles: BOSS_AGGRO_RANGE_TILES,
+  });
 
   const combat = new EnemyCombat(boss, getPlayer, blocker, {
     onAttack: (attackId) => boss.animationController.play("attack", { abilityId: attackId }),
@@ -82,7 +94,8 @@ export const spawnSwarmRoom: RoomSpawnStrategy = ({ scene, map, room, config, en
     const x = map.tileToWorldX(tile.x)!;
     const y = map.tileToWorldY(tile.y)!;
 
-    const aggressionLevel = 1 + Math.floor(Math.random() * 2);
+    const aggressionLevel =
+      SWARM_MIN_AGGRESSION + Math.floor(Math.random() * (SWARM_MAX_AGGRESSION - SWARM_MIN_AGGRESSION + 1));
     const enemy = new Enemy(scene, x, y, config.enemy_color, aggressionLevel, SWARM_ENEMY_HP, enemyManifest);
 
     const label = new EntityLabel(scene, fontFamily, enemy.sprite, {
@@ -91,7 +104,7 @@ export const spawnSwarmRoom: RoomSpawnStrategy = ({ scene, map, room, config, en
       health: enemy.health,
     });
 
-    const ai = new EnemyAI(enemy, getPlayer, blocker, { speed: 200 });
+    const ai = new EnemyAI(enemy, getPlayer, blocker, { speed: SWARM_SPEED });
 
     const combat = new EnemyCombat(enemy, getPlayer, blocker, {
       onAttack: (attackId) => enemy.animationController.play("attack", { abilityId: attackId }),

@@ -35,17 +35,21 @@ export default class Player implements CombatEntity {
     this.sprite.setScale(1.4);
     this.sprite.setDepth(1);
     scene.physics.add.existing(this.sprite);
-    (this.sprite.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
+    this.body.setCollideWorldBounds(true);
     this.animationController = new AnimationController(scene, this.sprite, manifest);
 
     this.cursors = scene.input.keyboard!.createCursorKeys();
+  }
+
+  private get body(): Phaser.Physics.Arcade.Body {
+    return this.sprite.body as Phaser.Physics.Arcade.Body;
   }
 
   update(deltaMs: number) {
     this.statusEffects.update(deltaMs);
     this.health.update(deltaMs);
 
-    const body = this.sprite.body as Phaser.Physics.Arcade.Body;
+    const body = this.body;
     body.setVelocity(0);
 
     const speed = PLAYER_SPEED * this.statusEffects.getMagnitude("speed", 1) * this.statusEffects.getMagnitude("slow", 1);
@@ -64,6 +68,6 @@ export default class Player implements CombatEntity {
   }
 
   stop() {
-    (this.sprite.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+    this.body.setVelocity(0);
   }
 }

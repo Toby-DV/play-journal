@@ -16,6 +16,7 @@ import PlayerCombat from "../combat/PlayerCombat";
 import { PhaserAttackInput } from "../combat/PhaserAttackInput";
 import { LineOfSightBlocker } from "../combat/lineOfSight";
 import { loadEntityManifests } from "../animation/manifestLoader";
+import { SpriteManifest } from "../animation/SpriteManifest";
 import RoomEncounter from "../dungeon/RoomEncounter";
 import EnemySpawner, { SpawnedEnemy } from "../dungeon/EnemySpawner";
 import { spawnBossRoom, spawnSwarmRoom } from "../dungeon/roomSpawnStrategies";
@@ -24,6 +25,7 @@ import buildRoomDoors from "../dungeon/buildRoomDoors";
 import { paintRooms, placeStairs } from "../dungeon/paintRooms";
 import placeRoomStructures from "../dungeon/placeRoomStructures";
 import Door from "../dungeon/Door";
+import { DungeonRoom, RoomKind } from "../dungeon/types";
 import TutorialBanner from "../ui/TutorialBanner";
 import DebugOverlay from "../ui/DebugOverlay";
 
@@ -44,8 +46,7 @@ function getSwarmRoomCount(totalRooms: number): number {
 
 const LEVEL_COMPLETE_DELAY_MS = 1500;
 const STAIRS_REACH_RADIUS = TILE_SIZE * 0.75;
-// Freeze on impact; 0 disables it. Past ~120ms this stops reading as weight and starts reading as
-// a frame hitch. 60 is a good starting value.
+// Freeze-on-impact duration, currently disabled; try 60, and past ~120ms it reads as a frame hitch.
 const HITSTOP_MS = 0;
 
 export function createDungeonScene(
@@ -95,19 +96,77 @@ export function createDungeonScene(
         },
       });
 
+      this.buildTilemap(dungeon);
+
+      const startRoom = dungeon.rooms[0];
+      const finalRoom = dungeon.rooms[dungeon.rooms.length - 1];
+      this.stairsPosition = placeStairs(this.map, this.stuffLayer, finalRoom);
+
+      placeRoomStructures(this.stuffLayer, dungeon.rooms.slice(1, -1));
+
+      const roomKindAssignments = assignRoomKinds(dungeon.rooms, [
+        { kind: "boss", count: getBossRoomCount(dungeon.rooms.length) },
+        { kind: "swarm", count: getSwarmRoomCount(dungeon.rooms.length) },
+      ]);
+
+      this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+      this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+
+      const { player: playerManifest, enemy: enemyManifest, boss: bossManifest } = await loadEntityManifests(this, PhaserLib, config);
+
+      this.createPlayer(startRoom, playerManifest);
+
+      // Reuses the same .collides flag Phaser already computed for player-movement collision
+      // (via setCollisionByExclusion in buildTilemap), so line-of-sight blocking always matches
+      // what actually blocks movement.
+      const blocker: LineOfSightBlocker = {
+        isBlocked: (x, y) =>
+          !!this.groundLayer.getTileAtWorldXY(x, y)?.collides || !!this.stuffLayer.getTileAtWorldXY(x, y)?.collides,
+      };
+
+      this.spawnEnemies(dungeon, roomKindAssignments, { enemyManifest, bossManifest, blocker });
+
+      // The stairs room's own doors
+      this.finalRoomDoors = buildRoomDoors(this.stuffLayer, finalRoom);
+      if (this.bossEncounters.length > 0) {
+        this.finalRoomDoors.forEach((door) => door.close());
+      }
+
+      this.playerCombat = new PlayerCombat(
+        this.player.weapon,
+        this.player,
+        () => this.enemyInstances.map(({ enemy }) => enemy),
+        blocker,
+        new PhaserAttackInput(this),
+        {
+          onAttack: (attackId) => {
+            this.player.animationController.play("attack", { abilityId: attackId });
+            // TODO: trigger from Enemy.onDamaged instead, so self-targeted abilities don't freeze.
+            this.freezeFor(HITSTOP_MS);
+          },
+        }
+      );
+
+      this.debugOverlay = new DebugOverlay(this, this.player, this.playerCombat);
+
+      this.wireMoodEffects();
+
+      this.createTutorial();
+    }
+
+    private buildTilemap(dungeon: Dungeon) {
       // Create a blank map matching the dungeon's dimensions
-      const map = this.make.tilemap({
+      this.map = this.make.tilemap({
         tileWidth: TILE_SIZE,
         tileHeight: TILE_SIZE,
         width: dungeon.width,
         height: dungeon.height,
       });
 
-      this.map = map;
-      const tileset = map.addTilesetImage("tiles", undefined, TILE_SIZE, TILE_SIZE, 0, 0)!;
-      this.groundLayer = map.createBlankLayer("Ground", tileset)!;
+      const tileset = this.map.addTilesetImage("tiles", undefined, TILE_SIZE, TILE_SIZE, 0, 0)!;
+      this.groundLayer = this.map.createBlankLayer("Ground", tileset)!;
       // Second layer for items/decorations
-      this.stuffLayer = map.createBlankLayer("Stuff", tileset)!;
+      this.stuffLayer = this.map.createBlankLayer("Stuff", tileset)!;
 
       paintRooms(this.groundLayer, dungeon);
 
@@ -122,25 +181,11 @@ export function createDungeonScene(
         [TILE_MAPPING.DOOR.CLOSED.HORIZONTAL, TILE_MAPPING.DOOR.CLOSED.VERTICAL],
         true
       );
+    }
 
-      const startRoom = dungeon.rooms[0];
-      const finalRoom = dungeon.rooms[dungeon.rooms.length - 1];
-      this.stairsPosition = placeStairs(map, this.stuffLayer, finalRoom);
-
-      placeRoomStructures(this.stuffLayer, dungeon.rooms.slice(1, -1));
-
-      const roomKindAssignments = assignRoomKinds(dungeon.rooms, [
-        { kind: "boss", count: getBossRoomCount(dungeon.rooms.length) },
-        { kind: "swarm", count: getSwarmRoomCount(dungeon.rooms.length) },
-      ]);
-
-      this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-      this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
-      const { player: playerManifest, enemy: enemyManifest, boss: bossManifest } = await loadEntityManifests(this, PhaserLib, config);
-
-      const playerX = map.tileToWorldX(startRoom.centerX)!;
-      const playerY = map.tileToWorldY(startRoom.centerY)!;
+    private createPlayer(startRoom: Dungeon["rooms"][number], playerManifest: SpriteManifest) {
+      const playerX = this.map.tileToWorldX(startRoom.centerX)!;
+      const playerY = this.map.tileToWorldY(startRoom.centerY)!;
       const weapon = WEAPONS[config.weapon_no];
       this.player = new Player(this, playerX, playerY, weapon, playerManifest);
       this.cameras.main.startFollow(this.player.sprite, true);
@@ -159,15 +204,13 @@ export function createDungeonScene(
       });
       this.events.once(PhaserLib.Scenes.Events.SHUTDOWN, unsubscribeSettings);
       this.events.once(PhaserLib.Scenes.Events.DESTROY, unsubscribeSettings);
+    }
 
-      // Reuses the same .collides flag Phaser already computed for player-movement collision
-      // (via setCollisionByExclusion above), so line-of-sight blocking always matches what
-      // actually blocks movement.
-      const blocker: LineOfSightBlocker = {
-        isBlocked: (x, y) =>
-          !!this.groundLayer.getTileAtWorldXY(x, y)?.collides || !!this.stuffLayer.getTileAtWorldXY(x, y)?.collides,
-      };
-
+    private spawnEnemies(
+      dungeon: Dungeon,
+      roomKindAssignments: ReadonlyMap<DungeonRoom, RoomKind>,
+      manifests: { enemyManifest: SpriteManifest; bossManifest: SpriteManifest; blocker: LineOfSightBlocker }
+    ) {
       // Player and Enemy implement CombatEntity themselves (live x/y getters), so both combat
       // systems take the entities directly.
       const spawner = new EnemySpawner();
@@ -175,16 +218,17 @@ export function createDungeonScene(
       spawner.register("swarm", spawnSwarmRoom);
       const spawnResults = spawner.spawnAll(dungeon.rooms, roomKindAssignments, this.stuffLayer, {
         scene: this,
-        map,
+        map: this.map,
         config,
-        enemyManifest,
-        bossManifest,
+        enemyManifest: manifests.enemyManifest,
+        bossManifest: manifests.bossManifest,
         fontFamily,
         getPlayer: () => this.player,
-        blocker,
+        blocker: manifests.blocker,
       });
       this.enemyInstances = spawnResults.flatMap((result) => result.spawned);
       this.roomEncounters = spawnResults.map((result) => result.encounter);
+      this.bossEncounters = spawnResults.filter((result) => result.kind === "boss").map((result) => result.encounter);
 
       // Enemies collide with the same layers as the player (walls, structures, closed doors) and
       // each other
@@ -196,35 +240,11 @@ export function createDungeonScene(
       if (enemySprites.length > 0) {
         this.physics.add.collider(enemySprites, enemySprites);
       }
+    }
 
-      // The stairs room's own doors
-      this.bossEncounters = spawnResults.filter((result) => result.kind === "boss").map((result) => result.encounter);
-      this.finalRoomDoors = buildRoomDoors(this.stuffLayer, finalRoom);
-      if (this.bossEncounters.length > 0) {
-        this.finalRoomDoors.forEach((door) => door.close());
-      }
-
-      this.playerCombat = new PlayerCombat(
-        this.player.weapon,
-        this.player,
-        () => this.enemyInstances.map(({ enemy }) => enemy),
-        blocker,
-        new PhaserAttackInput(this),
-        {
-          onAttack: (attackId) => {
-            this.player.animationController.play("attack", { abilityId: attackId });
-            // Fires only once a target was found, so this already means "hit landed" - except for
-            // self-targeted abilities, which shouldn't freeze at all. Moving the trigger to
-            // Enemy.onDamaged fixes that.
-            this.freezeFor(HITSTOP_MS);
-          },
-        }
-      );
-
-      this.debugOverlay = new DebugOverlay(this, this.player, this.playerCombat);
-
-      // Full-screen mood tint over the whole level, so the run feels different depending on
-      // whether the journal entry read as a good day or a bad one (see src/lib/moodTint.ts).
+    // Full-screen mood tint (plus optional vignette/confetti/rain) so the run feels different
+    // depending on whether the journal entry read as a good day or a bad one (see src/lib/moodTint.ts).
+    private wireMoodEffects() {
       const tint = getMoodTint(config.mood);
       this.moodOverlay = this.add
         .rectangle(0, 0, this.scale.width, this.scale.height, tint.color, tint.alpha)
@@ -250,25 +270,16 @@ export function createDungeonScene(
       if (tint.rain) {
         this.rainSpawnZone = addRain(this).spawnZone;
       }
+    }
 
-      this.add
-        .text(100, 10, `${dungeon.rooms.length} rooms generated, ${spawnResults.length} special`, {
-          fontSize: "14px",
-          fontFamily: "monospace",
-          color: "#e2e8f0",
-          backgroundColor: "#0f172a",
-          padding: { x: 6, y: 4 },
-        })
-        .setScrollFactor(0);
-
-      // Level-start tutorial, sourced from the journal entry's own game_rules - freezes gameplay
-      // (see the update() gate below) until the player has stepped through every line, so SPACE
-      // advancing text can never also fire the player's SPACE-triggered basic attack.
-      if (config.game_rules.length > 0) {
-        this.tutorialBanner = new TutorialBanner(this, fontFamily, config.game_rules, () => {
-          this.tutorialBanner = undefined;
-        });
-      }
+    // Level-start tutorial, sourced from the journal entry's own game_rules - freezes gameplay
+    // (see the update() gate below) until the player has stepped through every line, so SPACE
+    // advancing text can never also fire the player's SPACE-triggered basic attack.
+    private createTutorial() {
+      if (config.game_rules.length === 0) return;
+      this.tutorialBanner = new TutorialBanner(this, fontFamily, config.game_rules, () => {
+        this.tutorialBanner = undefined;
+      });
     }
 
     update(_time: number, delta: number) {

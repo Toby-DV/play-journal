@@ -35,15 +35,12 @@ export default class EnemyAI {
   update(_deltaMs: number): void {
     const body = this.enemy.sprite.body as Phaser.Physics.Arcade.Body;
 
-    if (this.enemy.isKnockedBack) return;
-
     if (this.enemy.health.isDead) {
       body.setVelocity(0);
       return;
     }
 
-    // Every path below assigns velocity outright, so without this the knockback impulse would be
-    // erased the frame after it lands. Enemy.update decays it and clears the flag.
+    // Yields control of movement
     if (this.enemy.isKnockedBack) return;
 
     const target = this.getTarget();
