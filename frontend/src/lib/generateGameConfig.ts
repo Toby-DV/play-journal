@@ -52,7 +52,7 @@ const GAME_RULES = [
 // Placeholder art only for now - both ids resolve through LocalSpriteProvider's local manifests
 // (see game/animation/SpriteProvider.ts).
 const PLAYER_SPRITE = "sliced_knight";
-const ENEMY_TYPE = "bug";
+const ENEMY_TYPE = "skeleton";
 
 function detectMood(text: string): string {
   const lower = text.toLowerCase();

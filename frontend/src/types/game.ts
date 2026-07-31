@@ -4,7 +4,7 @@ export interface GameConfig {
   theme_name: string;
   player_sprite: string;
   enemy_type: string;
-  enemy_color: string; // hex tint applied to enemy/boss sprites
+  enemy_color: string; // per-theme hex; no longer tints sprites now that enemies ship real art
   mood: string; // keys into lib/moodTint.ts
   game_rules: string[];
   bosses: string[];

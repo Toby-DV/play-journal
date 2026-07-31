@@ -54,7 +54,7 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
   const x = map.tileToWorldX(room.centerX)!;
   const y = map.tileToWorldY(room.centerY)!;
 
-  const boss = new Enemy(scene, x, y, config.enemy_color, BOSS_AGGRESSION, BOSS_HP, bossManifest, {
+  const boss = new Enemy(scene, x, y, BOSS_AGGRESSION, BOSS_HP, bossManifest, {
     knockbackScale: BOSS_KNOCKBACK_SCALE,
   });
   boss.sprite.setScale(BOSS_SPRITE_SCALE);
@@ -96,7 +96,7 @@ export const spawnSwarmRoom: RoomSpawnStrategy = ({ scene, map, room, config, en
 
     const aggressionLevel =
       SWARM_MIN_AGGRESSION + Math.floor(Math.random() * (SWARM_MAX_AGGRESSION - SWARM_MIN_AGGRESSION + 1));
-    const enemy = new Enemy(scene, x, y, config.enemy_color, aggressionLevel, SWARM_ENEMY_HP, enemyManifest);
+    const enemy = new Enemy(scene, x, y, aggressionLevel, SWARM_ENEMY_HP, enemyManifest);
 
     const label = new EntityLabel(scene, fontFamily, enemy.sprite, {
       name: prettifyName(config.enemy_type),

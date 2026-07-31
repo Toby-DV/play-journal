@@ -16,7 +16,6 @@ export default class Health {
     this.msSinceDamage = 0;
   }
 
-  // No-op unless a regen config was passed in - enemies simply never call this or never get one.
   update(deltaMs: number): void {
     if (!this.regen || this.isDead || this.current >= this.max) return;
 
@@ -24,14 +23,16 @@ export default class Health {
     this.msSinceDamage += deltaMs;
     if (this.msSinceDamage < this.regen.delayMs) return;
 
-    // Only the portion of this tick past the delay threshold counts as regen time, so a large
-    // deltaMs spike that straddles the threshold doesn't over-regen for the pre-threshold portion.
     const regenMs = this.msSinceDamage - Math.max(previousMsSinceDamage, this.regen.delayMs);
     this.current = Math.min(this.max, this.current + (this.regen.perSecond * regenMs) / 1000);
   }
 
   get isDead(): boolean {
     return this.current <= 0;
+  }
+
+  get getHp(): number {
+    return this.current;
   }
 
   getRatio(): number {

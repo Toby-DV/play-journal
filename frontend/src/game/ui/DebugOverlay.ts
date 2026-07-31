@@ -43,8 +43,13 @@ export default class DebugOverlay {
   }
 
   private render(): string {
-    const cooldownStr = Array.from(this.playerCombat.cooldownTracker.cooldowns, ([key, value]) => `${key}:${value.toFixed(1)}`).join("\n")
-    return `Weapon: ${this.player.weapon.id}\n
-Cooldowns:\n${cooldownStr}`;
+    const cooldownStr = Array.from(this.playerCombat.cooldownTracker.cooldowns, ([key, value]) => `${key}:${Math.ceil((value/1000)).toFixed(0)}`).join("\n")
+    return (`
+Weapon: ${this.player.weapon.id}
+Health: ${this.player.health.getHp.toFixed(2)}
+
+Cooldowns:
+${cooldownStr}
+`);
   }
 }

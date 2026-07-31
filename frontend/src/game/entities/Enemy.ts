@@ -2,7 +2,6 @@ import type Phaser from "phaser";
 import StatusEffectController from "../combat/StatusEffectController";
 import Health from "../combat/Health";
 import { AggressiveCombatEntity, HitInfo } from "../combat/AttackComponent";
-import { hexToNumber } from "@/lib/format";
 import { SpriteManifest } from "../animation/SpriteManifest";
 import { resolveClip } from "../animation/resolveAnimation";
 import AnimationController from "../animation/AnimationController";
@@ -29,7 +28,6 @@ export default class Enemy implements AggressiveCombatEntity {
   public health: Health;
   public aggressionLevel: number;
   public animationController: AnimationController;
-  private baseTint: number;
   private hitFlashMs = 0;
   private knockbackMs = 0;
   private knockbackScale: number;
@@ -49,7 +47,6 @@ export default class Enemy implements AggressiveCombatEntity {
     scene: Phaser.Scene,
     x: number,
     y: number,
-    color: string,
     aggressionLevel: number,
     maxHp: number,
     manifest: SpriteManifest,
@@ -58,8 +55,6 @@ export default class Enemy implements AggressiveCombatEntity {
     this.knockbackScale = options.knockbackScale ?? 1;
     const idleClip = resolveClip(manifest, "idle");
     this.sprite = scene.add.sprite(x, y, idleClip.textureKey, 0);
-    this.baseTint = hexToNumber(color);
-    this.sprite.setTint(this.baseTint).setTintMode(TINT_MODE_FILL);
     this.aggressionLevel = aggressionLevel;
     this.health = new Health(maxHp);
     this.animationController = new AnimationController(scene, this.sprite, manifest);
@@ -71,10 +66,16 @@ export default class Enemy implements AggressiveCombatEntity {
     return this.sprite.body as Phaser.Physics.Arcade.Body;
   }
 
+  // Swaps the world bounds this enemy collides against for a custom rect, so it can't be lured or
+  // knocked out of it. Relies on the setCollideWorldBounds above.
+  confineTo(bounds: Phaser.Geom.Rectangle): void {
+    this.body.setBoundsRectangle(bounds);
+  }
+
   // hit.dirX/dirY point from attacker to this enemy, already normalised by resolveAttackComponents
   onDamaged(hit: HitInfo) {
     this.hitFlashMs = HIT_FLASH_MS;
-    this.sprite.setTint(HIT_FLASH_TINT);
+    this.sprite.setTint(HIT_FLASH_TINT).setTintMode(TINT_MODE_FILL);
 
     const speed = KNOCKBACK_SPEED * hit.knockback * this.knockbackScale;
     if (speed === 0) return; // a 0-knockback weapon or immovable enemy shouldn't suspend the AI for KNOCKBACK_MS
@@ -87,7 +88,7 @@ export default class Enemy implements AggressiveCombatEntity {
 
     if (this.hitFlashMs > 0) {
       this.hitFlashMs -= deltaMs;
-      if (this.hitFlashMs <= 0) this.sprite.setTint(this.baseTint);
+      if (this.hitFlashMs <= 0) this.sprite.clearTint(); // also restores the default MULTIPLY mode
     }
 
     // Runs after EnemyAI.update yields movement control

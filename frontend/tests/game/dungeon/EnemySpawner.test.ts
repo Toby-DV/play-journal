@@ -26,10 +26,19 @@ function fakeStuffLayer(): Phaser.Tilemaps.TilemapLayer {
   return { putTileAt: vi.fn(), removeTileAt: vi.fn() } as unknown as Phaser.Tilemaps.TilemapLayer;
 }
 
+const TILE = 48;
+
 function baseCtx(): Omit<RoomSpawnContext, "room" | "stuffLayer"> {
   return {
     scene: {} as unknown as Phaser.Scene,
-    map: {} as unknown as Phaser.Tilemaps.Tilemap,
+    // Only the bits spawnAll uses to build each room's confinement rect
+    PhaserLib: {
+      Geom: { Rectangle: class {} },
+    } as unknown as typeof Phaser,
+    map: {
+      tileToWorldX: (tileX: number) => tileX * TILE,
+      tileToWorldY: (tileY: number) => tileY * TILE,
+    } as unknown as Phaser.Tilemaps.Tilemap,
     config: {} as unknown as RoomSpawnContext["config"],
     enemyManifest: {} as unknown as RoomSpawnContext["enemyManifest"],
     bossManifest: {} as unknown as RoomSpawnContext["bossManifest"],
@@ -42,8 +51,8 @@ function baseCtx(): Omit<RoomSpawnContext, "room" | "stuffLayer"> {
 function fakeSpawnedEnemy(): SpawnedEnemy {
   const health = new Health(10);
   return {
-    enemy: { health } as unknown as Enemy,
-    ai: {} as unknown as EnemyAI,
+    enemy: { health, confineTo: vi.fn() } as unknown as Enemy,
+    ai: { restrictTo: vi.fn() } as unknown as EnemyAI,
     combat: {} as unknown as EnemyCombat,
     label: {} as unknown as EntityLabel,
   };

@@ -20,6 +20,7 @@ export default class EnemyAI {
   private speed: number;
   private aggroRange: number;
   private standoff: number;
+  private aggroArea?: Phaser.Geom.Rectangle;
 
   constructor(
     private readonly enemy: Enemy,
@@ -30,6 +31,13 @@ export default class EnemyAI {
     this.speed = options?.speed ?? DEFAULT_SPEED;
     this.aggroRange = (options?.aggroRangeTiles ?? DEFAULT_AGGRO_RANGE_TILES) * TILE_SIZE;
     this.standoff = (options?.standoffTiles ?? DEFAULT_STANDOFF_TILES) * TILE_SIZE;
+  }
+
+  // Limits aggro to targets standing inside this world-space rect; without it the enemy chases
+  // anything within range. Set alongside Enemy.confineTo so the enemy holds still rather than
+  // grinding against the edge of the area it's confined to.
+  restrictTo(area: Phaser.Geom.Rectangle): void {
+    this.aggroArea = area;
   }
 
   update(_deltaMs: number): void {
@@ -50,6 +58,7 @@ export default class EnemyAI {
 
     const shouldChase =
       distance > this.standoff &&
+      (!this.aggroArea || this.aggroArea.contains(target.x, target.y)) &&
       isWithinRange(this.enemy.x, this.enemy.y, target.x, target.y, this.aggroRange) &&
       hasLineOfSight(this.blocker, this.enemy.x, this.enemy.y, target.x, target.y);
 

@@ -68,13 +68,25 @@ export const SLICED_KNIGHT_MANIFEST: SpriteManifest = {
   },
 };
 
-// Dev/test implementation - a couple of hardcoded, deliberately sparse manifests (matching
-// mockGameConfig's player_sprite: "sliced_knight" and enemy_type: "bug"), reusing the generic
-// manifests' clips/art so no extra placeholder assets are needed. Unknown ids resolve null so
-// the fallback path is exercised (see resolveAnimation.ts's pickManifest).
+// Real art (CC-BY 4.0, David Harrington - see public/sprites/ATTRIBUTION.md). No hit/dash clip in
+// the source sheet, so both fall back through resolveClip.
+export const SKELETON_MANIFEST: SpriteManifest = {
+  spriteId: "skeleton",
+  clips: {
+    idle: clip("skeleton", "idle", { frameCount: 5, frameRate: 6, repeat: -1 }),
+    walk: clip("skeleton", "walk", { frameCount: 5, frameRate: 10, repeat: -1 }),
+    attack: clip("skeleton", "attack", { frameCount: 8, frameRate: 14, repeat: 0 }),
+    death: clip("skeleton", "death", { frameCount: 8, frameRate: 10, repeat: 0 }),
+  },
+};
+
+// Dev/test implementation. "sliced_knight"/"skeleton" are the ids mockGameConfig actually ships;
+// "bug" is the sparse placeholder-backed manifest kept so the missing-clip fallback stays covered.
+// Unknown ids resolve null so pickManifest's fallback is exercised too (see resolveAnimation.ts).
 export class LocalSpriteProvider implements SpriteProvider {
   private manifests: Record<string, SpriteManifest> = {
     sliced_knight: SLICED_KNIGHT_MANIFEST,
+    skeleton: SKELETON_MANIFEST,
     bug: {
       spriteId: "bug",
       clips: {

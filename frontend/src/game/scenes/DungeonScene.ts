@@ -219,6 +219,7 @@ export function createDungeonScene(
       spawner.register("swarm", spawnSwarmRoom);
       const spawnResults = spawner.spawnAll(dungeon.rooms, roomKindAssignments, this.stuffLayer, {
         scene: this,
+        PhaserLib,
         map: this.map,
         config,
         enemyManifest: manifests.enemyManifest,
