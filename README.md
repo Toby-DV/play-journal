@@ -1,5 +1,4 @@
 # Play-Journal
-[Demo Video](https://youtu.be/T8fDD7PzMU0)
 
 > **Why just read your journal entries when you can play them?**
 
