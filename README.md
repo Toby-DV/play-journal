@@ -1,5 +1,7 @@
 # Play-Journal
 
+[Demo Video](https://youtu.be/K6oJsiG4mg8)
+
 > **Why just read your journal entries when you can play them?**
 
 Play-Journal is an interactive diary app that turns your daily entries into custom, 2D games, tailored to your mood and the contents of your entry.
