@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { ATTACKS } from "@/game/combat/EnemyAttack";
-import { STATUS_EFFECTS } from "@/game/combat/StatusEffect";
+import { ATTACKS } from "@/game/data/enemyAttacks";
+import { STATUS_EFFECTS } from "@/game/data/statusEffects";
 
 describe("ATTACKS catalog", () => {
   it("only references effect ids that exist in STATUS_EFFECTS", () => {

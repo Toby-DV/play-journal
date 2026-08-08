@@ -1,6 +1,6 @@
 import { LineOfSightBlocker, hasLineOfSight } from "./lineOfSight";
-import { Weapon } from "./Weapon";
-import { WEAPON_ATTACKS, BASIC_ATTACK } from "./WeaponAttack";
+import { Weapon } from "../data/weapons";
+import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
 import { CombatEntity, resolveAttackComponents } from "./AttackComponent";
 import CooldownTracker from "./CooldownTracker";
 import { TILE_SIZE } from "../constants";

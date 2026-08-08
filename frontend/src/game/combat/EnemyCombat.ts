@@ -1,4 +1,4 @@
-import { ATTACKS, AttackDefinition } from "./EnemyAttack";
+import { ATTACKS, AttackDefinition } from "../data/enemyAttacks";
 import { CombatEntity, AggressiveCombatEntity, resolveAttackComponents } from "./AttackComponent";
 import CooldownTracker from "./CooldownTracker";
 import { LineOfSightBlocker, isWithinRange, hasLineOfSight } from "./lineOfSight";

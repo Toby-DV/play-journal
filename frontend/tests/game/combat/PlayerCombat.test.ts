@@ -4,7 +4,7 @@ import { CombatEntity } from "@/game/combat/AttackComponent";
 import StatusEffectController from "@/game/combat/StatusEffectController";
 import Health from "@/game/combat/Health";
 import { LineOfSightBlocker } from "@/game/combat/lineOfSight";
-import { Weapon } from "@/game/combat/Weapon";
+import { Weapon } from "@/game/data/weapons";
 
 const OPEN_BLOCKER: LineOfSightBlocker = { isBlocked: () => false };
 const BLOCKED_BLOCKER: LineOfSightBlocker = { isBlocked: () => true };

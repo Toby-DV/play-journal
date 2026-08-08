@@ -3,7 +3,7 @@ import EnemyCombat, { getAvailableAttacks } from "@/game/combat/EnemyCombat";
 import { AggressiveCombatEntity, CombatEntity } from "@/game/combat/AttackComponent";
 import StatusEffectController from "@/game/combat/StatusEffectController";
 import Health from "@/game/combat/Health";
-import { ATTACKS, AttackDefinition } from "@/game/combat/EnemyAttack";
+import { ATTACKS, AttackDefinition } from "@/game/data/enemyAttacks";
 import { LineOfSightBlocker } from "@/game/combat/lineOfSight";
 import CooldownTracker from "@/game/combat/CooldownTracker";
 

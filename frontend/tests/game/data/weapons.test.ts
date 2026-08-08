@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { WEAPONS } from "@/game/combat/Weapon";
-import { WEAPON_ATTACKS } from "@/game/combat/WeaponAttack";
+import { WEAPONS } from "@/game/data/weapons";
+import { WEAPON_ATTACKS } from "@/game/data/weaponAttacks";
 
 describe("WEAPONS", () => {
   it("gives each weapon a unique id", () => {

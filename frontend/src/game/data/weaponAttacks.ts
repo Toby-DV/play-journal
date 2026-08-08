@@ -1,5 +1,4 @@
-import { Darumadrop_One } from "next/font/google";
-import { AttackComponent } from "./AttackComponent";
+import { AttackComponent } from "../combat/AttackComponent";
 
 export interface WeaponAttackDefinition {
   id: string;

@@ -2,7 +2,7 @@ import type Phaser from "phaser";
 import Dungeon from "@mikewesthad/dungeon";
 import { TILE_SIZE } from "../constants";
 import Player from "../entities/Player";
-import { WEAPONS } from "../combat/Weapon";
+import { WEAPONS } from "../data/weapons";
 import TILE_MAPPING from "../tileMapping";
 import { GameConfig } from "@/types/game";
 import { getMoodTint } from "@/lib/moodTint";

@@ -1,4 +1,4 @@
-import { STATUS_EFFECTS, StatusEffectDefinition } from "./StatusEffect";
+import { STATUS_EFFECTS, StatusEffectDefinition } from "../data/statusEffects";
 
 interface ActiveEffect {
   def: StatusEffectDefinition;

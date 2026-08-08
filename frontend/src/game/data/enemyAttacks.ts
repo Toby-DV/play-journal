@@ -1,4 +1,4 @@
-import { WeaponAttackDefinition } from "./WeaponAttack";
+import { WeaponAttackDefinition } from "./weaponAttacks";
 
 // An enemy attack is a weapon attack plus AI gating: how aggressive the enemy
 // must be to use it, and whether range/line-of-sight constrain it.

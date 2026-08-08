@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { STATUS_EFFECTS } from "../combat/StatusEffect";
+import { STATUS_EFFECTS } from "../data/statusEffects";
 import { hexToNumber } from "@/lib/format";
 
 export interface NamePlateTarget {
