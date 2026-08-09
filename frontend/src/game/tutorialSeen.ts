@@ -1,7 +1,4 @@
-// Tracks whether the level-start tutorial has ever been shown, so it only greets
-// first-time players. Deliberately separate from settings.ts - it's a one-way
-// progress flag, not something the settings menu exposes.
-
+// Tracks whether the level-start tutorial has ever been shown
 const STORAGE_KEY = "play_journal_tutorial_seen";
 
 export function hasSeenTutorial(): boolean {

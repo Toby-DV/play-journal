@@ -117,9 +117,6 @@ export function createDungeonScene(
 
       this.createPlayer(startRoom, playerManifest);
 
-      // Reuses the same .collides flag Phaser already computed for player-movement collision
-      // (via setCollisionByExclusion in buildTilemap), so line-of-sight blocking always matches
-      // what actually blocks movement.
       const blocker: LineOfSightBlocker = {
         isBlocked: (x, y) =>
           !!this.groundLayer.getTileAtWorldXY(x, y)?.collides || !!this.stuffLayer.getTileAtWorldXY(x, y)?.collides,
@@ -263,21 +260,15 @@ export function createDungeonScene(
         this.vignette = addVignette(this, this.scale.width, this.scale.height, tint.vignette);
       }
 
-      // Falling confetti for happy days, currently disabled.
       if (tint.confetti) {
         addConfetti(this, this.scale.width);
       }
 
-      // Light rain for reflective days, world-space so it scrolls with the tiles (see rain.ts)
       if (tint.rain) {
         this.rainSpawnZone = addRain(this).spawnZone;
       }
     }
 
-    // Level-start tutorial, sourced from the journal entry's own game_rules - freezes gameplay
-    // (see the update() gate below) until the player has stepped through every line, so SPACE
-    // advancing text can never also fire the player's SPACE-triggered basic attack. First run
-    // only; marked seen on show rather than on completion so a mid-tutorial reload doesn't replay it.
     private createTutorial() {
       if (config.game_rules.length === 0 || hasSeenTutorial()) return;
       markTutorialSeen();
@@ -287,8 +278,7 @@ export function createDungeonScene(
     }
 
     update(_time: number, delta: number) {
-      // create() resolves sprite manifests asynchronously; guard against Phaser calling update()
-      // on an earlier frame before it has finished.
+      // Guard against Phaser calling update() before create() has finished.
       if (!this.player) return;
 
       this.debugOverlay.update();
