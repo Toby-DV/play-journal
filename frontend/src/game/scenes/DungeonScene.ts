@@ -47,8 +47,6 @@ function getSwarmRoomCount(totalRooms: number): number {
 
 const LEVEL_COMPLETE_DELAY_MS = 1500;
 const STAIRS_REACH_RADIUS = TILE_SIZE * 0.75;
-// Freeze-on-impact duration, currently disabled; try 60, and past ~120ms it reads as a frame hitch.
-const HITSTOP_MS = 0;
 
 export function createDungeonScene(
   PhaserLib: typeof Phaser,
@@ -61,7 +59,6 @@ export function createDungeonScene(
     private playerLabel!: EntityLabel;
     private enemyInstances: SpawnedEnemy[] = [];
     private playerCombat!: PlayerCombat;
-    private hitstopMs = 0;
     private isPlayerDead = false;
     private isLevelComplete = false;
     private tutorialBanner?: TutorialBanner;
@@ -139,8 +136,6 @@ export function createDungeonScene(
         {
           onAttack: (attackId) => {
             this.player.animationController.play("attack", { abilityId: attackId });
-            // TODO: trigger from Enemy.onDamaged instead, so self-targeted abilities don't freeze.
-            this.freezeFor(HITSTOP_MS);
           },
         }
       );
@@ -288,13 +283,6 @@ export function createDungeonScene(
         return;
       }
 
-      if (this.hitstopMs > 0) {
-        this.hitstopMs -= delta;
-        if (this.hitstopMs > 0) return;
-        this.physics.world.resume();
-        this.anims.resumeAll();
-      }
-
       if (this.isPlayerDead || this.isLevelComplete) return;
 
       this.player.update(delta);
@@ -338,20 +326,6 @@ export function createDungeonScene(
       const dx = this.player.x - this.stairsPosition.x;
       const dy = this.player.y - this.stairsPosition.y;
       return dx * dx + dy * dy < STAIRS_REACH_RADIUS * STAIRS_REACH_RADIUS;
-    }
-
-    // Skipping the per-entity update() calls isn't enough on its own - Phaser steps the physics
-    // world and the animation manager itself, so both have to be paused or frozen enemies keep
-    // gliding and animating.
-    private freezeFor(ms: number) {
-      // Guard, not an optimisation: without it a 0 would pause both systems and then skip the
-      // resume below (gated on hitstopMs > 0), leaving the game permanently frozen.
-      if (ms <= 0) return;
-      if (this.hitstopMs <= 0) {
-        this.physics.world.pause();
-        this.anims.pauseAll();
-      }
-      this.hitstopMs = Math.max(this.hitstopMs, ms); // longest wins; overlapping hits don't stack
     }
 
     private removeDeadEnemies() {
