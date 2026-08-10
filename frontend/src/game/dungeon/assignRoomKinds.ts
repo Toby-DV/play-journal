@@ -10,10 +10,8 @@ export default function assignRoomKinds<T>(
   rooms: readonly T[],
   quotas: readonly RoomKindQuota[]
 ): Map<T, RoomKind> {
-  // Protect the spawn and finish rooms
   const candidates = rooms.slice(1, -1).slice();
 
-  // Fisher-Yates shuffle
   for (let i = candidates.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [candidates[i], candidates[j]] = [candidates[j], candidates[i]];

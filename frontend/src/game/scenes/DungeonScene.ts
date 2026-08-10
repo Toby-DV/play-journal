@@ -163,13 +163,10 @@ export function createDungeonScene(
 
       paintRooms(this.groundLayer, dungeon);
 
-      // Everything except empty tiles and floor variants should block movement
       // hard-coded and needs changing when more tilemaps are added
       this.groundLayer.setCollisionByExclusion([-1, 6, 7, 8, 26]);
       this.stuffLayer.setCollisionByExclusion([-1, 6, 7, 8, 26]);
-      // setCollisionByExclusion above only registers indexes already present in the (still blank)
-      // stuffLayer, so the closed-door tiles - not placed until a Door actually closes - need to
-      // be registered explicitly or they'd render but not collide.
+      // setCollisionByExclusion above only registers indexes already present in the layer
       this.stuffLayer.setCollision(
         [TILE_MAPPING.DOOR.CLOSED.HORIZONTAL, TILE_MAPPING.DOOR.CLOSED.VERTICAL],
         true
@@ -204,8 +201,6 @@ export function createDungeonScene(
       roomKindAssignments: ReadonlyMap<DungeonRoom, RoomKind>,
       manifests: { enemyManifest: SpriteManifest; bossManifest: SpriteManifest; blocker: LineOfSightBlocker }
     ) {
-      // Player and Enemy implement CombatEntity themselves (live x/y getters), so both combat
-      // systems take the entities directly.
       const spawner = new EnemySpawner();
       spawner.register("boss", spawnBossRoom);
       spawner.register("swarm", spawnSwarmRoom);
@@ -224,8 +219,6 @@ export function createDungeonScene(
       this.roomEncounters = spawnResults.map((result) => result.encounter);
       this.bossEncounters = spawnResults.filter((result) => result.kind === "boss").map((result) => result.encounter);
 
-      // Enemies collide with the same layers as the player (walls, structures, closed doors) and
-      // each other
       const enemySprites = this.enemyInstances.map(({ enemy }) => enemy.sprite);
       enemySprites.forEach((sprite) => {
         this.physics.add.collider(sprite, this.groundLayer);
@@ -236,8 +229,6 @@ export function createDungeonScene(
       }
     }
 
-    // Full-screen mood tint (plus optional vignette/confetti/rain) so the run feels different
-    // depending on whether the journal entry read as a good day or a bad one (see src/lib/moodTint.ts).
     private wireMoodEffects() {
       const tint = getMoodTint(config.mood);
       this.moodOverlay = this.add
@@ -286,8 +277,7 @@ export function createDungeonScene(
       if (this.isPlayerDead || this.isLevelComplete) return;
 
       this.player.update(delta);
-      // AI first so each enemy's update() sees the velocity chosen this frame when deriving its
-      // animation state.
+
       this.enemyInstances.forEach(({ ai }) => ai.update(delta));
       this.enemyInstances.forEach(({ enemy }) => enemy.update(delta));
       this.enemyInstances.forEach(({ combat }) => combat.update(delta));
@@ -302,8 +292,6 @@ export function createDungeonScene(
       const playerTileY = this.map.worldToTileY(this.player.y)!;
       this.roomEncounters.forEach((encounter) => encounter.update(playerTileX, playerTileY));
 
-      // door.open() no-ops once already open, so it's fine to keep checking every frame rather
-      // than tracking a separate "already opened" flag.
       if (this.bossEncounters.every((encounter) => encounter.isCleared)) {
         this.finalRoomDoors.forEach((door) => door.open());
       }

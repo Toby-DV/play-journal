@@ -25,16 +25,12 @@ export interface RoomSpawnResult {
   encounter: RoomEncounter;
 }
 
-// Everything a per-kind spawn strategy needs to populate its room. Strategies only decide what
-// enemies to create - door sealing and clear detection are handled uniformly by EnemySpawner via
-// RoomEncounter, so a strategy never has to know about doors or tile bounds.
 export interface RoomSpawnContext {
   scene: Phaser.Scene;
   // Phaser at runtime (everything here imports it as a type only), for constructing geometry
   PhaserLib: typeof Phaser;
   map: Phaser.Tilemaps.Tilemap;
   room: DungeonRoom;
-  // For checking which tiles are already occupied (structures, stairs) when picking spawn spots.
   stuffLayer: Phaser.Tilemaps.TilemapLayer;
   config: GameConfig;
   enemyManifest: SpriteManifest;
@@ -46,10 +42,7 @@ export interface RoomSpawnContext {
 
 export type RoomSpawnStrategy = (ctx: RoomSpawnContext) => SpawnedEnemy[];
 
-// Loops every room in a dungeon and, for the ones assigned a special kind (see assignRoomKinds),
-// runs that kind's registered strategy and seals the room behind doors until every enemy it
-// spawned is dead. Rooms with no assignment, or a kind with no registered strategy, are left
-// untouched. Register strategies via `.register(kind, strategy)` before calling spawnAll.
+// Register strategies via `.register(kind, strategy)` before calling spawnAll.
 export default class EnemySpawner {
   private strategies = new Map<RoomKind, RoomSpawnStrategy>();
 

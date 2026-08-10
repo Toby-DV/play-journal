@@ -32,10 +32,7 @@ export default class EnemyAI {
     this.aggroRange = (options?.aggroRangeTiles ?? DEFAULT_AGGRO_RANGE_TILES) * TILE_SIZE;
     this.standoff = (options?.standoffTiles ?? DEFAULT_STANDOFF_TILES) * TILE_SIZE;
   }
-
-  // Limits aggro to targets standing inside this world-space rect; without it the enemy chases
-  // anything within range. Set alongside Enemy.confineTo so the enemy holds still rather than
-  // grinding against the edge of the area it's confined to.
+  
   restrictTo(area: Phaser.Geom.Rectangle): void {
     this.aggroArea = area;
   }

@@ -66,8 +66,6 @@ export default class Enemy implements AggressiveCombatEntity {
     return this.sprite.body as Phaser.Physics.Arcade.Body;
   }
 
-  // Swaps the world bounds this enemy collides against for a custom rect, so it can't be lured or
-  // knocked out of it. Relies on the setCollideWorldBounds above.
   confineTo(bounds: Phaser.Geom.Rectangle): void {
     this.body.setBoundsRectangle(bounds);
   }
