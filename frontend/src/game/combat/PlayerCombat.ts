@@ -33,8 +33,6 @@ function findNearestTarget(
 }
 
 export default class PlayerCombat {
-  // Holds the basic attack (keyed by BASIC_ATTACK.id, gated by the weapon's
-  // attack speed) alongside ability cooldowns; the id pools don't overlap.
   private cooldowns = new CooldownTracker();
 
   constructor(

@@ -10,7 +10,6 @@ export interface StatusEffectDefinition {
 }
 
 export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
-  // magnitude is a fallback value -> 0.2 will reduce an enemy to 20% speed. 
   slow: {
     id: "slow",
     label: "SLOW",
@@ -39,6 +38,12 @@ export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
     tags: ["buff"],
     magnitude: 10,
   },
+  channelling: {
+    id: "channeling",
+    label: "CHANNELING",
+    color: "#e1d56c",
+    tags: [],
+  }
 };
 
 // TODO: add channeling / suppressed effects

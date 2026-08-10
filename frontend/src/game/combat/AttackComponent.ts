@@ -1,5 +1,6 @@
 import StatusEffectController from "./StatusEffectController";
 import Health from "./Health";
+import { TILE_SIZE } from "../constants";
 
 export interface StatusEffectComponent {
   kind: "status";
@@ -15,6 +16,13 @@ export interface DamageComponent {
   amount?: number;
 }
 
+export interface DashComponent {
+  kind: "dash";
+  target: "self";
+  distanceTiles: number;
+  durationMs: number;
+}
+
 export interface HitInfo {
   damage: number;
   dirX: number;
@@ -22,15 +30,17 @@ export interface HitInfo {
   knockback: number;
 }
 
-export type AttackComponent = StatusEffectComponent | DamageComponent;
+export type AttackComponent = StatusEffectComponent | DamageComponent | DashComponent;
 
 export interface CombatEntity {
   statusEffects: StatusEffectController;
   health: Health;
   x: number;
   y: number;
-  // Optional hit reaction - lets sprite-owning entities play feedback without the combat layer knowing about rendering
+  facingX?: number,
+  facingY?: number
   onDamaged?(hit: HitInfo): void;
+  dash?: (dirX: number, dirY: number, speed: number, durationMs: number) => void;
 }
 
 export interface AggressiveCombatEntity extends CombatEntity {
@@ -42,14 +52,21 @@ export function resolveAttackComponents(
   self: CombatEntity,
   target: CombatEntity | null,
   fallbackDamage: number,
-  // Per-attack feel modifiers. Optional so enemy attacks and tests, which don't tune feel, can omit it.
   modifiers: { knockback?: number } = {}
 ): void {
   for (const component of components) {
     const recipient = component.target === "self" ? self : target;
     if (!recipient) continue;
-
-    if (component.kind === "damage") {
+    
+    if (component.kind === "dash") {
+      let dirX = self.facingX ?? 1;
+      let dirY = self.facingY ?? 0;
+      let durationMs = component.durationMs;
+      let distanceTiles = component.distanceTiles;
+      self.dash?.(dirX, dirY, (distanceTiles * TILE_SIZE) / (durationMs / 1000), durationMs);
+    } 
+    
+    else if (component.kind === "damage") {
       const amount = component.amount ?? fallbackDamage;
       recipient.health.takeDamage(amount);
       const dx = recipient.x - self.x;
@@ -61,7 +78,9 @@ export function resolveAttackComponents(
         dirY: dy / len,
         knockback: modifiers.knockback ?? 1,
       });
-    } else {
+    } 
+    
+    else if (component.kind === "status") {
       recipient.statusEffects.apply(component.effectId, component.durationMs, component.magnitude);
     }
   }

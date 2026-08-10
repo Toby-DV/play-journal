@@ -20,6 +20,10 @@ export default class Player implements CombatEntity {
   public weapon: Weapon;
   public animationController: AnimationController;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  private movementOverrideMs: number = 0;
+  // Latched unit vector - single source of truth for the sprite flip
+  public facingX = 1;
+  public facingY = 0;
 
   get x(): number {
     return this.sprite.x;
@@ -45,11 +49,21 @@ export default class Player implements CombatEntity {
     return this.sprite.body as Phaser.Physics.Arcade.Body;
   }
 
+  dash(dirX: number, dirY: number, speed: number, durationMs: number) {
+    this.movementOverrideMs = durationMs
+    this.body.setVelocity(dirX*speed, dirY*speed);
+  }
+
   update(deltaMs: number) {
     this.statusEffects.update(deltaMs);
     this.health.update(deltaMs);
 
     const body = this.body;
+
+    if (this.movementOverrideMs > 0) {
+      this.movementOverrideMs -= deltaMs
+    } else {
+      
     body.setVelocity(0);
 
     const speed = PLAYER_SPEED * this.statusEffects.getMagnitude("speed", 1) * this.statusEffects.getMagnitude("slow", 1);
@@ -62,8 +76,15 @@ export default class Player implements CombatEntity {
 
     body.velocity.normalize().scale(speed);
 
+    // Latches only while moving; pure vertical movement leaves facingX 0 so the flip holds
+    if (body.velocity.x !== 0 || body.velocity.y !== 0) {
+      this.facingX = body.velocity.x / speed;
+      this.facingY = body.velocity.y / speed;
+    }
+    }
+
     const isMoving = body.velocity.x !== 0 || body.velocity.y !== 0;
-    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, body.velocity.x);
+    this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, this.facingX);
   }
 
   stop() {

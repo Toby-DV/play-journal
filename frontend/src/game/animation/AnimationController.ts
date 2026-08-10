@@ -52,9 +52,9 @@ export default class AnimationController {
   }
 
   // Facing latches: standing still or moving straight up/down keeps the last horizontal direction
-  update(healthRatio: number, isDead: boolean, isMoving: boolean, velocityX = 0): void {
+  update(healthRatio: number, isDead: boolean, isMoving: boolean, facingX = 0): void {
     this.lastIsMoving = isMoving;
-    if (velocityX !== 0) this.facingLeft = velocityX < 0;
+    if (facingX !== 0) this.facingLeft = facingX < 0;
     this.sprite.setFlipX(this.facingLeft);
 
     if (isDead) {

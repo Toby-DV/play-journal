@@ -27,6 +27,12 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Speed Up",
     cooldownMs: 7000,
     effects:[{kind: "status", effectId: "speed", magnitude: 1.2, target: "self", durationMs: 4000}]
+  },
+  {
+    id: "short_dash",
+    name: "Short Dash",
+    cooldownMs: 2000,
+    effects: [{kind: "dash", target: "self", distanceTiles: 2, durationMs: 60}]
   }
 ];
 

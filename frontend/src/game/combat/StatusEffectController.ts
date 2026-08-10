@@ -4,8 +4,6 @@ interface ActiveEffect {
   def: StatusEffectDefinition;
   remainingMs: number;
   totalMs: number;
-  // Per-application override of def.magnitude, e.g. so puncture and slowing_attack can share
-  // the "slow" effect at different strengths (see AttackComponent.magnitude).
   magnitude?: number;
 }
 
