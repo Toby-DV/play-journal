@@ -50,7 +50,7 @@ function pickSpawnTile(
 }
 
 // Single placeholder boss
-export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bossManifest, fontFamily, getPlayer, blocker }) => {
+export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bossManifest, fontFamily, getPlayer, blocker, dashBlocker }) => {
   const x = map.tileToWorldX(room.centerX)!;
   const y = map.tileToWorldY(room.centerY)!;
 
@@ -70,7 +70,7 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
     aggroRangeTiles: BOSS_AGGRO_RANGE_TILES,
   });
 
-  const combat = new EnemyCombat(boss, getPlayer, blocker, {
+  const combat = new EnemyCombat(boss, getPlayer, blocker, dashBlocker, {
     onAttack: (attackId) => boss.animationController.play("attack", { abilityId: attackId }),
   });
 
@@ -80,7 +80,7 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
 // 3-6 weak, fast enemies scattered across the room. Uses the regular enemy manifest and the same
 // door-sealing mechanic as boss rooms (RoomEncounter, via EnemySpawner) - the room seals when the
 // player steps in and reopens once the whole swarm is dead.
-export const spawnSwarmRoom: RoomSpawnStrategy = ({ scene, map, room, config, enemyManifest, stuffLayer, fontFamily, getPlayer, blocker }) => {
+export const spawnSwarmRoom: RoomSpawnStrategy = ({ scene, map, room, config, enemyManifest, stuffLayer, fontFamily, getPlayer, blocker, dashBlocker }) => {
   const count = SWARM_MIN_ENEMIES + Math.floor(Math.random() * (SWARM_MAX_ENEMIES - SWARM_MIN_ENEMIES + 1));
   const used = new Set<string>();
   const spawned: SpawnedEnemy[] = [];
@@ -106,7 +106,7 @@ export const spawnSwarmRoom: RoomSpawnStrategy = ({ scene, map, room, config, en
 
     const ai = new EnemyAI(enemy, getPlayer, blocker, { speed: SWARM_SPEED });
 
-    const combat = new EnemyCombat(enemy, getPlayer, blocker, {
+    const combat = new EnemyCombat(enemy, getPlayer, blocker, dashBlocker, {
       onAttack: (attackId) => enemy.animationController.play("attack", { abilityId: attackId }),
     });
 

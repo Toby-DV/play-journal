@@ -39,7 +39,7 @@ describe("PlayerCombat basic attack", () => {
     const self = makeEntity();
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isBasicAttackJustPressed: () => true });
-    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -50,7 +50,7 @@ describe("PlayerCombat basic attack", () => {
     const self = makeEntity();
     let enemy = makeEntity(10, 0);
     const input = makeInput({ isBasicAttackJustPressed: () => true });
-    const combat = new PlayerCombat(makeWeapon({ attackSpeedMs: 500 }), self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(makeWeapon({ attackSpeedMs: 500 }), self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0); // first swing lands
     enemy = makeEntity(10, 0); // fresh enemy with no "slow" on it yet
@@ -63,7 +63,7 @@ describe("PlayerCombat basic attack", () => {
     const self = makeEntity();
     const farEnemy = makeEntity(1000, 0);
     const input = makeInput({ isBasicAttackJustPressed: () => true });
-    const combat = new PlayerCombat(makeWeapon({ rangeTiles: 1.5 }), self, () => [farEnemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(makeWeapon({ rangeTiles: 1.5 }), self, () => [farEnemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -74,7 +74,7 @@ describe("PlayerCombat basic attack", () => {
     const self = makeEntity();
     const enemy = makeEntity(50, 0); // far enough that hasLineOfSight samples intermediate points
     const input = makeInput({ isBasicAttackJustPressed: () => true });
-    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], BLOCKED_BLOCKER, input);
+    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], BLOCKED_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -85,7 +85,7 @@ describe("PlayerCombat basic attack", () => {
     const self = makeEntity();
     let enemies: CombatEntity[] = [makeEntity(1000, 0)]; // out of range
     const input = makeInput({ isBasicAttackJustPressed: () => true });
-    const combat = new PlayerCombat(makeWeapon({ attackSpeedMs: 500 }), self, () => enemies, OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(makeWeapon({ attackSpeedMs: 500 }), self, () => enemies, OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0); // whiff - still starts the 500ms cooldown
     enemies = [makeEntity(10, 0)]; // now within range
@@ -98,7 +98,7 @@ describe("PlayerCombat basic attack", () => {
     const self = makeEntity();
     const enemies: CombatEntity[] = [makeEntity(1000, 0)]; // out of range, forces a whiff first
     const input = makeInput({ isBasicAttackJustPressed: () => true });
-    const combat = new PlayerCombat(makeWeapon({ attackSpeedMs: 500 }), self, () => enemies, OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(makeWeapon({ attackSpeedMs: 500 }), self, () => enemies, OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0); // whiff, starts the 500ms cooldown
     enemies[0] = makeEntity(10, 0); // move into range before the cooldown elapses
@@ -114,7 +114,7 @@ describe("PlayerCombat abilities", () => {
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["puncture"] });
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -126,7 +126,7 @@ describe("PlayerCombat abilities", () => {
     const self = makeEntity();
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["battle_focus"] });
-    const combat = new PlayerCombat(weapon, self, () => [], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -138,7 +138,7 @@ describe("PlayerCombat abilities", () => {
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 2 });
     const weapon = makeWeapon({ attackIds: ["puncture"] }); // no slot 2
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     expect(() => combat.update(0)).not.toThrow();
     expect(enemy.statusEffects.getActiveIds()).toEqual([]);
@@ -149,7 +149,7 @@ describe("PlayerCombat abilities", () => {
     let enemies: CombatEntity[] = [makeEntity(1000, 0)]; // out of range
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["puncture"], rangeTiles: 1.5 }); // puncture cooldown: 3000ms
-    const combat = new PlayerCombat(weapon, self, () => enemies, OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => enemies, OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0); // whiff, starts puncture's 3000ms cooldown
     enemies = [makeEntity(10, 0)]; // now within range
@@ -164,7 +164,7 @@ describe("PlayerCombat abilities", () => {
     let pressedSlot: 0 | 1 | null = 0;
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === pressedSlot });
     const weapon = makeWeapon({ attackIds: ["puncture", "intimidating_strike"] });
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0); // fires puncture (slot 0), starts its cooldown
     pressedSlot = 1;
@@ -181,7 +181,7 @@ describe("PlayerCombat abilities", () => {
       isAbilityJustPressed: (slot) => slot === 0,
     });
     const weapon = makeWeapon({ attackIds: ["puncture"] });
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0); // basic attack fires and starts its own cooldown; ability fires too
 
@@ -195,7 +195,7 @@ describe("PlayerCombat damage", () => {
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isBasicAttackJustPressed: () => true });
     const weapon = makeWeapon({ damage: 15 });
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -207,7 +207,7 @@ describe("PlayerCombat damage", () => {
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["puncture"], damage: 999 });
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -219,7 +219,7 @@ describe("PlayerCombat damage", () => {
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["battle_focus"] });
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     combat.update(0);
 
@@ -234,7 +234,7 @@ describe("PlayerCombat onAttack callback", () => {
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isBasicAttackJustPressed: () => true });
     const onAttack = vi.fn();
-    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], OPEN_BLOCKER, input, { onAttack });
+    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input, { onAttack });
 
     combat.update(0);
 
@@ -246,7 +246,7 @@ describe("PlayerCombat onAttack callback", () => {
     const farEnemy = makeEntity(1000, 0);
     const input = makeInput({ isBasicAttackJustPressed: () => true });
     const onAttack = vi.fn();
-    const combat = new PlayerCombat(makeWeapon(), self, () => [farEnemy], OPEN_BLOCKER, input, { onAttack });
+    const combat = new PlayerCombat(makeWeapon(), self, () => [farEnemy], OPEN_BLOCKER, OPEN_BLOCKER, input, { onAttack });
 
     combat.update(0);
 
@@ -259,7 +259,7 @@ describe("PlayerCombat onAttack callback", () => {
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["puncture"] });
     const onAttack = vi.fn();
-    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, input, { onAttack });
+    const combat = new PlayerCombat(weapon, self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input, { onAttack });
 
     combat.update(0);
 
@@ -271,7 +271,7 @@ describe("PlayerCombat onAttack callback", () => {
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["battle_focus"] });
     const onAttack = vi.fn();
-    const combat = new PlayerCombat(weapon, self, () => [], OPEN_BLOCKER, input, { onAttack });
+    const combat = new PlayerCombat(weapon, self, () => [], OPEN_BLOCKER, OPEN_BLOCKER, input, { onAttack });
 
     combat.update(0);
 
@@ -284,7 +284,7 @@ describe("PlayerCombat onAttack callback", () => {
     const input = makeInput({ isAbilityJustPressed: (slot) => slot === 0 });
     const weapon = makeWeapon({ attackIds: ["puncture"] });
     const onAttack = vi.fn();
-    const combat = new PlayerCombat(weapon, self, () => [farEnemy], OPEN_BLOCKER, input, { onAttack });
+    const combat = new PlayerCombat(weapon, self, () => [farEnemy], OPEN_BLOCKER, OPEN_BLOCKER, input, { onAttack });
 
     combat.update(0);
 
@@ -295,7 +295,7 @@ describe("PlayerCombat onAttack callback", () => {
     const self = makeEntity();
     const enemy = makeEntity(10, 0);
     const input = makeInput({ isBasicAttackJustPressed: () => true });
-    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], OPEN_BLOCKER, input);
+    const combat = new PlayerCombat(makeWeapon(), self, () => [enemy], OPEN_BLOCKER, OPEN_BLOCKER, input);
 
     expect(() => combat.update(0)).not.toThrow();
   });

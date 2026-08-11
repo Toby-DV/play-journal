@@ -45,6 +45,7 @@ function baseCtx(): Omit<RoomSpawnContext, "room" | "stuffLayer"> {
     fontFamily: "monospace",
     getPlayer: () => ({ x: 0, y: 0 }) as unknown as ReturnType<RoomSpawnContext["getPlayer"]>,
     blocker: { isBlocked: () => false },
+    dashBlocker: { isBlocked: () => false },
   };
 }
 

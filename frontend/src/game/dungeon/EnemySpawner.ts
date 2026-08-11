@@ -38,6 +38,7 @@ export interface RoomSpawnContext {
   fontFamily: string;
   getPlayer: () => CombatEntity;
   blocker: LineOfSightBlocker;
+  dashBlocker: LineOfSightBlocker;
 }
 
 export type RoomSpawnStrategy = (ctx: RoomSpawnContext) => SpawnedEnemy[];

@@ -40,6 +40,7 @@ export default class PlayerCombat {
     private self: CombatEntity,
     private getEnemies: () => CombatEntity[],
     private blocker: LineOfSightBlocker,
+    private dashBlocker: LineOfSightBlocker,
     private input: AttackInput,
     private options: { onAttack?: (attackId: string) => void } = {}
   ) {}
@@ -68,7 +69,7 @@ export default class PlayerCombat {
       this.blocker
     );
     if (!target) return;
-    resolveAttackComponents(BASIC_ATTACK.effects, this.self, target, this.weapon.damage, {
+    resolveAttackComponents(BASIC_ATTACK.effects, this.self, target, this.weapon.damage, this.dashBlocker, {
       knockback: this.weapon.knockback,
     });
     this.options.onAttack?.(BASIC_ATTACK.id);
@@ -88,9 +89,9 @@ export default class PlayerCombat {
     const target = requiresTarget
       ? findNearestTarget(this.self, this.getEnemies(), this.weapon.rangeTiles * TILE_SIZE, this.blocker)
       : null;
-    if (requiresTarget && !target) return;
+    // if (requiresTarget && !target) return;
 
-    resolveAttackComponents(definition.effects, this.self, target, this.weapon.damage, {
+    resolveAttackComponents(definition.effects, this.self, target, this.weapon.damage, this.dashBlocker, {
       knockback: this.weapon.knockback,
     });
     this.options.onAttack?.(attackId);

@@ -62,6 +62,8 @@ export default class Player implements CombatEntity {
 
     if (this.movementOverrideMs > 0) {
       this.movementOverrideMs -= deltaMs
+      // Ends the dash the frame its counter runs out - leaving velocity set overshoots by a whole frame
+      if (this.movementOverrideMs <= 0) body.setVelocity(0);
     } else {
       
     body.setVelocity(0);

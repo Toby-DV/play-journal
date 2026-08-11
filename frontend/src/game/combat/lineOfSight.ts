@@ -32,3 +32,27 @@ export function hasLineOfSight(
 
   return true;
 }
+
+export function sweepUntilBlocked(
+  blocker: LineOfSightBlocker,
+  fromX: number,
+  fromY: number,
+  toX: number, 
+  toY: number
+) : {x: number, y: number} {
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+  const steps = Math.ceil(Math.hypot(dx, dy) / (TILE_SIZE / 4));
+  let clearX = fromX;
+  let clearY = fromY;
+  // Endpoint included, unlike hasLineOfSight - stopping inside a wall is what this prevents
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const x = fromX + dx * t
+    const y = fromY + dy * t
+    if (blocker.isBlocked(x, y)) break;
+    clearX = x;
+    clearY = y;
+  }
+  return {x: clearX, y: clearY}
+}

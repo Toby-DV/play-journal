@@ -44,7 +44,7 @@ describe("EnemyCombat", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
     const selector = vi.fn(() => ATTACKS[0]);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, { selector });
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, { selector });
     combat.update(1000); // default interval is 1500ms
     expect(selector).not.toHaveBeenCalled();
   });
@@ -53,7 +53,7 @@ describe("EnemyCombat", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
     const selector = vi.fn(() => ATTACKS[0]);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, { selector });
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, { selector });
     combat.update(1500);
     expect(selector).toHaveBeenCalled();
   });
@@ -61,7 +61,7 @@ describe("EnemyCombat", () => {
   it("applies a self-targeted effect to the enemy, not the player", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, {
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, {
       selector: (_enemy, available) => available.find((a) => a.id === "brace") ?? null,
     });
     combat.update(1500);
@@ -72,7 +72,7 @@ describe("EnemyCombat", () => {
   it("applies a target-targeted effect to the player, not the enemy", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, {
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, {
       selector: (_enemy, available) => available.find((a) => a.id === "nagging_reminder") ?? null,
     });
     combat.update(1500);
@@ -84,7 +84,7 @@ describe("EnemyCombat", () => {
     const enemy = makeEntity(1); // only "brace" is available at aggression 1
     const player: CombatEntity = makeEntity(0);
     const selector = vi.fn((_enemy: AggressiveCombatEntity, available: ReturnType<typeof getAvailableAttacks>) => available[0] ?? null);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, { selector, trigger: () => true });
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, { selector, trigger: () => true });
 
     combat.update(0);
     expect(selector).toHaveBeenLastCalledWith(enemy, expect.arrayContaining([expect.objectContaining({ id: "brace" })]));
@@ -96,7 +96,7 @@ describe("EnemyCombat", () => {
   it("does nothing when the selector returns null", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, { selector: () => null });
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, { selector: () => null });
     expect(() => combat.update(1500)).not.toThrow();
     expect(player.statusEffects.getActiveIds()).toEqual([]);
   });
@@ -105,7 +105,7 @@ describe("EnemyCombat", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
     const onAttack = vi.fn();
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, {
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, {
       selector: (_enemy, available) => available.find((a) => a.id === "brace") ?? null,
       onAttack,
     });
@@ -117,7 +117,7 @@ describe("EnemyCombat", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
     const onAttack = vi.fn();
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, { selector: () => null, onAttack });
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, { selector: () => null, onAttack });
     combat.update(1500);
     expect(onAttack).not.toHaveBeenCalled();
   });
@@ -125,7 +125,7 @@ describe("EnemyCombat", () => {
   it("works with no onAttack option provided at all", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, {
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, {
       selector: (_enemy, available) => available.find((a) => a.id === "brace") ?? null,
     });
     expect(() => combat.update(1500)).not.toThrow();
@@ -134,7 +134,7 @@ describe("EnemyCombat", () => {
   it("works end-to-end with the default trigger and selector", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER);
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER);
     const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0); // picks the first available attack
     combat.update(1500);
     randomSpy.mockRestore();
@@ -145,7 +145,7 @@ describe("EnemyCombat", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = { x: 500, y: 0, statusEffects: new StatusEffectController(), health: new Health(100) }; // 500 > 8 tiles (384px)
     const selector = vi.fn((_enemy: AggressiveCombatEntity, available: AttackDefinition[]) => available[0] ?? null);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, { selector });
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, { selector });
     combat.update(1500);
     expect(selector).toHaveBeenLastCalledWith(enemy, []);
   });
@@ -155,7 +155,7 @@ describe("EnemyCombat", () => {
     const player: CombatEntity = { x: 100, y: 0, statusEffects: new StatusEffectController(), health: new Health(100) }; // well within range
     const blockedBlocker: LineOfSightBlocker = { isBlocked: () => true };
     const selector = vi.fn((_enemy: AggressiveCombatEntity, available: AttackDefinition[]) => available[0] ?? null);
-    const combat = new EnemyCombat(enemy, () => player, blockedBlocker, { selector });
+    const combat = new EnemyCombat(enemy, () => player, blockedBlocker, OPEN_BLOCKER, { selector });
     combat.update(1500);
     expect(selector).toHaveBeenLastCalledWith(enemy, []);
   });
@@ -164,7 +164,7 @@ describe("EnemyCombat", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = { x: 100, y: 0, statusEffects: new StatusEffectController(), health: new Health(100) };
     const selector = vi.fn((_enemy: AggressiveCombatEntity, available: AttackDefinition[]) => available[0] ?? null);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, { selector });
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, { selector });
     combat.update(1500);
     expect(selector).toHaveBeenLastCalledWith(enemy, expect.arrayContaining([expect.objectContaining({ id: "brace" })]));
   });
@@ -172,7 +172,7 @@ describe("EnemyCombat", () => {
   it("deals damage to the target when the chosen attack has a damage component", () => {
     const enemy = makeEntity(3);
     const player: CombatEntity = makeEntity(0);
-    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, {
+    const combat = new EnemyCombat(enemy, () => player, OPEN_BLOCKER, OPEN_BLOCKER, {
       selector: (_enemy, available) => available.find((a) => a.id === "nagging_reminder") ?? null,
     });
     combat.update(1500);

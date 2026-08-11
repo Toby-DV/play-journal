@@ -17,7 +17,7 @@ export const WEAPONS: Weapon[] = [
     category: "melee",
     damage: 25,
     attackSpeedMs: 1000,
-    rangeTiles: 4.5,
+    rangeTiles: 2.5,
     knockback: 1,
     attackIds: ["slowing_attack", "unstoppable_slash", "short_dash"],
   },

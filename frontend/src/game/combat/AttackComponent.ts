@@ -1,6 +1,7 @@
 import StatusEffectController from "./StatusEffectController";
 import Health from "./Health";
 import { TILE_SIZE } from "../constants";
+import { sweepUntilBlocked, LineOfSightBlocker } from "./lineOfSight";
 
 export interface StatusEffectComponent {
   kind: "status";
@@ -52,18 +53,23 @@ export function resolveAttackComponents(
   self: CombatEntity,
   target: CombatEntity | null,
   fallbackDamage: number,
-  modifiers: { knockback?: number } = {}
+  dashBlocker: LineOfSightBlocker,
+  modifiers: { knockback?: number } = {},
 ): void {
   for (const component of components) {
     const recipient = component.target === "self" ? self : target;
     if (!recipient) continue;
     
     if (component.kind === "dash") {
-      let dirX = self.facingX ?? 1;
-      let dirY = self.facingY ?? 0;
-      let durationMs = component.durationMs;
-      let distanceTiles = component.distanceTiles;
-      self.dash?.(dirX, dirY, (distanceTiles * TILE_SIZE) / (durationMs / 1000), durationMs);
+      const dirX = self.facingX ?? 1;
+      const dirY = self.facingY ?? 0;
+      const distanceTiles = component.distanceTiles;
+      const intended = TILE_SIZE * distanceTiles
+      const speed = (distanceTiles * TILE_SIZE) / (component.durationMs / 1000)
+      const stop = sweepUntilBlocked(dashBlocker, self.x, self.y, self.x + dirX * intended, self.y + dirY * intended)
+      // Speed is held constant and the duration clipped, so a blocked dash slams rather than glides
+      const durationMs = (Math.hypot(stop.x - self.x, stop.y - self.y) / speed) * 1000
+      self.dash?.(dirX, dirY, speed, durationMs);
     } 
     
     else if (component.kind === "damage") {

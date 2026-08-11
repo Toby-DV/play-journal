@@ -109,6 +109,8 @@ export function createDungeonScene(
 
       this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
       this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+      // Default 16 silently discards deeper overlaps, so dash-speed bodies pass into walls unseparated
+      this.physics.world.TILE_BIAS = TILE_SIZE;
 
       const { player: playerManifest, enemy: enemyManifest, boss: bossManifest } = await loadEntityManifests(this, PhaserLib, config);
 
@@ -119,7 +121,14 @@ export function createDungeonScene(
           !!this.groundLayer.getTileAtWorldXY(x, y)?.collides || !!this.stuffLayer.getTileAtWorldXY(x, y)?.collides,
       };
 
-      this.spawnEnemies(dungeon, roomKindAssignments, { enemyManifest, bossManifest, blocker });
+      const dashBlocker: LineOfSightBlocker = {
+        isBlocked: (x, y) => {
+        if (!!this.groundLayer.getTileAtWorldXY(x, y)?.collides) return true;
+        const index = this.stuffLayer.getTileAtWorldXY(x, y)?.index;
+        return index === TILE_MAPPING.DOOR.CLOSED.HORIZONTAL || index === TILE_MAPPING.DOOR.CLOSED.VERTICAL;}
+      }
+
+      this.spawnEnemies(dungeon, roomKindAssignments, { enemyManifest, bossManifest, blocker, dashBlocker });
 
       // The stairs room's own doors
       this.finalRoomDoors = buildRoomDoors(this.stuffLayer, finalRoom);
@@ -132,6 +141,7 @@ export function createDungeonScene(
         this.player,
         () => this.enemyInstances.map(({ enemy }) => enemy),
         blocker,
+        dashBlocker,
         new PhaserAttackInput(this),
         {
           onAttack: (attackId) => {
@@ -178,7 +188,7 @@ export function createDungeonScene(
       const playerY = this.map.tileToWorldY(startRoom.centerY)!;
       const weapon = WEAPONS[config.weapon_no];
       this.player = new Player(this, playerX, playerY, weapon, playerManifest);
-      this.cameras.main.startFollow(this.player.sprite, true);
+      this.cameras.main.startFollow(this.player.sprite, true, 0.26, 0.26);
 
       this.physics.add.collider(this.player.sprite, this.groundLayer);
       this.physics.add.collider(this.player.sprite, this.stuffLayer);
@@ -199,7 +209,12 @@ export function createDungeonScene(
     private spawnEnemies(
       dungeon: Dungeon,
       roomKindAssignments: ReadonlyMap<DungeonRoom, RoomKind>,
-      manifests: { enemyManifest: SpriteManifest; bossManifest: SpriteManifest; blocker: LineOfSightBlocker }
+      manifests: {
+        enemyManifest: SpriteManifest;
+        bossManifest: SpriteManifest;
+        blocker: LineOfSightBlocker;
+        dashBlocker: LineOfSightBlocker;
+      }
     ) {
       const spawner = new EnemySpawner();
       spawner.register("boss", spawnBossRoom);
@@ -214,6 +229,7 @@ export function createDungeonScene(
         fontFamily,
         getPlayer: () => this.player,
         blocker: manifests.blocker,
+        dashBlocker: manifests.dashBlocker,
       });
       this.enemyInstances = spawnResults.flatMap((result) => result.spawned);
       this.roomEncounters = spawnResults.map((result) => result.encounter);

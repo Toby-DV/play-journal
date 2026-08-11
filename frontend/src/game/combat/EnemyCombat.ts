@@ -41,6 +41,7 @@ export default class EnemyCombat {
     private enemy: AggressiveCombatEntity,
     private getTarget: () => CombatEntity,
     private blocker: LineOfSightBlocker,
+    private dashBlocker: LineOfSightBlocker,
     options?: { trigger?: AttackTrigger; selector?: AttackSelector; onAttack?: (attackId: string) => void }
   ) {
     this.trigger = options?.trigger ?? defaultTrigger;
@@ -79,7 +80,7 @@ export default class EnemyCombat {
     if (!chosen) return;
 
     this.cooldowns.start(chosen.id, chosen.cooldownMs);
-    resolveAttackComponents(chosen.effects, this.enemy, target, 0);
+    resolveAttackComponents(chosen.effects, this.enemy, target, 0, this.dashBlocker);
     this.onAttack?.(chosen.id);
   }
 }
