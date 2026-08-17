@@ -5,7 +5,6 @@ export const mockGameConfig: GameConfig = {
   theme_name: "Coder's Coffee Chase",
   player_sprite: "sliced_knight",
   enemy_type: "skeleton",
-  enemy_color: "#ef4444",
   mood: "reflective",
   game_rules: [
     "Use the ARROW keys to move.",

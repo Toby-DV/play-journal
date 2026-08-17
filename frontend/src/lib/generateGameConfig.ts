@@ -11,35 +11,31 @@ const DEFAULT_MOOD = "balanced";
 
 const MOOD_THEMES: Record<
   string,
-  { theme_id: string; theme_name: string; bosses: string[]; weapons: string[]; enemy_color: string }
+  { theme_id: string; theme_name: string; bosses: string[]; weapons: string[] }
 > = {
   happy: {
     theme_id: "party_star",
     theme_name: "Festival of Sparks",
     bosses: ["The Confetti King", "Big Grin"],
     weapons: ["Party Popper", "Glowstick"],
-    enemy_color: "#ec4899",
   },
   reflective: {
     theme_id: "rainy_day",
     theme_name: "The Quiet Hours",
     bosses: ["The Hollow Echo", "Old Rain"],
     weapons: ["Umbrella Blade", "Worn Locket"],
-    enemy_color: "#60a5fa",
   },
   productive: {
     theme_id: "coder_coffee",
     theme_name: "Coder's Coffee Chase",
     bosses: ["The Merge Conflict", "Big John"],
     weapons: ["Mechanical Keyboard", "Debug Wand"],
-    enemy_color: "#ef4444",
   },
   balanced: {
     theme_id: "daily_quest",
     theme_name: "An Ordinary Quest",
     bosses: ["The Routine", "Clockwork Warden"],
     weapons: ["Worn Sword", "Traveler's Staff"],
-    enemy_color: "#d97706",
   },
 };
 
@@ -90,7 +86,6 @@ export function generateGameConfig(text: string): GameConfig {
     theme_name: theme.theme_name,
     player_sprite: PLAYER_SPRITE,
     enemy_type: ENEMY_TYPE,
-    enemy_color: theme.enemy_color,
     mood,
     game_rules: GAME_RULES,
     bosses: [pick(theme.bosses)],
