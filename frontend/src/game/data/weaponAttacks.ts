@@ -33,8 +33,8 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Short Dash",
     cooldownMs: 2000,
     effects: [{kind: "dash", target: "self", distanceTiles: 2, durationMs: 70},
-              {kind: "status", target: "target", effectId: "slow", durationMs: 800, magnitude: 0.4},
-              {kind: "damage", target: "target"}
+              {kind: "status", target: "target", effectId: "slow", durationMs: 800, magnitude: 0.4, resolveLast: true},
+              {kind: "damage", target: "target", resolveLast: true}
     ]
   }
 ];

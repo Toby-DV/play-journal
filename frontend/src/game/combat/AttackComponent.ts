@@ -4,58 +4,68 @@ import { TILE_SIZE } from "../constants";
 import { sweepUntilBlocked, LineOfSightBlocker } from "./lineOfSight";
 
 export interface StatusEffectComponent {
-  kind: "status";
-  effectId: string;
-  target: "self" | "target";
-  durationMs: number;
-  magnitude?: number;
+  kind: "status",
+  effectId: string,
+  target: "self" | "target",
+  durationMs: number,
+  magnitude?: number,
+  resolveLast?: Boolean,
 }
 
 export interface DamageComponent {
-  kind: "damage";
-  target: "self" | "target";
-  amount?: number;
+  kind: "damage",
+  target: "self" | "target",
+  amount?: number,
+  resolveLast?: Boolean,
 }
 
 export interface DashComponent {
-  kind: "dash";
-  target: "self";
-  distanceTiles: number;
-  durationMs: number;
+  kind: "dash",
+  target: "self",
+  distanceTiles: number,
+  durationMs: number,
+  resolveLast?: Boolean
 }
 
 export interface HitInfo {
-  damage: number;
-  dirX: number;
-  dirY: number;
-  knockback: number;
+  damage: number,
+  dirX: number,
+  dirY: number,
+  knockback: number,
 }
 
 export type AttackComponent = StatusEffectComponent | DamageComponent | DashComponent;
 
 export interface CombatEntity {
-  statusEffects: StatusEffectController;
-  health: Health;
-  x: number;
-  y: number;
+  statusEffects: StatusEffectController,
+  health: Health,
+  x: number,
+  y: number,
   facingX?: number,
-  facingY?: number
+  facingY?: number,
   onDamaged?(hit: HitInfo): void;
   dash?: (dirX: number, dirY: number, speed: number, durationMs: number) => void;
 }
 
-export interface AggressiveCombatEntity extends CombatEntity {
-  aggressionLevel: number;
+export interface DelayedAttack {
+  effects: AttackComponent[],
+  modifiers: {knockback?: number},
+  remainingMs: number
 }
 
-export function resolveAttackComponents(
+export interface AggressiveCombatEntity extends CombatEntity {
+  aggressionLevel: number,
+}
+
+export function resolveAttackComponents( // Also returns how long an action will take
   components: AttackComponent[],
   self: CombatEntity,
   target: CombatEntity | null,
   fallbackDamage: number,
   dashBlocker: LineOfSightBlocker,
   modifiers: { knockback?: number } = {},
-): void {
+): number | undefined {
+  let effectDurationMs: number | undefined;
   for (const component of components) {
     const recipient = component.target === "self" ? self : target;
     if (!recipient) continue;
@@ -70,6 +80,7 @@ export function resolveAttackComponents(
       // Speed is held constant and the duration clipped, so a blocked dash slams rather than glides
       const durationMs = (Math.hypot(stop.x - self.x, stop.y - self.y) / speed) * 1000
       self.dash?.(dirX, dirY, speed, durationMs);
+      effectDurationMs = durationMs;
     } 
     
     else if (component.kind === "damage") {
@@ -90,4 +101,5 @@ export function resolveAttackComponents(
       recipient.statusEffects.apply(component.effectId, component.durationMs, component.magnitude);
     }
   }
+  return effectDurationMs;
 }
