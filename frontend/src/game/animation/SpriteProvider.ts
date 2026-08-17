@@ -80,13 +80,101 @@ export const SKELETON_MANIFEST: SpriteManifest = {
   },
 };
 
-// Dev/test implementation. "sliced_knight"/"skeleton" are the ids mockGameConfig actually ships;
-// "bug" is the sparse placeholder-backed manifest kept so the missing-clip fallback stays covered.
-// Unknown ids resolve null so pickManifest's fallback is exercised too (see resolveAnimation.ts).
+// Enemy Galore I (Admurin - see public/sprites/ATTRIBUTION.md). Cropped from 64x64 source
+// frames to the project's 32x32 cells. None of the pack has dash art, so dash falls back to walk;
+// pebble and skull have no attack art either.
+export const BAT_MANIFEST: SpriteManifest = {
+  spriteId: "bat",
+  clips: {
+    idle: clip("bat", "idle", { frameCount: 4, frameRate: 12, repeat: -1 }),
+    walk: clip("bat", "walk", { frameCount: 4, frameRate: 12, repeat: -1 }),
+    attack: clip("bat", "attack", { frameCount: 7, frameRate: 14, repeat: 0 }),
+    hit: clip("bat", "hit", { frameCount: 5, frameRate: 14, repeat: 0 }),
+    death: clip("bat", "death", { frameCount: 11, frameRate: 12, repeat: 0 }),
+  },
+};
+
+export const CRAB_MANIFEST: SpriteManifest = {
+  spriteId: "crab",
+  clips: {
+    idle: clip("crab", "idle", { frameCount: 4, frameRate: 6, repeat: -1 }),
+    walk: clip("crab", "walk", { frameCount: 6, frameRate: 12, repeat: -1 }),
+    attack: clip("crab", "attack", { frameCount: 10, frameRate: 14, repeat: 0 }),
+    hit: clip("crab", "hit", { frameCount: 3, frameRate: 12, repeat: 0 }),
+    death: clip("crab", "death", { frameCount: 5, frameRate: 10, repeat: 0 }),
+  },
+};
+
+export const RAT_MANIFEST: SpriteManifest = {
+  spriteId: "rat",
+  clips: {
+    idle: clip("rat", "idle", { frameCount: 4, frameRate: 6, repeat: -1 }),
+    walk: clip("rat", "walk", { frameCount: 6, frameRate: 14, repeat: -1 }),
+    attack: clip("rat", "attack", { frameCount: 8, frameRate: 14, repeat: 0 }),
+    hit: clip("rat", "hit", { frameCount: 4, frameRate: 12, repeat: 0 }),
+    death: clip("rat", "death", { frameCount: 5, frameRate: 10, repeat: 0 }),
+  },
+};
+
+export const SLIME_MANIFEST: SpriteManifest = {
+  spriteId: "slime",
+  clips: {
+    idle: clip("slime", "idle", { frameCount: 4, frameRate: 6, repeat: -1 }),
+    walk: clip("slime", "walk", { frameCount: 4, frameRate: 10, repeat: -1 }),
+    attack: clip("slime", "attack", { frameCount: 8, frameRate: 12, repeat: 0 }),
+    hit: clip("slime", "hit", { frameCount: 4, frameRate: 12, repeat: 0 }),
+    death: clip("slime", "death", { frameCount: 6, frameRate: 10, repeat: 0 }),
+  },
+};
+
+export const PEBBLE_MANIFEST: SpriteManifest = {
+  spriteId: "pebble",
+  clips: {
+    idle: clip("pebble", "idle", { frameCount: 4, frameRate: 6, repeat: -1 }),
+    walk: clip("pebble", "walk", { frameCount: 5, frameRate: 12, repeat: -1 }),
+    hit: clip("pebble", "hit", { frameCount: 5, frameRate: 12, repeat: 0 }),
+    death: clip("pebble", "death", { frameCount: 7, frameRate: 10, repeat: 0 }),
+  },
+};
+
+export const SKULL_MANIFEST: SpriteManifest = {
+  spriteId: "skull",
+  clips: {
+    idle: clip("skull", "idle", { frameCount: 4, frameRate: 6, repeat: -1 }),
+    walk: clip("skull", "walk", { frameCount: 8, frameRate: 12, repeat: -1 }),
+    hit: clip("skull", "hit", { frameCount: 4, frameRate: 12, repeat: 0 }),
+    // The skull falls out of frame as it dies, so the clip ends on empty air by design
+    death: clip("skull", "death", { frameCount: 6, frameRate: 10, repeat: 0 }),
+  },
+};
+
+// Bulkiest of the pack, so it backs BOSS_SPRITE_ID
+export const GOLEM_MANIFEST: SpriteManifest = {
+  spriteId: "golem",
+  clips: {
+    idle: clip("golem", "idle", { frameCount: 4, frameRate: 5, repeat: -1 }),
+    walk: clip("golem", "walk", { frameCount: 4, frameRate: 8, repeat: -1 }),
+    attack: clip("golem", "attack", { frameCount: 7, frameRate: 12, repeat: 0 }),
+    hit: clip("golem", "hit", { frameCount: 5, frameRate: 12, repeat: 0 }),
+    death: clip("golem", "death", { frameCount: 9, frameRate: 10, repeat: 0 }),
+  },
+};
+
+// Dev/test implementation. "bug" is the sparse placeholder-backed manifest kept so the
+// missing-clip fallback stays covered. Unknown ids resolve null so pickManifest's fallback is
+// exercised too (see resolveAnimation.ts).
 export class LocalSpriteProvider implements SpriteProvider {
   private manifests: Record<string, SpriteManifest> = {
     sliced_knight: SLICED_KNIGHT_MANIFEST,
     skeleton: SKELETON_MANIFEST,
+    bat: BAT_MANIFEST,
+    crab: CRAB_MANIFEST,
+    rat: RAT_MANIFEST,
+    slime: SLIME_MANIFEST,
+    pebble: PEBBLE_MANIFEST,
+    skull: SKULL_MANIFEST,
+    golem: GOLEM_MANIFEST,
+    [BOSS_SPRITE_ID]: GOLEM_MANIFEST,
     bug: {
       spriteId: "bug",
       clips: {

@@ -11,31 +11,35 @@ const DEFAULT_MOOD = "balanced";
 
 const MOOD_THEMES: Record<
   string,
-  { theme_id: string; theme_name: string; bosses: string[]; weapons: string[] }
+  { theme_id: string; theme_name: string; bosses: string[]; weapons: string[]; enemies: string[] }
 > = {
   happy: {
     theme_id: "party_star",
     theme_name: "Festival of Sparks",
     bosses: ["The Confetti King", "Big Grin"],
     weapons: ["Party Popper", "Glowstick"],
+    enemies: ["slime", "bat"],
   },
   reflective: {
     theme_id: "rainy_day",
     theme_name: "The Quiet Hours",
     bosses: ["The Hollow Echo", "Old Rain"],
     weapons: ["Umbrella Blade", "Worn Locket"],
+    enemies: ["skull", "skeleton"],
   },
   productive: {
     theme_id: "coder_coffee",
     theme_name: "Coder's Coffee Chase",
     bosses: ["The Merge Conflict", "Big John"],
     weapons: ["Mechanical Keyboard", "Debug Wand"],
+    enemies: ["rat", "pebble"],
   },
   balanced: {
     theme_id: "daily_quest",
     theme_name: "An Ordinary Quest",
     bosses: ["The Routine", "Clockwork Warden"],
     weapons: ["Worn Sword", "Traveler's Staff"],
+    enemies: ["crab", "skeleton"],
   },
 };
 
@@ -45,10 +49,9 @@ const GAME_RULES = [
   "Clear every room to reach the stairs.",
 ];
 
-// Placeholder art only for now - both ids resolve through LocalSpriteProvider's local manifests
-// (see game/animation/SpriteProvider.ts).
+// Resolves through LocalSpriteProvider's local manifests (see game/animation/SpriteProvider.ts);
+// the boss sprite is picked there off BOSS_SPRITE_ID rather than coming from the config.
 const PLAYER_SPRITE = "sliced_knight";
-const ENEMY_TYPE = "skeleton";
 
 function detectMood(text: string): string {
   const lower = text.toLowerCase();
@@ -74,8 +77,7 @@ function pick<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-// Deterministic mood detection with no network call. 
-// Placeholder sprites only for now.
+// Deterministic mood detection with no network call.
 export function generateGameConfig(text: string): GameConfig {
   const mood = detectMood(text);
   const theme = MOOD_THEMES[mood];
@@ -85,7 +87,7 @@ export function generateGameConfig(text: string): GameConfig {
     theme_id: theme.theme_id,
     theme_name: theme.theme_name,
     player_sprite: PLAYER_SPRITE,
-    enemy_type: ENEMY_TYPE,
+    enemy_type: pick(theme.enemies),
     mood,
     game_rules: GAME_RULES,
     bosses: [pick(theme.bosses)],
