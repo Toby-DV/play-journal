@@ -10,13 +10,15 @@ import { silkscreen } from "@/lib/fonts";
 interface GameComponentProps {
   config: GameConfig;
   onLevelComplete: () => void;
+  onPlayerDeath: () => void;
 }
 
 // https://github.com/mikewesthad/phaser-3-tilemap-blog-posts.
-export default function GameComponent({ config, onLevelComplete }: GameComponentProps) {
+export default function GameComponent({ config, onLevelComplete, onPlayerDeath }: GameComponentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
   const onLevelCompleteRef = useRef(onLevelComplete);
+  const onPlayerDeathRef = useRef(onPlayerDeath);
   onLevelCompleteRef.current = onLevelComplete;
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function GameComponent({ config, onLevelComplete }: GameComponent
     import("phaser").then((Phaser) => {
       if (isDestroyed) return;
 
-      const DungeonScene = createDungeonScene(Phaser, config, silkscreen.style.fontFamily, () => onLevelCompleteRef.current());
+      const DungeonScene = createDungeonScene(Phaser, config, silkscreen.style.fontFamily, () => onLevelCompleteRef.current(), () => onPlayerDeathRef.current());
 
       const initialWidth = containerRef.current?.clientWidth || 800;
       const initialHeight = containerRef.current?.clientHeight || 600;

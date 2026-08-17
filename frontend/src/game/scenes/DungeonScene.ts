@@ -46,13 +46,15 @@ function getSwarmRoomCount(totalRooms: number): number {
 }
 
 const LEVEL_COMPLETE_DELAY_MS = 1500;
+const PLAYER_DEATH_DELAY_MS = 2000;
 const STAIRS_REACH_RADIUS = TILE_SIZE * 0.75;
 
 export function createDungeonScene(
   PhaserLib: typeof Phaser,
   config: GameConfig,
   fontFamily: string,
-  onLevelComplete: () => void
+  onLevelComplete: () => void,
+  onPlayerDeath: () => void
 ) {
   return class DungeonScene extends PhaserLib.Scene {
     private player!: Player;
@@ -359,6 +361,7 @@ export function createDungeonScene(
         })
         .setOrigin(0.5, 0.5)
         .setScrollFactor(0);
+      this.time.delayedCall(PLAYER_DEATH_DELAY_MS, () => onPlayerDeath());
     }
 
     private handleLevelComplete() {

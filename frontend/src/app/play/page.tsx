@@ -84,7 +84,7 @@ export default function PlayPage() {
       <GameSettingsMenu />
 
       <div className="w-full h-full">
-        <GameComponent config={gameConfig} onLevelComplete={handleBackToJournal} />
+        <GameComponent config={gameConfig} onLevelComplete={handleBackToJournal} onPlayerDeath={handleBackToJournal} />
       </div>
 
       {/* Exit fade: sits above everything and fades in to black before navigating back to the

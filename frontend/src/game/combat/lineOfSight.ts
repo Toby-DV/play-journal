@@ -42,7 +42,7 @@ export function sweepUntilBlocked(
 ) : {x: number, y: number} {
   const dx = toX - fromX;
   const dy = toY - fromY;
-  const steps = Math.ceil(Math.hypot(dx, dy) / (TILE_SIZE / 4));
+  const steps = Math.ceil(Math.hypot(dx, dy) / (TILE_SIZE / 8));
   let clearX = fromX;
   let clearY = fromY;
   // Endpoint included, unlike hasLineOfSight - stopping inside a wall is what this prevents
