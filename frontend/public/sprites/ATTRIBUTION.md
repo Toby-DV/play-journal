@@ -17,7 +17,9 @@ with the knight.
 
 Admurin's own terms: free for personal and commercial projects, modification allowed, credit not
 required but appreciated. **The assets may not be resold or redistributed as game assets** — they
-have to ship as part of a project.
+have to ship as part of a project. The original pack is kept at
+`frontend/art-source/Enemy_Galore_I.zip`, deliberately outside `public/` so the build never serves
+the redistributable archive itself.
 
 Source frames are 64x64 in 4-wide row-major grids, with the art occupying a ~32px region. Each
 enemy is cropped to a single 32x32 window (shared across all its states so the origin stays put),
