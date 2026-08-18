@@ -12,6 +12,12 @@ export interface StatusEffectComponent {
   resolveLast?: Boolean,
 }
 
+export interface DelayComponent {
+  kind: "delay",
+  target: "self",
+  durationMs: number
+}
+
 export interface DamageComponent {
   kind: "damage",
   target: "self" | "target",
@@ -34,7 +40,7 @@ export interface HitInfo {
   knockback: number,
 }
 
-export type AttackComponent = StatusEffectComponent | DamageComponent | DashComponent;
+export type AttackComponent = StatusEffectComponent | DamageComponent | DashComponent | DelayComponent;
 
 export interface CombatEntity {
   statusEffects: StatusEffectController,
@@ -65,7 +71,7 @@ export function resolveAttackComponents( // Also returns how long an action will
   dashBlocker: LineOfSightBlocker,
   modifiers: { knockback?: number } = {},
 ): number | undefined {
-  let effectDurationMs: number | undefined;
+  let effectDurationMs: number = 0;
   for (const component of components) {
     const recipient = component.target === "self" ? self : target;
     if (!recipient) continue;
@@ -77,10 +83,9 @@ export function resolveAttackComponents( // Also returns how long an action will
       const intended = TILE_SIZE * distanceTiles
       const speed = (distanceTiles * TILE_SIZE) / (component.durationMs / 1000)
       const stop = sweepUntilBlocked(dashBlocker, self.x, self.y, self.x + dirX * intended, self.y + dirY * intended)
-      // Speed is held constant and the duration clipped, so a blocked dash slams rather than glides
       const durationMs = (Math.hypot(stop.x - self.x, stop.y - self.y) / speed) * 1000
       self.dash?.(dirX, dirY, speed, durationMs);
-      effectDurationMs = durationMs;
+      effectDurationMs += durationMs;
     } 
     
     else if (component.kind === "damage") {
@@ -88,7 +93,7 @@ export function resolveAttackComponents( // Also returns how long an action will
       recipient.health.takeDamage(amount);
       const dx = recipient.x - self.x;
       const dy = recipient.y - self.y;
-      const len = Math.hypot(dx, dy) || 1; // guard against self-targeting abilities
+      const len = Math.hypot(dx, dy) || 1; // guard against self-targeting abilities using 0
       recipient.onDamaged?.({
         damage: amount,
         dirX: dx / len,
@@ -99,6 +104,10 @@ export function resolveAttackComponents( // Also returns how long an action will
     
     else if (component.kind === "status") {
       recipient.statusEffects.apply(component.effectId, component.durationMs, component.magnitude);
+    }
+
+    else if (component.kind === "delay") {
+      effectDurationMs += component.durationMs;
     }
   }
   return effectDurationMs;

@@ -38,11 +38,23 @@ export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
     tags: ["buff"],
     magnitude: 10,
   },
-  channelling: {
+  channeling: {
     id: "channeling",
     label: "CHANNELING",
     color: "#e1d56c",
     tags: [],
+  },
+  rooted: {
+    id: "rooted",
+    label: "ROOTED",
+    color: "#e1d56c", 
+    tags: ["cc"]
+  },
+  stunned: {
+    id: "stunned",
+    label: "STUNNED",
+    color: "#d70c0c",
+    tags: ["cc"]
   }
 };
 

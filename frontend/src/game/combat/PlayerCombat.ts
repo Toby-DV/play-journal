@@ -1,7 +1,7 @@
 import { LineOfSightBlocker, hasLineOfSight } from "./lineOfSight";
 import { Weapon } from "../data/weapons";
 import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
-import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
+import { CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
 import CooldownTracker from "./CooldownTracker";
 import { TILE_SIZE } from "../constants";
 
@@ -46,23 +46,27 @@ export default class PlayerCombat {
     private options: { onAttack?: (attackId: string) => void } = {}
   ) {}
 
+  private findTarget(): CombatEntity | null {
+    return findNearestTarget(this.self, this.getEnemies(), this.weapon.rangeTiles * TILE_SIZE, this.blocker);
+  }
+
   update(deltaMs: number): void {
     this.cooldowns.tick(deltaMs);
+    if (this.self.statusEffects.has("stunned")) { this.pendingResolution = []; return }
 
     if (this.input.isBasicAttackJustPressed()) this.tryBasicAttack();
     for (const slot of [0, 1, 2] as const) {
       if (this.input.isAbilityJustPressed(slot)) this.tryAbility(slot);
     }
 
-    const attacks: AttackComponent[] = [];
     this.pendingResolution = this.pendingResolution.filter((attack) => {
       attack.remainingMs -= deltaMs;
       if (attack.remainingMs > 0) return true;
-      attacks.push(...attack.effects)
+      const target = this.findTarget();
+      resolveAttackComponents(attack.effects, this.self, target, this.weapon.damage, this.dashBlocker, attack.modifiers);
       return false;
     });
-    const target = findNearestTarget(this.self, this.getEnemies(), this.weapon.rangeTiles * TILE_SIZE, this.blocker);
-    resolveAttackComponents(attacks, this.self, target, this.weapon.damage, this.dashBlocker, {knockback: this.weapon.knockback})
+    
   }
 
   get cooldownTracker(): CooldownTracker {
@@ -73,12 +77,7 @@ export default class PlayerCombat {
     if (!this.cooldowns.isReady(BASIC_ATTACK.id)) return;
     this.cooldowns.start(BASIC_ATTACK.id, this.weapon.attackSpeedMs);
 
-    const target = findNearestTarget(
-      this.self,
-      this.getEnemies(),
-      this.weapon.rangeTiles * TILE_SIZE,
-      this.blocker
-    );
+    const target = this.findTarget();
     if (!target) return;
     resolveAttackComponents(BASIC_ATTACK.effects, this.self, target, this.weapon.damage, this.dashBlocker, {
       knockback: this.weapon.knockback,
@@ -97,13 +96,11 @@ export default class PlayerCombat {
     this.cooldowns.start(attackId, definition.cooldownMs);
 
     const requiresTarget = definition.effects.some((component) => component.target === "target");
-    const target = requiresTarget
-      ? findNearestTarget(this.self, this.getEnemies(), this.weapon.rangeTiles * TILE_SIZE, this.blocker)
-      : null;
+    const target = requiresTarget ? this.findTarget() : null;
     // if (requiresTarget && !target) return;
 
-    const instantEffects = definition.effects.filter((e) => !!(!e?.resolveLast));
-    const delayedEffects = definition.effects.filter((e) => !!e?.resolveLast);
+    const instantEffects = definition.effects.filter((e) => !("resolveLast" in e) || !e.resolveLast);
+    const delayedEffects = definition.effects.filter((e) => ("resolveLast" in e) && !!e.resolveLast);
     const timeUntilDone = resolveAttackComponents(instantEffects, this.self, target, this.weapon.damage, this.dashBlocker, {
       knockback: this.weapon.knockback,
     });

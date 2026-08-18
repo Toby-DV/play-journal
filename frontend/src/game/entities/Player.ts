@@ -60,30 +60,34 @@ export default class Player implements CombatEntity {
 
     const body = this.body;
 
-    if (this.movementOverrideMs > 0) {
+    
+    if (this.statusEffects.has("rooted") 
+      || this.statusEffects.has("channeling") 
+      || this.statusEffects.has("stunned")) {
+      body.setVelocity(0) 
+    }
+
+    else if (this.movementOverrideMs > 0) {
       this.movementOverrideMs -= deltaMs
-      // Ends the dash the frame its counter runs out - leaving velocity set overshoots by a whole frame
       if (this.movementOverrideMs <= 0) body.setVelocity(0);
-    } else {
-      
+    }
+    
+    else {
     body.setVelocity(0);
 
     const speed = PLAYER_SPEED * this.statusEffects.getMagnitude("speed", 1) * this.statusEffects.getMagnitude("slow", 1);
 
     if (this.cursors.left.isDown) body.setVelocityX(-speed);
     else if (this.cursors.right.isDown) body.setVelocityX(speed);
-
     if (this.cursors.up.isDown) body.setVelocityY(-speed);
     else if (this.cursors.down.isDown) body.setVelocityY(speed);
 
     body.velocity.normalize().scale(speed);
 
-    // Latches only while moving; pure vertical movement leaves facingX 0 so the flip holds
     if (body.velocity.x !== 0 || body.velocity.y !== 0) {
       this.facingX = body.velocity.x / speed;
       this.facingY = body.velocity.y / speed;
-    }
-    }
+    }}
 
     const isMoving = body.velocity.x !== 0 || body.velocity.y !== 0;
     this.animationController.update(this.health.getRatio(), this.health.isDead, isMoving, this.facingX);
