@@ -1,9 +1,11 @@
 import { LineOfSightBlocker, hasLineOfSight } from "./lineOfSight";
 import { Weapon } from "../data/weapons";
 import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
-import { CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
+import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
 import CooldownTracker from "./CooldownTracker";
 import { TILE_SIZE } from "../constants";
+import { AttackDefinition } from "../data/enemyAttacks";
+import { NONE } from "phaser";
 
 export interface AttackInput {
   isBasicAttackJustPressed(): boolean;
@@ -52,25 +54,34 @@ export default class PlayerCombat {
 
   update(deltaMs: number): void {
     this.cooldowns.tick(deltaMs);
-    if (this.self.statusEffects.has("stunned")) { this.pendingResolution = []; return }
+    if (this.self.statusEffects.has("stunned") || this.self.statusEffects.has("suppressed")) {
+      this.pendingResolution = []; 
+      return;
+    }
 
     if (this.input.isBasicAttackJustPressed()) this.tryBasicAttack();
     for (const slot of [0, 1, 2] as const) {
       if (this.input.isAbilityJustPressed(slot)) this.tryAbility(slot);
     }
 
+    const remainingAttacks: DelayedAttack[] = [];
     this.pendingResolution = this.pendingResolution.filter((attack) => {
       attack.remainingMs -= deltaMs;
       if (attack.remainingMs > 0) return true;
       const target = this.findTarget();
-      resolveAttackComponents(attack.effects, this.self, target, this.weapon.damage, this.dashBlocker, attack.modifiers);
+      const pending = this.resolveEffects(attack.effects, target);
+      if (pending) remainingAttacks.push(pending);
       return false;
-    });
+    }).concat(remainingAttacks);
     
   }
 
   get cooldownTracker(): CooldownTracker {
     return this.cooldowns;
+  }
+
+  get pendingAttacks(): DelayedAttack[] {
+    return this.pendingResolution;
   }
 
   private tryBasicAttack(): void {
@@ -87,7 +98,7 @@ export default class PlayerCombat {
 
   private tryAbility(slot: 0 | 1 | 2): void {
     const attackId = this.weapon.attackIds[slot];
-    if (!attackId) return;
+    if (!attackId || this.self.statusEffects.has("suppressed")) return;
     if (!this.cooldowns.isReady(attackId)) return;
 
     const definition = WEAPON_ATTACKS.find((a) => a.id === attackId);
@@ -98,19 +109,36 @@ export default class PlayerCombat {
     const requiresTarget = definition.effects.some((component) => component.target === "target");
     const target = requiresTarget ? this.findTarget() : null;
     // if (requiresTarget && !target) return;
+    const pending = this.resolveEffects(definition.effects, target);
+    if (pending) this.pendingResolution.push(pending);
+    this.options.onAttack?.(attackId);
+  }
 
-    const instantEffects = definition.effects.filter((e) => !("resolveLast" in e) || !e.resolveLast);
-    const delayedEffects = definition.effects.filter((e) => ("resolveLast" in e) && !!e.resolveLast);
-    const timeUntilDone = resolveAttackComponents(instantEffects, this.self, target, this.weapon.damage, this.dashBlocker, {
+  // Runs immediate effects and returns a DelayedAttack for delayed ones
+  private resolveEffects(effects: AttackComponent[], target: CombatEntity | null): DelayedAttack | null {
+    const instantEffects: AttackComponent[] = [];
+    const delayedEffects: AttackComponent[] = [];
+    let delayMs: number = 0;
+    let pastDelay = false;
+    for (const effect of effects) {
+      if (effect.kind === "delay" && !pastDelay) {
+        pastDelay = true;
+        delayMs = effect.durationMs;
+        continue;
+      }
+      (pastDelay ? delayedEffects : instantEffects).push(effect);
+    }
+
+    resolveAttackComponents(instantEffects, this.self, target, this.weapon.damage, this.dashBlocker, {
       knockback: this.weapon.knockback,
     });
     if (delayedEffects.length > 0) {
-      this.pendingResolution?.push({
+      return ({
         effects: delayedEffects,
         modifiers: { knockback: this.weapon.knockback },
-        remainingMs: timeUntilDone || 0
+        remainingMs: delayMs || 0
       })
     }
-    this.options.onAttack?.(attackId);
+  return null;
   }
 }

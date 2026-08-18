@@ -55,6 +55,12 @@ export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
     label: "STUNNED",
     color: "#d70c0c",
     tags: ["cc"]
+  },
+  suppressed: {
+    id: "suppressed",
+    label: "SUPPRESSED",
+    color: "#594d4d",
+    tags: ["debuff"]
   }
 };
 

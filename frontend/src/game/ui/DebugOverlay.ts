@@ -6,8 +6,7 @@ const DEPTH = 2000;
 const MARGIN_X = 10;
 const MARGIN_TOP = 60;
 
-// Minecraft-style debug panel: hidden by default, F3 toggles it. Weapon name is the first line -
-// add more as more debug info is needed.
+// Minecraft-style debug panel: hidden by default, F3 toggles it
 export default class DebugOverlay {
   private text: Phaser.GameObjects.Text;
   private f3Key: Phaser.Input.Keyboard.Key;
@@ -44,12 +43,17 @@ export default class DebugOverlay {
 
   private render(): string {
     const cooldownStr = Array.from(this.playerCombat.cooldownTracker.cooldowns, ([key, value]) => `${key}:${Math.ceil((value/1000)).toFixed(0)}`).join("\n")
+    const attackComponents = Array.from(this.playerCombat.pendingAttacks, (attack) => `${attack.effects.map((effect) => `${effect.kind}`)}:
+${(attack.remainingMs/1000).toFixed(1)}`).join("\n")
     return (`
 Weapon: ${this.player.weapon.id}
 Health: ${this.player.health.getHp.toFixed(2)}
 
 Cooldowns:
 ${cooldownStr}
+
+Pending AttackComponents:
+${attackComponents}
 `);
   }
 }

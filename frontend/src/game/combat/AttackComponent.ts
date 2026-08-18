@@ -100,7 +100,7 @@ export function resolveAttackComponents( // Also returns how long an action will
         dirY: dy / len,
         knockback: modifiers.knockback ?? 1,
       });
-    } 
+    }
     
     else if (component.kind === "status") {
       recipient.statusEffects.apply(component.effectId, component.durationMs, component.magnitude);

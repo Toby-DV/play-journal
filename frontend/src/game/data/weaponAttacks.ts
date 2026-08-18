@@ -21,10 +21,14 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Unstoppable Slash",
     cooldownMs: 2000,
     // effects: [{kind: "status", effectId: "stunned", target: "self", durationMs: 2000, resolveLast: true}]
-    effects: [{kind: "delay", target: "self", durationMs: 1500},
-              {kind: "status", effectId: "channeling", target: "self", durationMs: 2000, resolveLast: true},
-              {kind: "delay", target: "self", durationMs: 2500},
-              {kind: "status", effectId: "unstoppable", target: "self", durationMs: 2000, resolveLast: true}]
+    effects: [
+      {kind: "status", effectId: "unstoppable", target: "self", durationMs: 2000},
+      {kind: "status", effectId: "channeling", target: "self", durationMs: 600},
+      {kind: "delay", target: "self", durationMs: 600},
+      {kind: "dash", target: "self", distanceTiles: 3, durationMs: 220},
+      {kind: "delay", target: "self", durationMs: 220},
+      {kind: "status", effectId: "channeling", target: "self", durationMs: 300},
+      ]
   },
   {
     id: "speed_buff",
@@ -36,7 +40,7 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     id: "short_dash",
     name: "Short Dash",
     cooldownMs: 2000,
-    effects: [{kind: "dash", target: "self", distanceTiles: 3, durationMs: 80},
+    effects: [{kind: "dash", target: "self", distanceTiles: 2, durationMs: 80},
               {kind: "status", target: "target", effectId: "slow", durationMs: 800, magnitude: 0.4, resolveLast: true},
               {kind: "damage", target: "target", resolveLast: true}
     ]
