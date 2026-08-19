@@ -61,7 +61,11 @@ export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
     label: "SUPPRESSED",
     color: "#594d4d",
     tags: ["debuff"]
+  },
+  cleanse: {
+    id: "cleanse", 
+    label: "CLEANSE",
+    color: "#52e2db",
+    tags: []
   }
 };
-
-// TODO: add channeling / suppressed effects

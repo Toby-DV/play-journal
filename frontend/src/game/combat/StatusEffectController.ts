@@ -13,6 +13,11 @@ export default class StatusEffectController {
   apply(effectId: string, durationMs: number, magnitude?: number): boolean {
     const def = STATUS_EFFECTS[effectId];
     if (!def) return false;
+    if (def.id === "cleanse") {
+      for (const [id, effect] of this.active) {
+        if (effect.def.tags.includes("cc") || effect.def.tags.includes("debuff")) this.active.delete(id)
+      }
+    }
 
     for (const activeEffect of this.active.values()) {
       if (activeEffect.def.blocksTags?.some((tag) => def.tags.includes(tag))) {
