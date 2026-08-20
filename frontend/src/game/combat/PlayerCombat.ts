@@ -1,4 +1,4 @@
-import { LineOfSightBlocker, hasLineOfSight } from "./lineOfSight";
+import { LineOfSightBlocker } from "./lineOfSight";
 import { Weapon } from "../data/weapons";
 import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
 import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
@@ -6,32 +6,11 @@ import CooldownTracker from "./CooldownTracker";
 import { TILE_SIZE } from "../constants";
 import { AttackDefinition } from "../data/enemyAttacks";
 import { NONE } from "phaser";
+import { findNearestTarget } from "./TargetFinders";
 
 export interface AttackInput {
   isBasicAttackJustPressed(): boolean;
   isAbilityJustPressed(slot: 0 | 1 | 2): boolean;
-}
-
-function findNearestTarget(
-  self: CombatEntity,
-  enemies: CombatEntity[],
-  maxRangeWorldUnits: number,
-  blocker: LineOfSightBlocker
-): CombatEntity | null {
-  let nearest: CombatEntity | null = null;
-  let nearestDistance = Infinity;
-
-  for (const enemy of enemies) {
-    const distance = Math.hypot(enemy.x - self.x, enemy.y - self.y);
-    if (distance > maxRangeWorldUnits) continue;
-    if (!hasLineOfSight(blocker, self.x, self.y, enemy.x, enemy.y)) continue;
-    if (distance < nearestDistance) {
-      nearest = enemy;
-      nearestDistance = distance;
-    }
-  }
-
-  return nearest;
 }
 
 export default class PlayerCombat {

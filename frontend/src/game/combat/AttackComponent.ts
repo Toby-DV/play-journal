@@ -2,27 +2,28 @@ import StatusEffectController from "./StatusEffectController";
 import Health from "./Health";
 import { TILE_SIZE } from "../constants";
 import { sweepUntilBlocked, LineOfSightBlocker } from "./lineOfSight";
+import { TargetFinder } from "./TargetFinders";
 
 export interface StatusEffectComponent {
   kind: "status",
   effectId: string,
   target: "self" | "target",
   durationMs: number,
+  // targetFinder: TargetFinder,
   magnitude?: number,
-  resolveLast?: Boolean,
 }
 
 export interface DelayComponent {
   kind: "delay",
   target: "self",
-  durationMs: number
+  durationMs: number,
 }
 
 export interface DamageComponent {
   kind: "damage",
   target: "self" | "target",
+  // targetFinder: TargetFinder,
   amount?: number,
-  resolveLast?: Boolean,
 }
 
 export interface DashComponent {
@@ -30,7 +31,6 @@ export interface DashComponent {
   target: "self",
   distanceTiles: number,
   durationMs: number,
-  resolveLast?: Boolean
 }
 
 export interface HitInfo {
