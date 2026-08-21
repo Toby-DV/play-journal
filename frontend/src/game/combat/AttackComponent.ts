@@ -16,7 +16,6 @@ export interface StatusEffectComponent {
 
 export interface DelayComponent {
   kind: "delay",
-  target: "self",
   durationMs: number,
 }
 

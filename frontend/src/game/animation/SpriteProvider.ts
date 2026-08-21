@@ -58,6 +58,7 @@ export const SLICED_KNIGHT_MANIFEST: SpriteManifest = {
     idle: clip("sliced_knight", "idle", { frameCount: 1, frameRate: 4, repeat: -1 }),
     walk: clip("sliced_knight", "walk", { frameCount: 4, frameRate: 8, repeat: -1 }),
     attack: clip("sliced_knight", "attack", { frameCount: 3, frameRate: 12, repeat: 0 }),
+    "attack:shockwave": attackVariantClip("sliced_knight", "shockwave", { frameCount: 12, frameRate: 24 }),
     death: clip("sliced_knight", "death", { frameCount: 4, frameRate: 6, repeat: 0 }),
   },
 };

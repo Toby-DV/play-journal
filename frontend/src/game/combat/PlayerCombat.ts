@@ -81,9 +81,6 @@ export default class PlayerCombat {
 
     this.cooldowns.start(attackId, definition.cooldownMs);
 
-    // const requiresTarget = definition.effects.some((component) => component.target === "target");
-    // const target = requiresTarget ? this.findTarget() : null;
-    // if (requiresTarget && !target) return;
     const pending = this.resolveEffects(definition.effects);
     if (pending) this.pendingResolution.push(pending);
     this.options.onAttack?.(attackId);
