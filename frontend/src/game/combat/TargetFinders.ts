@@ -1,11 +1,12 @@
 import { LineOfSightBlocker, hasLineOfSight } from "./lineOfSight";
 import { CombatEntity } from "./AttackComponent";
+import { TILE_SIZE } from "../constants";
 
 export type TargetFinder = RadiusDefinition | {kind: "self"}
 
 export interface RadiusDefinition {
     kind: "radius",
-    worldUnits: number,
+    rangeTiles: number,
     aoe: Boolean,
     // TODO: add offset option
 }
@@ -15,16 +16,15 @@ export function resolveTarget(
     enemies: CombatEntity[],
     targetFinder: TargetFinder,
     blocker: LineOfSightBlocker
-) : CombatEntity[] | null {
+) : CombatEntity[] {
     let inRange: CombatEntity[] = []
     if (targetFinder.kind === "self") {return [self]}
 
     else if (targetFinder.kind === "radius") {
-        const shapeCheck = inCircle({x: self.x, y: self.y}, targetFinder.worldUnits);
+        const shapeCheck = inCircle({x: self.x, y: self.y}, targetFinder.rangeTiles * TILE_SIZE);
         inRange = filterByShape(self, enemies, blocker, shapeCheck);
-        if (!targetFinder.aoe) inRange.slice(0, 1);
+        if (!targetFinder.aoe) inRange = inRange.slice(0, 1);
     }
-
     return inRange
 }
 

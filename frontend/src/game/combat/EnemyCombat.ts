@@ -54,7 +54,7 @@ export default class EnemyCombat {
     this.timeSinceLastAttempt += deltaMs;
 
     const target = this.getTarget();
-    if (!this.trigger(this.enemy, target, this.timeSinceLastAttempt)) return;
+    if (!this.trigger(this.enemy, this.getTarget(), this.timeSinceLastAttempt)) return;
     this.timeSinceLastAttempt = 0;
 
     const byAggressionAndCooldown = getAvailableAttacks(this.enemy.aggressionLevel, (id) =>
@@ -80,7 +80,7 @@ export default class EnemyCombat {
     if (!chosen) return;
 
     this.cooldowns.start(chosen.id, chosen.cooldownMs);
-    resolveAttackComponents(chosen.effects, this.enemy, target, 0, this.dashBlocker);
+    resolveAttackComponents(chosen.effects, this.enemy, [this.getTarget()], 0, this.dashBlocker, this.blocker);
     this.onAttack?.(chosen.id);
   }
 }

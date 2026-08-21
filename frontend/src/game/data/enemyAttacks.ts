@@ -24,8 +24,8 @@ export const ATTACKS: AttackDefinition[] = [
     minAggression: 2,
     cooldownMs: 4000,
     effects: [
-      { kind: "status", effectId: "slow", target: "target", durationMs: 2000, magnitude: 0.5 },
-      { kind: "damage", target: "target", amount: 10 },
+      { kind: "status", effectId: "slow", targetFinder: {kind:"radius", rangeTiles: 2.5, aoe: false}, durationMs: 2000, magnitude: 0.5 },
+      { kind: "damage", targetFinder: {kind:"radius", rangeTiles: 2.5, aoe: false}, amount: 10 },
     ],
     requiresLineOfSight: true,
     maxRangeTiles: 8,
@@ -36,8 +36,8 @@ export const ATTACKS: AttackDefinition[] = [
     minAggression: 3,
     cooldownMs: 6000,
     effects: [
-      { kind: "status", effectId: "suppressed", target: "target", durationMs: 2500 },
-      { kind: "damage", target: "target", amount: 14 },
+      { kind: "status", effectId: "suppressed", targetFinder: {kind:"radius", rangeTiles: 2.5, aoe: false}, durationMs: 2500 },
+      { kind: "damage", targetFinder: {kind:"radius", rangeTiles: 2.5, aoe: false}, amount: 14 },
     ],
     requiresLineOfSight: true,
     maxRangeTiles: 8,
