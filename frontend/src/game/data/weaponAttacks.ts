@@ -12,8 +12,8 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     id: "slowing_attack",
     name: "Slowing attack",
     cooldownMs: 5000,
-    effects: [{kind: "status", effectId: "slow", target: "target", durationMs: 2500, magnitude: 0.2}, 
-              {kind: "damage", target: "target"}
+    effects: [{kind: "status", effectId: "slow", durationMs: 2500, magnitude: 0.2, targetFinder: {kind: "radius", rangeTiles: 2.5, aoe: false}}, 
+              // {kind: "damage", target: "target"}
     ],
   },
   {
@@ -21,7 +21,8 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Test Attack",
     cooldownMs: 2000,
     effects: [
-      {kind: "status", effectId: "cleanse", target: "self", durationMs: 200}
+      // {kind: "status", effectId: "cleanse", durationMs: 200, targetFinder: {kind: "self"}}
+      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}}
     ]
   },
   {
@@ -32,15 +33,16 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     effects: [
       {kind: "dash", target: "self", distanceTiles: 2.8, durationMs: 220},
       {kind: "delay", target: "self", durationMs: 220},
-      {kind: "damage", target: "target"},
-      {kind: "status", effectId: "channeling", target: "self", durationMs: 100},
+      // {kind: "damage", target: "target"},
+      // {kind: "status", effectId: "channeling", target: "self", durationMs: 100},
       ]
   },
   {
     id: "speed_buff",
     name: "Speed Up",
     cooldownMs: 7000,
-    effects:[{kind: "status", effectId: "speed", magnitude: 1.2, target: "self", durationMs: 4000}]
+    // effects:[{kind: "status", effectId: "speed", magnitude: 1.2, target: "self", durationMs: 4000}]
+    effects: []
   },
   {
     id: "short_dash",
@@ -48,8 +50,8 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     cooldownMs: 2000,
     effects: [{kind: "dash", target: "self", distanceTiles: 2, durationMs: 80},
               {kind: "delay", target: "self", durationMs: 80},
-              {kind: "status", target: "target", effectId: "slow", durationMs: 800, magnitude: 0.4},
-              {kind: "damage", target: "target"}
+              // {kind: "status", target: "target", effectId: "slow", durationMs: 800, magnitude: 0.4},
+              // {kind: "damage", target: "target"}
     ]
   }
 ];
@@ -60,6 +62,6 @@ export const BASIC_ATTACK: WeaponAttackDefinition = {
   name: "Basic Attack",
   cooldownMs: 0, // unused - PlayerCombat gates this by weapon.attackSpeedMs instead
   effects: [
-    { kind: "damage", target: "target" },
+    {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 2.5, aoe: false}},
   ],
 };

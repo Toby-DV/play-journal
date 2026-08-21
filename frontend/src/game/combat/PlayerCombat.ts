@@ -1,4 +1,4 @@
-import { LineOfSightBlocker, hasLineOfSight } from "./lineOfSight";
+import { LineOfSightBlocker } from "./lineOfSight";
 import { Weapon } from "../data/weapons";
 import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
 import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
@@ -6,32 +6,11 @@ import CooldownTracker from "./CooldownTracker";
 import { TILE_SIZE } from "../constants";
 import { AttackDefinition } from "../data/enemyAttacks";
 import { NONE } from "phaser";
+import { findNearestTarget } from "./TargetFinders";
 
 export interface AttackInput {
   isBasicAttackJustPressed(): boolean;
   isAbilityJustPressed(slot: 0 | 1 | 2): boolean;
-}
-
-function findNearestTarget(
-  self: CombatEntity,
-  enemies: CombatEntity[],
-  maxRangeWorldUnits: number,
-  blocker: LineOfSightBlocker
-): CombatEntity | null {
-  let nearest: CombatEntity | null = null;
-  let nearestDistance = Infinity;
-
-  for (const enemy of enemies) {
-    const distance = Math.hypot(enemy.x - self.x, enemy.y - self.y);
-    if (distance > maxRangeWorldUnits) continue;
-    if (!hasLineOfSight(blocker, self.x, self.y, enemy.x, enemy.y)) continue;
-    if (distance < nearestDistance) {
-      nearest = enemy;
-      nearestDistance = distance;
-    }
-  }
-
-  return nearest;
 }
 
 export default class PlayerCombat {
@@ -68,8 +47,7 @@ export default class PlayerCombat {
     this.pendingResolution = this.pendingResolution.filter((attack) => {
       attack.remainingMs -= deltaMs;
       if (attack.remainingMs > 0) return true;
-      const target = this.findTarget();
-      const pending = this.resolveEffects(attack.effects, target);
+      const pending = this.resolveEffects(attack.effects);
       if (pending) remainingAttacks.push(pending);
       return false;
     }).concat(remainingAttacks);
@@ -88,11 +66,8 @@ export default class PlayerCombat {
     if (!this.cooldowns.isReady(BASIC_ATTACK.id)) return;
     this.cooldowns.start(BASIC_ATTACK.id, this.weapon.attackSpeedMs);
 
-    const target = this.findTarget();
-    if (!target) return;
-    resolveAttackComponents(BASIC_ATTACK.effects, this.self, target, this.weapon.damage, this.dashBlocker, {
-      knockback: this.weapon.knockback,
-    });
+    resolveAttackComponents(BASIC_ATTACK.effects, this.self, this.getEnemies(), this.weapon.damage, this.dashBlocker, this.blocker, 
+      {knockback: this.weapon.knockback,});
     this.options.onAttack?.(BASIC_ATTACK.id);
   }
 
@@ -106,16 +81,16 @@ export default class PlayerCombat {
 
     this.cooldowns.start(attackId, definition.cooldownMs);
 
-    const requiresTarget = definition.effects.some((component) => component.target === "target");
-    const target = requiresTarget ? this.findTarget() : null;
+    // const requiresTarget = definition.effects.some((component) => component.target === "target");
+    // const target = requiresTarget ? this.findTarget() : null;
     // if (requiresTarget && !target) return;
-    const pending = this.resolveEffects(definition.effects, target);
+    const pending = this.resolveEffects(definition.effects);
     if (pending) this.pendingResolution.push(pending);
     this.options.onAttack?.(attackId);
   }
 
   // Runs immediate effects and returns a DelayedAttack for delayed ones
-  private resolveEffects(effects: AttackComponent[], target: CombatEntity | null): DelayedAttack | null {
+  private resolveEffects(effects: AttackComponent[]): DelayedAttack | null {
     const instantEffects: AttackComponent[] = [];
     const delayedEffects: AttackComponent[] = [];
     let delayMs: number = 0;
@@ -129,9 +104,8 @@ export default class PlayerCombat {
       (pastDelay ? delayedEffects : instantEffects).push(effect);
     }
 
-    resolveAttackComponents(instantEffects, this.self, target, this.weapon.damage, this.dashBlocker, {
-      knockback: this.weapon.knockback,
-    });
+    resolveAttackComponents(instantEffects, this.self, this.getEnemies(), this.weapon.damage, this.dashBlocker, this.blocker, 
+      {knockback: this.weapon.knockback,});
     if (delayedEffects.length > 0) {
       return ({
         effects: delayedEffects,
