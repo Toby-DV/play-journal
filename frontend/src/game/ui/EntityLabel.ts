@@ -1,25 +1,18 @@
 import type Phaser from "phaser";
 import { STATUS_EFFECTS } from "../data/statusEffects";
 import { hexToNumber } from "@/lib/format";
+import StatusEffectController from "../combat/StatusEffectController";
+import Health from "../combat/Health";
 
 export interface NamePlateTarget {
   x: number;
   y: number;
 }
 
-export interface StatusEffectSource {
-  getActiveIds(): string[];
-  getRemainingRatio(effectId: string): number;
-}
-
-export interface HealthSource {
-  getRatio(): number;
-}
-
 export interface EntityLabelOptions {
   name?: string;
-  statusEffects?: StatusEffectSource;
-  health?: HealthSource;
+  statusEffects?: StatusEffectController;
+  health?: Health;
   offsetY?: number;
   color?: string;
   fontSize?: string;
@@ -51,18 +44,14 @@ export function diffBadgeIds(previous: string[], current: string[]): { added: st
   };
 }
 
-// Floating plate above an entity: name, health bar, and one badge (label +
-// timeout bar) per active status effect, stacked upward in that order. Rows
-// only claim space while visible, so hiding the name drops everything above
-// it back down.
 export default class EntityLabel {
   private scene: Phaser.Scene;
   private fontFamily: string;
   private target: NamePlateTarget;
   private offsetY: number;
   private nameText?: Phaser.GameObjects.Text;
-  private statusEffects?: StatusEffectSource;
-  private health?: HealthSource;
+  private statusEffects?: StatusEffectController;
+  private health?: Health;
   private healthBarBg?: Phaser.GameObjects.Rectangle;
   private healthBarFill?: Phaser.GameObjects.Rectangle;
   private badgeTexts: Map<string, Phaser.GameObjects.Text> = new Map();
@@ -147,8 +136,7 @@ export default class EntityLabel {
     this.activeBadgeIds = currentIds;
   }
 
-  // Position every row relative to the target. The cursor starts just above
-  // the entity's head and moves up past each visible row.
+  // Position every row relative to the target
   private layout() {
     let y = this.target.y - this.offsetY;
 

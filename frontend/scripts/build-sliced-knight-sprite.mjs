@@ -17,7 +17,9 @@ const FRAME_SIZE = 32;
 // comes from sliced_knight2/, a second character sheet in the same layout (row6 - lying-down pose).
 // idle is a single still frame (no idle motion in the source sheet worth animating). attack comes
 // from sliced_knight2's row4 - a forward sword-thrust cycle (windup, thrust with speed lines, full
-// extension with impact dust); c00-c02 is the cleanest 3-frame cut of it.
+// extension with impact dust); c00-c02 is the cleanest 3-frame cut of it. attack_ground_pound comes
+// from knight_attack_anims's row0 - a full frontflip cycle (crouch, leap, mid-air flip, descend,
+// landing impact dust, settle) - all 8 frames of the row.
 const STATES = {
   idle: { sourceDir: "sliced_knight", frames: ["sprite_r00_c00.png"] },
   walk: {
@@ -27,6 +29,19 @@ const STATES = {
   attack: {
     sourceDir: "sliced_knight2",
     frames: ["sprite_r04_c00.png", "sprite_r04_c01.png", "sprite_r04_c02.png"],
+  },
+  attack_ground_pound: {
+    sourceDir: "knight_attack_anims",
+    frames: [
+      "sprite_r00_c00.png",
+      "sprite_r00_c01.png",
+      "sprite_r00_c02.png",
+      "sprite_r00_c03.png",
+      "sprite_r00_c04.png",
+      "sprite_r00_c05.png",
+      "sprite_r00_c06.png",
+      "sprite_r00_c07.png",
+    ],
   },
   death: {
     sourceDir: "sliced_knight2",

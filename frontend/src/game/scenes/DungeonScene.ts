@@ -29,6 +29,7 @@ import { DungeonRoom, RoomKind } from "../dungeon/types";
 import TutorialBanner from "../ui/TutorialBanner";
 import { hasSeenTutorial, markTutorialSeen } from "../tutorialSeen";
 import DebugOverlay from "../ui/DebugOverlay";
+import AbilityOverlay from "../ui/AbilityOverlay";
 
 // Room count scales with length_of_day (Min: 5, Max: 10)
 function getRoomCount(lengthOfDay: number): number {
@@ -72,6 +73,7 @@ export function createDungeonScene(
     private roomEncounters: RoomEncounter[] = [];
     private finalRoomDoors: Door[] = [];
     private bossEncounters: RoomEncounter[] = [];
+    private abilityOverlay!: AbilityOverlay;
     private moodOverlay!: Phaser.GameObjects.Rectangle;
     private vignette?: Phaser.GameObjects.Image;
     private rainSpawnZone?: { x: number; y: number; width: number; height: number; getRandomPoint(p: { x: number; y: number }): void };
@@ -152,6 +154,8 @@ export function createDungeonScene(
         }
       );
 
+      this.abilityOverlay = new AbilityOverlay(this, this.player, this.playerCombat, fontFamily)
+
       this.debugOverlay = new DebugOverlay(this, this.player, this.playerCombat);
 
       this.wireMoodEffects();
@@ -204,6 +208,7 @@ export function createDungeonScene(
       const unsubscribeSettings = subscribeSettings((settings) => {
         this.playerLabel.setNameVisible(settings.showPlayerName);
       });
+
       this.events.once(PhaserLib.Scenes.Events.SHUTDOWN, unsubscribeSettings);
       this.events.once(PhaserLib.Scenes.Events.DESTROY, unsubscribeSettings);
     }

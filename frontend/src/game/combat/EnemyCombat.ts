@@ -38,7 +38,7 @@ export default class EnemyCombat {
   private onAttack?: (attackId: string) => void;
 
   constructor(
-    private enemy: AggressiveCombatEntity,
+    private self: AggressiveCombatEntity,
     private getTarget: () => CombatEntity,
     private blocker: LineOfSightBlocker,
     private dashBlocker: LineOfSightBlocker,
@@ -54,33 +54,33 @@ export default class EnemyCombat {
     this.timeSinceLastAttempt += deltaMs;
 
     const target = this.getTarget();
-    if (!this.trigger(this.enemy, this.getTarget(), this.timeSinceLastAttempt)) return;
+    if (!this.trigger(this.self, this.getTarget(), this.timeSinceLastAttempt)) return;
     this.timeSinceLastAttempt = 0;
 
-    const byAggressionAndCooldown = getAvailableAttacks(this.enemy.aggressionLevel, (id) =>
+    const byAggressionAndCooldown = getAvailableAttacks(this.self.aggressionLevel, (id) =>
       this.cooldowns.isReady(id)
     );
     const available = byAggressionAndCooldown.filter((attack) => {
       if (
         attack.maxRangeTiles !== undefined &&
-        !isWithinRange(this.enemy.x, this.enemy.y, target.x, target.y, attack.maxRangeTiles * TILE_SIZE)
+        !isWithinRange(this.self.x, this.self.y, target.x, target.y, attack.maxRangeTiles * TILE_SIZE)
       ) {
         return false;
       }
       if (
         attack.requiresLineOfSight &&
-        !hasLineOfSight(this.blocker, this.enemy.x, this.enemy.y, target.x, target.y)
+        !hasLineOfSight(this.blocker, this.self.x, this.self.y, target.x, target.y)
       ) {
         return false;
       }
       return true;
     });
 
-    const chosen = this.selector(this.enemy, available);
+    const chosen = this.selector(this.self, available);
     if (!chosen) return;
 
     this.cooldowns.start(chosen.id, chosen.cooldownMs);
-    resolveAttackComponents(chosen.effects, this.enemy, [this.getTarget()], 0, this.dashBlocker, this.blocker);
+    resolveAttackComponents(chosen.effects, this.self, [this.getTarget()], 0, this.dashBlocker, this.blocker);
     this.onAttack?.(chosen.id);
   }
 }

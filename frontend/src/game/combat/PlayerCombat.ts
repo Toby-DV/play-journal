@@ -27,6 +27,8 @@ export default class PlayerCombat {
     private options: { onAttack?: (attackId: string) => void } = {}
   ) {}
 
+  get activeWeapon(): Weapon {return this.weapon}
+
   private findTarget(): CombatEntity | null {
     return findNearestTarget(this.self, this.getEnemies(), this.weapon.rangeTiles * TILE_SIZE, this.blocker);
   }

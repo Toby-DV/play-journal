@@ -22,12 +22,29 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Shockwave",
     cooldownMs: 2000,
     effects: [
-      // {kind: "status", effectId: "cleanse", durationMs: 200, targetFinder: {kind: "self"}}
       {kind: "status", effectId: "channeling", durationMs: 500, targetFinder: {kind: "self"}},
       {kind: "delay", durationMs: 500},
       {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}},
-      {kind: "delay", durationMs: 200},
-      {kind: "status", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}, effectId: "stunned", durationMs: 400}
+      // {kind: "delay", durationMs: 200},
+      {kind: "status", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}, effectId: "stunned", durationMs: 700}
+    ]
+  },
+  {
+    id: "ground_pound",
+    name: "Ground Pound",
+    cooldownMs: 3000,
+    effects: [
+      {kind: "dash", target: "self", distanceTiles: 3, durationMs: 300},
+      {kind: "delay", durationMs: 400},
+      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}},
+    ]
+  },
+  {
+    id: "cleanse",
+    name: "Cleanse",
+    cooldownMs: 6000,
+    effects: [
+      {kind: "status", effectId: "cleanse", durationMs: 200, targetFinder: {kind: "self"}}
     ]
   },
   {

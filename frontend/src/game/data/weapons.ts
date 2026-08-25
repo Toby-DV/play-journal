@@ -19,7 +19,7 @@ export const WEAPONS: Weapon[] = [
     attackSpeedMs: 1000,
     rangeTiles: 2.5,
     knockback: 1,
-    attackIds: ["slowing_attack", "shockwave", "short_dash"],
+    attackIds: ["slowing_attack", "shockwave", "ground_pound"],
   },
   {
     id: "cannibals_sword",
