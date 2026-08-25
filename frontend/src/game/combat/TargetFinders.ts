@@ -8,6 +8,7 @@ export interface RadiusDefinition {
     kind: "radius",
     rangeTiles: number,
     aoe: Boolean,
+    ignoreWalls?: Boolean;
     // TODO: add offset option
 }
 
@@ -22,7 +23,7 @@ export function resolveTarget(
 
     else if (targetFinder.kind === "radius") {
         const shapeCheck = inCircle({x: self.x, y: self.y}, targetFinder.rangeTiles * TILE_SIZE);
-        inRange = filterByShape(self, enemies, blocker, shapeCheck);
+        inRange = filterByShape(self, enemies, targetFinder.ignoreWalls ? null : blocker, shapeCheck);
         if (!targetFinder.aoe) inRange = inRange.slice(0, 1);
     }
     return inRange

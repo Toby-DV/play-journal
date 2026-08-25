@@ -24,9 +24,9 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     effects: [
       {kind: "status", effectId: "channeling", durationMs: 500, targetFinder: {kind: "self"}},
       {kind: "delay", durationMs: 500},
-      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}},
+      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true, ignoreWalls: true}},
       // {kind: "delay", durationMs: 200},
-      {kind: "status", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}, effectId: "stunned", durationMs: 700}
+      {kind: "status", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true, ignoreWalls: true}, effectId: "stunned", durationMs: 700}
     ]
   },
   {

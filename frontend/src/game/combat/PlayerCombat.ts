@@ -68,7 +68,7 @@ export default class PlayerCombat {
     if (!this.cooldowns.isReady(BASIC_ATTACK.id)) return;
     this.cooldowns.start(BASIC_ATTACK.id, this.weapon.attackSpeedMs);
 
-    resolveAttackComponents(BASIC_ATTACK.effects, this.self, this.getEnemies(), this.weapon.damage, this.dashBlocker, this.blocker, 
+    resolveAttackComponents(BASIC_ATTACK.effects, this.self, this.getEnemies(), this.weapon.damage, this.blocker, this.dashBlocker, 
       {knockback: this.weapon.knockback,});
     this.options.onAttack?.(BASIC_ATTACK.id);
   }
@@ -103,7 +103,7 @@ export default class PlayerCombat {
       (pastDelay ? delayedEffects : instantEffects).push(effect);
     }
 
-    resolveAttackComponents(instantEffects, this.self, this.getEnemies(), this.weapon.damage, this.dashBlocker, this.blocker, 
+    resolveAttackComponents(instantEffects, this.self, this.getEnemies(), this.weapon.damage, this.blocker, this.dashBlocker,
       {knockback: this.weapon.knockback,});
     if (delayedEffects.length > 0) {
       return ({

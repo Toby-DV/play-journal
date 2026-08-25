@@ -80,7 +80,7 @@ export default class EnemyCombat {
     if (!chosen) return;
 
     this.cooldowns.start(chosen.id, chosen.cooldownMs);
-    resolveAttackComponents(chosen.effects, this.self, [this.getTarget()], 0, this.dashBlocker, this.blocker);
+    resolveAttackComponents(chosen.effects, this.self, [this.getTarget()], 0, this.blocker, this.dashBlocker);
     this.onAttack?.(chosen.id);
   }
 }
