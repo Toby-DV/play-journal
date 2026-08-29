@@ -7,7 +7,6 @@ import { TILE_SIZE } from "../constants";
 export interface EnemyAIOptions {
   speed?: number;
   aggroRangeTiles?: number;
-  // Chase stops once this close, so the enemy crowds the target without jittering on top of it.
   standoffTiles?: number;
 }
 
@@ -21,6 +20,7 @@ export default class EnemyAI {
   private aggroRange: number;
   private standoff: number;
   private aggroArea?: Phaser.Geom.Rectangle;
+  private lastSeen?: {x: number, y: number};
 
   constructor(
     private readonly self: Enemy,
@@ -37,35 +37,43 @@ export default class EnemyAI {
     this.aggroArea = area;
   }
 
+  shouldChase(targetX: number, targetY: number): boolean {
+    const distance = Math.hypot(targetX - this.self.x, targetY - this.self.y)
+    return distance > this.standoff &&
+    (!this.aggroArea || this.aggroArea?.contains(targetX, targetY)) &&
+    isWithinRange(this.self.x, this.self.y, targetX, targetY, this.aggroRange) &&
+    hasLineOfSight(this.blocker, this.self.x, this.self.y, targetX, targetY);
+  }
+
+  moveTowards(body: Phaser.Physics.Arcade.Body, x: number, y: number, speed: number) {
+    const dx = x - this.self.x;
+    const dy = y - this.self.y;
+    const distance = Math.hypot(dx, dy)
+    body.setVelocity((dx / distance) * speed, (dy / distance) * speed);
+  }
+
   update(_deltaMs: number): void {
     const body = this.self.sprite.body as Phaser.Physics.Arcade.Body;
+    const speed = this.speed * this.self.statusEffects.getMagnitude("slow", 1)
 
     if (this.self.health.isDead) {
       body.setVelocity(0);
       return;
     }
 
-    // Yields control of movement
     if (this.self.isKnockedBack || this.self.statusEffects.has("stunned")) return;
+    if (this.self.isKnockedBack) return;
 
     const target = this.getTarget();
-    const dx = target.x - this.self.x;
-    const dy = target.y - this.self.y;
-    const distance = Math.hypot(dx, dy);
 
-    const shouldChase =
-      distance > this.standoff &&
-      (!this.aggroArea || this.aggroArea.contains(target.x, target.y)) &&
-      isWithinRange(this.self.x, this.self.y, target.x, target.y, this.aggroRange) &&
-      hasLineOfSight(this.blocker, this.self.x, this.self.y, target.x, target.y);
-
-    if (!shouldChase) {
+    if (this.shouldChase(target.x, target.y)) {
+      this.moveTowards(body, target.x, target.y, speed);
+      this.lastSeen = {x: target.x, y: target.y}
+    } else if (this.lastSeen && this.shouldChase(this.lastSeen.x, this.lastSeen.y)) {
+      this.moveTowards(body, this.lastSeen.x, this.lastSeen.y, speed)
+    } else {
+      // TODO: make enemies roam around their room
       body.setVelocity(0);
-      return;
     }
-
-    // Same slow-status scaling the player's movement uses (see Player.update).
-    const speed = this.speed * this.self.statusEffects.getMagnitude("slow", 1);
-    body.setVelocity((dx / distance) * speed, (dy / distance) * speed);
   }
 }
