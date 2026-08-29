@@ -156,7 +156,7 @@ export function createDungeonScene(
 
       this.abilityOverlay = new AbilityOverlay(this, this.player, this.playerCombat, fontFamily)
 
-      this.debugOverlay = new DebugOverlay(this, this.player, this.playerCombat);
+      this.debugOverlay = new DebugOverlay(this, this.player, this.playerCombat, this.abilityOverlay);
 
       this.wireMoodEffects();
 
@@ -300,6 +300,7 @@ export function createDungeonScene(
       if (this.isPlayerDead || this.isLevelComplete) return;
 
       this.player.update(delta);
+      this.abilityOverlay.update();
 
       this.enemyInstances.forEach(({ ai }) => ai.update(delta));
       this.enemyInstances.forEach(({ enemy }) => enemy.update(delta));

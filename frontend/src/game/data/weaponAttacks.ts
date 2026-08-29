@@ -36,7 +36,7 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     effects: [
       {kind: "dash", target: "self", distanceTiles: 3, durationMs: 300},
       {kind: "delay", durationMs: 400},
-      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}},
+      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 1.7, aoe: true}},
     ]
   },
   {
