@@ -23,7 +23,7 @@ export default class EnemyAI {
   private aggroArea?: Phaser.Geom.Rectangle;
 
   constructor(
-    private readonly enemy: Enemy,
+    private readonly self: Enemy,
     private getTarget: () => CombatEntity,
     private blocker: LineOfSightBlocker,
     options?: EnemyAIOptions
@@ -38,26 +38,26 @@ export default class EnemyAI {
   }
 
   update(_deltaMs: number): void {
-    const body = this.enemy.sprite.body as Phaser.Physics.Arcade.Body;
+    const body = this.self.sprite.body as Phaser.Physics.Arcade.Body;
 
-    if (this.enemy.health.isDead) {
+    if (this.self.health.isDead) {
       body.setVelocity(0);
       return;
     }
 
     // Yields control of movement
-    if (this.enemy.isKnockedBack) return;
+    if (this.self.isKnockedBack || this.self.statusEffects.has("stunned")) return;
 
     const target = this.getTarget();
-    const dx = target.x - this.enemy.x;
-    const dy = target.y - this.enemy.y;
+    const dx = target.x - this.self.x;
+    const dy = target.y - this.self.y;
     const distance = Math.hypot(dx, dy);
 
     const shouldChase =
       distance > this.standoff &&
       (!this.aggroArea || this.aggroArea.contains(target.x, target.y)) &&
-      isWithinRange(this.enemy.x, this.enemy.y, target.x, target.y, this.aggroRange) &&
-      hasLineOfSight(this.blocker, this.enemy.x, this.enemy.y, target.x, target.y);
+      isWithinRange(this.self.x, this.self.y, target.x, target.y, this.aggroRange) &&
+      hasLineOfSight(this.blocker, this.self.x, this.self.y, target.x, target.y);
 
     if (!shouldChase) {
       body.setVelocity(0);
@@ -65,7 +65,7 @@ export default class EnemyAI {
     }
 
     // Same slow-status scaling the player's movement uses (see Player.update).
-    const speed = this.speed * this.enemy.statusEffects.getMagnitude("slow", 1);
+    const speed = this.speed * this.self.statusEffects.getMagnitude("slow", 1);
     body.setVelocity((dx / distance) * speed, (dy / distance) * speed);
   }
 }

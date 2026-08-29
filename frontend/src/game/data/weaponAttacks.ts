@@ -12,44 +12,66 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     id: "slowing_attack",
     name: "Slowing attack",
     cooldownMs: 5000,
-    effects: [{kind: "status", effectId: "slow", target: "target", durationMs: 2500, magnitude: 0.2}, 
-              {kind: "damage", target: "target"}
+    effects: [
+        {kind: "status", effectId: "slow", durationMs: 2500, magnitude: 0.2, targetFinder: {kind: "radius", rangeTiles: 2.5, aoe: false}},
+        {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 2.5, aoe: false}},
     ],
   },
   {
-    id: "test_attack",
-    name: "Test Attack",
+    id: "shockwave",
+    name: "Shockwave",
     cooldownMs: 2000,
     effects: [
-      {kind: "status", effectId: "cleanse", target: "self", durationMs: 200}
+      {kind: "status", effectId: "channeling", durationMs: 500, targetFinder: {kind: "self"}},
+      {kind: "delay", durationMs: 500},
+      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true, ignoreWalls: true}},
+      // {kind: "delay", durationMs: 200},
+      {kind: "status", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true, ignoreWalls: true}, effectId: "stunned", durationMs: 700}
+    ]
+  },
+  {
+    id: "ground_pound",
+    name: "Ground Pound",
+    cooldownMs: 3000,
+    effects: [
+      {kind: "dash", target: "self", distanceTiles: 3, durationMs: 300},
+      {kind: "delay", durationMs: 400},
+      {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 1.7, aoe: true}},
+    ]
+  },
+  {
+    id: "cleanse",
+    name: "Cleanse",
+    cooldownMs: 6000,
+    effects: [
+      {kind: "status", effectId: "cleanse", durationMs: 200, targetFinder: {kind: "self"}}
     ]
   },
   {
     id: "unstoppable_slash",
     name: "Unstoppable Slash",
     cooldownMs: 2000,
-    // effects: [{kind: "status", effectId: "stunned", target: "self", durationMs: 2000, resolveLast: true}]
     effects: [
       {kind: "dash", target: "self", distanceTiles: 2.8, durationMs: 220},
-      {kind: "delay", target: "self", durationMs: 220},
-      {kind: "damage", target: "target"},
-      {kind: "status", effectId: "channeling", target: "self", durationMs: 100},
+      {kind: "delay", durationMs: 220},
+      // {kind: "damage", target: "target"},
+      // {kind: "status", effectId: "channeling", target: "self", durationMs: 100},
       ]
   },
   {
     id: "speed_buff",
     name: "Speed Up",
     cooldownMs: 7000,
-    effects:[{kind: "status", effectId: "speed", magnitude: 1.2, target: "self", durationMs: 4000}]
+    // effects:[{kind: "status", effectId: "speed", magnitude: 1.2, target: "self", durationMs: 4000}]
+    effects: []
   },
   {
     id: "short_dash",
     name: "Short Dash",
     cooldownMs: 2000,
-    effects: [{kind: "dash", target: "self", distanceTiles: 2, durationMs: 80},
-              {kind: "delay", target: "self", durationMs: 80},
-              {kind: "status", target: "target", effectId: "slow", durationMs: 800, magnitude: 0.4},
-              {kind: "damage", target: "target"}
+    effects: [{kind: "dash", target: "self", distanceTiles: 2, durationMs: 150},
+              {kind: "delay", durationMs: 150},
+              {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true}},
     ]
   }
 ];
@@ -60,6 +82,6 @@ export const BASIC_ATTACK: WeaponAttackDefinition = {
   name: "Basic Attack",
   cooldownMs: 0, // unused - PlayerCombat gates this by weapon.attackSpeedMs instead
   effects: [
-    { kind: "damage", target: "target" },
+    {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 2.5, aoe: false}},
   ],
 };

@@ -33,6 +33,7 @@ export function resolveClip(manifest: SpriteManifest, requested: ManifestKey): C
 
   throw new Error(`Sprite "${manifest.spriteId}" has no idle or walk clip to fall back to`);
 }
+
 const STATE_PRIORITY: Record<AnimationState, number> = {
   idle: 0,
   walk: 0,

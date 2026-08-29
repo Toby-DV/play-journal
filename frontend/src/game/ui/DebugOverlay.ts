@@ -1,6 +1,7 @@
 import type Phaser from "phaser";
 import type Player from "../entities/Player";
 import PlayerCombat from "../combat/PlayerCombat";
+import AbilityOverlay from "./AbilityOverlay";
 
 const DEPTH = 2000;
 const MARGIN_X = 10;
@@ -13,7 +14,7 @@ export default class DebugOverlay {
   private wasF3Down = false;
   private visible = true;
 
-  constructor(scene: Phaser.Scene, private player: Player, private playerCombat: PlayerCombat) {
+  constructor(scene: Phaser.Scene, private player: Player, private playerCombat: PlayerCombat, private abilityOverlay: AbilityOverlay) {
     this.text = scene.add
       .text(MARGIN_X, MARGIN_TOP, this.render(), {
         fontFamily: "monospace",
@@ -42,8 +43,10 @@ export default class DebugOverlay {
   }
 
   private render(): string {
+    const abils = Array.from(this.abilityOverlay.abilMap, ([id, i]) => `${i}:${id}`).join("\n")
     const cooldownStr = Array.from(this.playerCombat.cooldownTracker.cooldowns, ([key, value]) => `${key}:${Math.ceil((value/1000)).toFixed(0)}`).join("\n")
-    const attackComponents = Array.from(this.playerCombat.pendingAttacks, (attack) => `${attack.effects.map((effect) => `${effect.kind}`)}:
+    const attackComponents = Array.from(this.playerCombat.pendingAttacks, (attack) => `${attack.effects.map((effect) => `${effect.kind}`)}
+
 ${(attack.remainingMs/1000).toFixed(1)}`).join("\n")
     return (`
 Weapon: ${this.player.weapon.id}
@@ -54,6 +57,9 @@ ${cooldownStr}
 
 Pending AttackComponents:
 ${attackComponents}
+
+Attacks:
+${abils}
 `);
   }
 }

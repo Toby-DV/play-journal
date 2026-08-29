@@ -6,8 +6,7 @@ import { pickManifest } from "./resolveAnimation";
 
 const MANIFEST_FETCH_TIMEOUT_MS = 5000;
 
-// Never lets a slow/hanging SpriteProvider block dungeon creation - a timed-out fetch is treated
-// the same as "sprite id not found" (see pickManifest).
+// Never lets a slow/hanging SpriteProvider block dungeon creation
 function fetchManifestWithTimeout(provider: SpriteProvider, spriteId: string): Promise<SpriteManifest | null> {
   return Promise.race([
     provider.getManifest(spriteId).catch(() => null),
@@ -27,11 +26,7 @@ function manifestHasFailedTexture(manifest: SpriteManifest, failedKeys: Set<stri
   return (Object.values(manifest.clips) as ClipDef[]).some((clip) => failedKeys.has(clip.textureKey));
 }
 
-// Resolves the player/enemy sprite manifests (falling back to the sliced knight for the player
-// and the generic manifest for the enemy on fetch failure, unknown id, or a texture actually
-// failing to download) and loads every clip's texture before returning, so by the time this
-// resolves everything needed to build Player/Enemy's AnimationControllers is already in the
-// texture manager.
+// By the time this resolves everything needed to build Player/Enemy's AnimationControllers is already in the texture manager.
 export async function loadEntityManifests(
   scene: Phaser.Scene,
   PhaserLib: typeof Phaser,

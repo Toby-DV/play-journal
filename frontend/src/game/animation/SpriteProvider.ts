@@ -4,9 +4,7 @@ export interface SpriteProvider {
   getManifest(spriteId: string): Promise<SpriteManifest | null>;
 }
 
-// Sentinel spriteId for boss lookups - doesn't match any real player/enemy sprite id, so
-// LocalSpriteProvider can tell "give me the boss-flavored pick" apart from the regular enemy
-// lookup (which prefers type "enemy") without changing the SpriteProvider interface.
+// Sentinel spriteId for boss lookups
 export const BOSS_SPRITE_ID = "__boss__";
 
 function clip(spriteId: string, state: AnimationState, opts: { frameCount: number; frameRate: number; repeat: number }): ClipDef {
@@ -35,11 +33,7 @@ function attackVariantClip(spriteId: string, attackId: string, opts: { frameCoun
   };
 }
 
-// Fully populated (all six AnimationStates) - the only manifests required to be complete.
-// GENERIC_ENEMY_MANIFEST is the guaranteed-safe fallback for any enemy sprite id
-// resolveAnimation.ts can't otherwise resolve; the player-side equivalent is
-// SLICED_KNIGHT_MANIFEST below (real art beats a placeholder box). Frame counts here must match
-// frontend/scripts/generate-placeholder-sprites.mjs.
+// The generic manifests are required to have 6 animations
 function buildGenericManifest(spriteId: string): SpriteManifest {
   return {
     spriteId,
@@ -64,12 +58,13 @@ export const SLICED_KNIGHT_MANIFEST: SpriteManifest = {
     idle: clip("sliced_knight", "idle", { frameCount: 1, frameRate: 4, repeat: -1 }),
     walk: clip("sliced_knight", "walk", { frameCount: 4, frameRate: 8, repeat: -1 }),
     attack: clip("sliced_knight", "attack", { frameCount: 3, frameRate: 12, repeat: 0 }),
+    "attack:shockwave": attackVariantClip("sliced_knight", "shockwave", { frameCount: 12, frameRate: 24 }),
+    "attack:ground_pound": attackVariantClip("sliced_knight", "ground_pound", { frameCount: 8, frameRate: 14 }),
     death: clip("sliced_knight", "death", { frameCount: 4, frameRate: 6, repeat: 0 }),
   },
 };
 
-// Real art (CC-BY 4.0, David Harrington - see public/sprites/ATTRIBUTION.md). No hit/dash clip in
-// the source sheet, so both fall back through resolveClip.
+// CC-BY 4.0, David Harrington (see public/sprites/ATTRIBUTION.md)
 export const SKELETON_MANIFEST: SpriteManifest = {
   spriteId: "skeleton",
   clips: {
@@ -80,9 +75,7 @@ export const SKELETON_MANIFEST: SpriteManifest = {
   },
 };
 
-// Enemy Galore I (Admurin - see public/sprites/ATTRIBUTION.md). Cropped from 64x64 source
-// frames to the project's 32x32 cells. None of the pack has dash art, so dash falls back to walk;
-// pebble and skull have no attack art either.
+// Enemy Galore I (Admurin - see public/sprites/ATTRIBUTION.md)
 export const BAT_MANIFEST: SpriteManifest = {
   spriteId: "bat",
   clips: {
@@ -160,9 +153,6 @@ export const GOLEM_MANIFEST: SpriteManifest = {
   },
 };
 
-// Dev/test implementation. "bug" is the sparse placeholder-backed manifest kept so the
-// missing-clip fallback stays covered. Unknown ids resolve null so pickManifest's fallback is
-// exercised too (see resolveAnimation.ts).
 export class LocalSpriteProvider implements SpriteProvider {
   private manifests: Record<string, SpriteManifest> = {
     sliced_knight: SLICED_KNIGHT_MANIFEST,
@@ -180,8 +170,6 @@ export class LocalSpriteProvider implements SpriteProvider {
       clips: {
         idle: GENERIC_ENEMY_MANIFEST.clips.idle!,
         walk: GENERIC_ENEMY_MANIFEST.clips.walk!,
-        // Placeholder attack art, so enemy attacks are visible while testing; hit/dash stay absent
-        // to keep resolveClip's fallback path exercised.
         attack: GENERIC_ENEMY_MANIFEST.clips.attack!,
         "attack:slowing_attack": GENERIC_ENEMY_MANIFEST.clips["attack:slowing_attack"]!,
         death: GENERIC_ENEMY_MANIFEST.clips.death!,

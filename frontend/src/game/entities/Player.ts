@@ -59,7 +59,6 @@ export default class Player implements CombatEntity {
     this.health.update(deltaMs);
 
     const body = this.body;
-
     
     if (this.statusEffects.has("rooted") 
       || this.statusEffects.has("channeling") 

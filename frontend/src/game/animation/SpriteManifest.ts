@@ -1,8 +1,7 @@
 export type AnimationState = "idle" | "walk" | "dash" | "attack" | "hit" | "death";
 
 // Attacks can optionally get their own clip, keyed by ability id (e.g. "attack:puncture").
-// Falls back to the plain "attack" clip if a sprite doesn't define one for a given ability -
-// see resolveAnimation.ts's resolveClip.
+// Falls back to the plain "attack" clip
 export type ManifestKey = AnimationState | `attack:${string}`;
 
 export interface ClipDef {
