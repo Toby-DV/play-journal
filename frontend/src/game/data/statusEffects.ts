@@ -67,5 +67,11 @@ export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
     label: "CLEANSE",
     color: "#52e2db",
     tags: []
+  },
+  silenced: {
+    id: "silenced",
+    label: "SILENCED",
+    color: "#594d4d",
+    tags: ["debuff"]
   }
 };

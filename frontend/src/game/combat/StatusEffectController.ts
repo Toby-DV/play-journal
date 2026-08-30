@@ -29,8 +29,11 @@ export default class StatusEffectController {
     return true;
   }
 
-  has(effectId: string): boolean {
-    return this.active.has(effectId);
+  has(effectIds: string[]): boolean {
+    for (const effect of effectIds) {
+      if (this.active.has(effect)) return true;
+    }
+    return false;
   }
 
   getMagnitude(effectId: string, fallback = 1): number {

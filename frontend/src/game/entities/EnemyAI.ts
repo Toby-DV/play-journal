@@ -78,7 +78,7 @@ export default class EnemyAI {
       return;
     }
 
-    if (this.self.isKnockedBack || this.self.statusEffects.has("stunned")) return;
+    if (this.self.isKnockedBack || this.self.statusEffects.has(["stunned"])) return;
     if (this.self.isKnockedBack) return;
 
     const target = this.getTarget();

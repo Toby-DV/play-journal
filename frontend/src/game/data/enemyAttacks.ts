@@ -36,7 +36,7 @@ export const ATTACKS: AttackDefinition[] = [
     minAggression: 3,
     cooldownMs: 6000,
     effects: [
-      { kind: "status", effectId: "suppressed", targetFinder: {kind:"radius", rangeTiles: 2.5, aoe: false}, durationMs: 2500 },
+      { kind: "status", effectId: "silenced", targetFinder: {kind:"radius", rangeTiles: 2.5, aoe: false}, durationMs: 2500 },
       { kind: "damage", targetFinder: {kind:"radius", rangeTiles: 2.5, aoe: false}, amount: 14 },
     ],
     requiresLineOfSight: true,

@@ -35,9 +35,8 @@ export default class PlayerCombat {
 
   update(deltaMs: number): void {
     this.cooldowns.tick(deltaMs);
-    if (this.self.statusEffects.has("stunned") || this.self.statusEffects.has("suppressed")) {
+    if (this.self.statusEffects.has(["stunned", "suppressed"])) {
       this.pendingResolution = []; 
-      return;
     }
 
     if (this.input.isBasicAttackJustPressed()) this.tryBasicAttack();
@@ -65,7 +64,7 @@ export default class PlayerCombat {
   }
 
   private tryBasicAttack(): void {
-    if (!this.cooldowns.isReady(BASIC_ATTACK.id)) return;
+    if (!this.cooldowns.isReady(BASIC_ATTACK.id) || this.self.statusEffects.has(["suppressed", "stunned"])) return;
     this.cooldowns.start(BASIC_ATTACK.id, this.weapon.attackSpeedMs);
 
     resolveAttackComponents(BASIC_ATTACK.effects, this.self, this.getEnemies(), this.weapon.damage, this.blocker, this.dashBlocker, 
@@ -75,7 +74,7 @@ export default class PlayerCombat {
 
   private tryAbility(slot: 0 | 1 | 2): void {
     const attackId = this.weapon.attackIds[slot];
-    if (!attackId || this.self.statusEffects.has("suppressed")) return;
+    if (!attackId || this.self.statusEffects.has(["suppressed", "stunned", "silenced"])) return;
     if (!this.cooldowns.isReady(attackId)) return;
 
     const definition = WEAPON_ATTACKS.find((a) => a.id === attackId);

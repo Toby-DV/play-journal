@@ -60,9 +60,7 @@ export default class Player implements CombatEntity {
 
     const body = this.body;
     
-    if (this.statusEffects.has("rooted") 
-      || this.statusEffects.has("channeling") 
-      || this.statusEffects.has("stunned")) {
+    if (this.statusEffects.has(["rooted", "channeling", "stunned", "suppressed"])) {
       body.setVelocity(0) 
     }
 
