@@ -8,7 +8,6 @@ import { GameConfig } from "@/types/game";
 import { getMoodTint } from "@/lib/moodTint";
 import { addVignette } from "../effects/vignette";
 import { addConfetti } from "../effects/confetti";
-import { addRain, followCamera as rainFollowCamera } from "../effects/rain";
 import EntityLabel from "../ui/EntityLabel";
 import { loadSettings, subscribeSettings } from "../settings";
 import { getDisplayName } from "@/lib/auth";
@@ -76,7 +75,6 @@ export function createDungeonScene(
     private abilityOverlay!: AbilityOverlay;
     private moodOverlay!: Phaser.GameObjects.Rectangle;
     private vignette?: Phaser.GameObjects.Image;
-    private rainSpawnZone?: { x: number; y: number; width: number; height: number; getRandomPoint(p: { x: number; y: number }): void };
 
     constructor() {
       super("DungeonScene");
@@ -274,8 +272,37 @@ export function createDungeonScene(
       }
 
       if (tint.rain) {
-        this.rainSpawnZone = addRain(this).spawnZone;
+        this.addRain();
       }
+    }
+
+    private addRain() {
+      const texture_key = "rain-drop"
+      if (!this.textures.exists(texture_key)) {
+        const gfx = this.make.graphics({ x: 0, y: 0 }, false);
+        gfx.fillStyle(0xa5c4e0, 1);
+        gfx.fillRect(0, 0, 2, 14);
+        gfx.generateTexture(texture_key, 2, 14);
+        gfx.destroy();
+      }
+
+      const spawnZone:  Phaser.Types.GameObjects.Particles.RandomZoneSource = {
+        getRandomPoint: (point) => {
+          point.x = Math.random() * this.map.widthInPixels;
+          point.y = Math.random() * this.map.heightInPixels;
+        },
+      }
+
+      this.add.particles(0, 0, texture_key, {
+        lifespan: 1200,
+        speedY: { min: 500, max: 650 },
+        speedX: { min: -40, max: -10 },
+        alpha: { min: 0.15, max: 0.35 },
+        scaleY: { min: 0.6, max: 1 },
+        quantity: 1,
+        frequency: 2,
+        emitZone: { type: "random", source: spawnZone },
+      });
     }
 
     private createTutorial() {
@@ -320,9 +347,6 @@ export function createDungeonScene(
         this.finalRoomDoors.forEach((door) => door.open());
       }
 
-      if (this.rainSpawnZone) {
-        rainFollowCamera(this, this.rainSpawnZone);
-      }
 
       if (this.player.health.isDead) {
         this.handlePlayerDeath();
