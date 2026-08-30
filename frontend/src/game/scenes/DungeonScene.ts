@@ -48,7 +48,7 @@ function getSwarmRoomCount(totalRooms: number): number {
 
 const LEVEL_COMPLETE_DELAY_MS = 1500;
 const PLAYER_DEATH_DELAY_MS = 2000;
-const STAIRS_REACH_RADIUS = TILE_SIZE * 0.75;
+const STAIRS_REACH_RADIUS = TILE_SIZE;
 
 export function createDungeonScene(
   PhaserLib: typeof Phaser,
@@ -329,14 +329,14 @@ export function createDungeonScene(
         return;
       }
 
-      if (this.roomEncounters.every((encounter) => encounter.isCleared) && this.hasReachedStairs()) {
+      if (this.bossEncounters.every((encounter) => encounter.isCleared) && this.hasReachedStairs()) {
         this.handleLevelComplete();
       }
     }
 
     private hasReachedStairs(): boolean {
-      const dx = this.player.x - this.stairsPosition.x;
-      const dy = this.player.y - this.stairsPosition.y;
+      const dx = this.player.x - (this.stairsPosition.x + TILE_SIZE/2);
+      const dy = this.player.y - (this.stairsPosition.y + TILE_SIZE/2);
       return dx * dx + dy * dy < STAIRS_REACH_RADIUS * STAIRS_REACH_RADIUS;
     }
 
