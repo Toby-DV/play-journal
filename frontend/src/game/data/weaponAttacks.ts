@@ -9,8 +9,8 @@ export interface WeaponAttackDefinition {
 
 export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
   {
-    id: "test_attack",
-    name: "Test Attack",
+    id: "test_ability",
+    name: "Test Ability",
     cooldownMs: 2000,
     effects: [
       {kind: "status", effectId: "silenced", durationMs: 2000, targetFinder: {kind: "self"}}

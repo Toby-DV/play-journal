@@ -1,10 +1,10 @@
-import { LineOfSightBlocker } from "./lineOfSight";
+import { LineOfSightBlocker } from "../combat/lineOfSight";
 import { Weapon } from "../data/weapons";
 import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
-import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
-import CooldownTracker from "./CooldownTracker";
+import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "../combat/AttackComponent";
+import CooldownTracker from "../combat/CooldownTracker";
 import { TILE_SIZE } from "../constants";
-import { findNearestTarget } from "./TargetFinders";
+import { findNearestTarget } from "../combat/TargetFinders";
 
 export interface AttackInput {
   isBasicAttackJustPressed(): boolean;
@@ -26,10 +26,6 @@ export default class PlayerCombat {
   ) {}
 
   get activeWeapon(): Weapon {return this.weapon}
-
-  private findTarget(): CombatEntity | null {
-    return findNearestTarget(this.self, this.getEnemies(), this.weapon.rangeTiles * TILE_SIZE, this.blocker);
-  }
 
   update(deltaMs: number): void {
     this.cooldowns.tick(deltaMs);

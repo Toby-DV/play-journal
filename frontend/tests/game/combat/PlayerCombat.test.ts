@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import PlayerCombat, { AttackInput } from "@/game/combat/PlayerCombat";
+import PlayerCombat, { AttackInput } from "@/game/entities/PlayerCombat";
 import { CombatEntity } from "@/game/combat/AttackComponent";
 import StatusEffectController from "@/game/combat/StatusEffectController";
 import Health from "@/game/combat/Health";

@@ -2,7 +2,7 @@ import type Phaser from "phaser";
 import { prettifyName } from "@/lib/format";
 import Enemy from "../entities/Enemy";
 import EnemyAI from "../entities/EnemyAI";
-import EnemyCombat from "../combat/EnemyCombat";
+import EnemyCombat from "../entities/EnemyCombat";
 import EntityLabel from "../ui/EntityLabel";
 import { RoomSpawnStrategy, SpawnedEnemy } from "./EnemySpawner";
 import { DungeonRoom } from "./types";

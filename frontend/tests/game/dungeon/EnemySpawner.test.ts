@@ -5,7 +5,7 @@ import { RoomKind, DungeonRoom } from "@/game/dungeon/types";
 import Health from "@/game/combat/Health";
 import type Enemy from "@/game/entities/Enemy";
 import type EnemyAI from "@/game/entities/EnemyAI";
-import type EnemyCombat from "@/game/combat/EnemyCombat";
+import type EnemyCombat from "@/game/entities/EnemyCombat";
 import type EntityLabel from "@/game/ui/EntityLabel";
 
 function fakeRoom(doors: { x: number; y: number }[] = []): DungeonRoom {

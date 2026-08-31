@@ -1,7 +1,7 @@
 import { ATTACKS, AttackDefinition } from "../data/enemyAttacks";
-import { CombatEntity, AggressiveCombatEntity, resolveAttackComponents } from "./AttackComponent";
-import CooldownTracker from "./CooldownTracker";
-import { LineOfSightBlocker, isWithinRange, hasLineOfSight } from "./lineOfSight";
+import { CombatEntity, AggressiveCombatEntity, resolveAttackComponents } from "../combat/AttackComponent";
+import CooldownTracker from "../combat/CooldownTracker";
+import { LineOfSightBlocker, isWithinRange, hasLineOfSight } from "../combat/lineOfSight";
 import { TILE_SIZE } from "../constants";
 
 export type AttackSelector = (

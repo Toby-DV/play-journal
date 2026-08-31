@@ -11,7 +11,7 @@ import { addConfetti } from "../effects/confetti";
 import EntityLabel from "../ui/EntityLabel";
 import { loadSettings, subscribeSettings } from "../settings";
 import { getDisplayName } from "@/lib/auth";
-import PlayerCombat from "../combat/PlayerCombat";
+import PlayerCombat from "../entities/PlayerCombat";
 import { PhaserAttackInput } from "../combat/PhaserAttackInput";
 import { LineOfSightBlocker } from "../combat/lineOfSight";
 import { loadEntityManifests } from "../animation/manifestLoader";

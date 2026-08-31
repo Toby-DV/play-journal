@@ -1,6 +1,6 @@
 import type Phaser from "phaser";
 import type Player from "../entities/Player";
-import PlayerCombat from "../combat/PlayerCombat";
+import PlayerCombat from "../entities/PlayerCombat";
 import AbilityOverlay from "./AbilityOverlay";
 
 const DEPTH = 2000;

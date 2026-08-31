@@ -1,7 +1,7 @@
 import { CombatEntity } from "../combat/AttackComponent"
 import type Phaser from "phaser";
 import { Weapon } from "../data/weapons";
-import PlayerCombat from "../combat/PlayerCombat";
+import PlayerCombat from "../entities/PlayerCombat";
 import CooldownTracker from "../combat/CooldownTracker";
 
 const DEPTH = 1000;

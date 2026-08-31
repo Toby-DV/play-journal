@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import EnemyCombat, { getAvailableAttacks } from "@/game/combat/EnemyCombat";
+import EnemyCombat, { getAvailableAttacks } from "@/game/entities/EnemyCombat";
 import { AggressiveCombatEntity, CombatEntity } from "@/game/combat/AttackComponent";
 import StatusEffectController from "@/game/combat/StatusEffectController";
 import Health from "@/game/combat/Health";

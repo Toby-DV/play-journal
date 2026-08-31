@@ -3,7 +3,7 @@ import { GameConfig } from "@/types/game";
 import { SpriteManifest } from "../animation/SpriteManifest";
 import { CombatEntity } from "../combat/AttackComponent";
 import { LineOfSightBlocker } from "../combat/lineOfSight";
-import EnemyCombat from "../combat/EnemyCombat";
+import EnemyCombat from "../entities/EnemyCombat";
 import EntityLabel from "../ui/EntityLabel";
 import Enemy from "../entities/Enemy";
 import EnemyAI from "../entities/EnemyAI";

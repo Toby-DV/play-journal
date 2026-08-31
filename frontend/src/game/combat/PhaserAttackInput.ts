@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { AttackInput } from "./PlayerCombat";
+import { AttackInput } from "../entities/PlayerCombat";
 
 type AttackKeyName = "space" | "q" | "w" | "e";
 
