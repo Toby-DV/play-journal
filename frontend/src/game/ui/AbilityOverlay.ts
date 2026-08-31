@@ -20,6 +20,10 @@ const RECT_COLOR = 0x1e293b;
 const ABIL_WIDTH = 50
 const ABIL_PADDING = 20
 
+const ROOT_BAR_MAX_WIDTH = RECT_WIDTH;
+const ROOT_BAR_HEIGHT = 6;
+const ROOT_BAR_COLOR = 0xe1d56c;
+
 export default class AbilityOverlay {
     private scene: Phaser.Scene;
     private player: CombatEntity;
@@ -34,6 +38,7 @@ export default class AbilityOverlay {
     private abilSlotNums: Phaser.GameObjects.Text[];
     private castingText: Phaser.GameObjects.Text;
     private castHideTimer?: Phaser.Time.TimerEvent;
+    private rootBar: Phaser.GameObjects.Rectangle;
 
     constructor(scene: Phaser.Scene, player: CombatEntity, playerCombat: PlayerCombat, fontFamily: string) {
         this.scene = scene;
@@ -80,6 +85,14 @@ export default class AbilityOverlay {
             .setOrigin(0.5, 1)
             .setScrollFactor(0)
             .setDepth(DEPTH + 1);
+
+        // Centered root-timer bar, just above the top edge of the ability box
+        this.rootBar = scene.add
+            .rectangle(this.abilBg.x, this.abilBg.y - RECT_HEIGHT / 2 - 4, ROOT_BAR_MAX_WIDTH, ROOT_BAR_HEIGHT, ROOT_BAR_COLOR)
+            .setOrigin(0.5, 0.5)
+            .setScrollFactor(0)
+            .setDepth(DEPTH + 1)
+            .setVisible(false);
 
         const abil1 = scene.add
             .rectangle(this.abilBg.x - RECT_WIDTH/3, this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
@@ -159,6 +172,7 @@ export default class AbilityOverlay {
 
     update() {
         const cooldowns = this.cooldownTracker.cooldowns
+        const effects = this.player.statusEffects
 
         for (const [id, i] of this.abilMap) {
             const cooldownMs = cooldowns.get(id);
@@ -171,6 +185,12 @@ export default class AbilityOverlay {
                 this.abilSlotNums[i].setText("")
             }
         }
+
+        if (effects.has(["casting_rooted"])) {
+            const ratio = effects.getRemainingRatio("casting_rooted");
+            this.rootBar.setVisible(true);
+            this.rootBar.scaleX = ratio;
+        } else { this.rootBar.setVisible(false) };
     }
 
 
