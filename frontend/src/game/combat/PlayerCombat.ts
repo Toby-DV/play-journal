@@ -33,8 +33,8 @@ export default class PlayerCombat {
 
   update(deltaMs: number): void {
     this.cooldowns.tick(deltaMs);
-    if (this.self.statusEffects.has(["stunned", "suppressed"])) {
-      this.pendingResolution = []; 
+    if (this.self.statusEffects.has(["stunned", "suppressed", "silenced"])) {
+      this.pendingResolution = [];
     }
 
     if (this.input.isBasicAttackJustPressed()) this.tryBasicAttack();

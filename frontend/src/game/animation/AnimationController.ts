@@ -50,6 +50,11 @@ export default class AnimationController {
     }
   }
 
+  interrupt() {
+    this.sprite.off("animationcomplete");
+    this.playInternal(this.lastIsMoving ? "walk" : "idle");
+  }
+
   update(healthRatio: number, isDead: boolean, isMoving: boolean, facingX = 0): void {
     this.lastIsMoving = isMoving;
     if (facingX !== 0) this.facingLeft = facingX < 0;

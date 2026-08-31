@@ -61,7 +61,8 @@ export default class Player implements CombatEntity {
     const body = this.body;
     
     if (this.statusEffects.has(["rooted", "channeling", "stunned", "suppressed"])) {
-      body.setVelocity(0) 
+      this.animationController.interrupt();
+      body.setVelocity(0);
     }
 
     else if (this.movementOverrideMs > 0) {
