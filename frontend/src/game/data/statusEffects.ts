@@ -73,5 +73,11 @@ export const STATUS_EFFECTS: Record<string, StatusEffectDefinition> = {
     label: "SILENCED",
     color: "#594d4d",
     tags: ["debuff"]
+  },
+  casting_rooted: { // a root effect that doesn't show a label
+    id: "casting_rooted",
+    label: "",
+    color: "#000000",
+    tags: []
   }
 };

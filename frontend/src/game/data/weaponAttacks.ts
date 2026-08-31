@@ -13,7 +13,7 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Test Ability",
     cooldownMs: 2000,
     effects: [
-      {kind: "status", effectId: "silenced", durationMs: 2000, targetFinder: {kind: "self"}}
+      {kind: "delay", durationMs: 1000},
     ]
   },
   {
@@ -30,7 +30,7 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Shockwave",
     cooldownMs: 2000,
     effects: [
-      {kind: "status", effectId: "channeling", durationMs: 500, targetFinder: {kind: "self"}},
+      {kind: "status", effectId: "casting_rooted", durationMs: 500, targetFinder: {kind: "self"}},
       {kind: "delay", durationMs: 500},
       {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true, ignoreWalls: true}},
       // {kind: "delay", durationMs: 200},

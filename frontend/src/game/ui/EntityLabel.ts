@@ -103,7 +103,7 @@ export default class EntityLabel {
   // Create/destroy badge objects to match the currently active effect ids
   private syncBadges() {
     if (!this.statusEffects) return;
-    const currentIds = this.statusEffects.getActiveIds();
+    const currentIds = this.statusEffects.getActiveIds().filter((id) => id !== "casting_rooted");
     const { added, removed } = diffBadgeIds(this.activeBadgeIds, currentIds);
 
     for (const id of removed) {
@@ -115,7 +115,7 @@ export default class EntityLabel {
 
     for (const id of added) {
       const def = STATUS_EFFECTS[id];
-      if (!def) continue;
+      if (!def || !def.label) continue;
       const text = this.scene.add
         .text(this.target.x, this.target.y, def.label, {
           fontFamily: this.fontFamily,
