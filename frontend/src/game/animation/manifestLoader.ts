@@ -48,8 +48,7 @@ export async function loadEntityManifests(
   scene.load.on(PhaserLib.Loader.Events.FILE_LOAD_ERROR, (file: Phaser.Loader.File) => failedKeys.add(file.key));
 
   const queued = new Set<string>();
-  // Always queue the fallback manifests too, so there's a guaranteed-loaded fallback even if
-  // a fetched manifest's own texture URLs 404 after the fetch itself succeeded.
+  // Always queue the fallback manifests too
   queueManifestTextures(scene, SLICED_KNIGHT_MANIFEST, queued);
   queueManifestTextures(scene, GENERIC_ENEMY_MANIFEST, queued);
   queueManifestTextures(scene, playerManifest, queued);

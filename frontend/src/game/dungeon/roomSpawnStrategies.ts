@@ -17,13 +17,13 @@ const SWARM_MAX_AGGRESSION = 2;
 const BOSS_HP = 150;
 const BOSS_AGGRESSION = 3;
 const BOSS_SPRITE_SCALE = 1.4;
-// Slower than swarm enemies but sees further
+
 const BOSS_SPEED = 140;
 const BOSS_AGGRO_RANGE_TILES = 9;
-// Bosses still visibly react to a hit, but don't get shoved around like swarm enemies
+
 const BOSS_KNOCKBACK_SCALE = 0.35;
-// Spawn tiles stay x tiles clear of the walls
-const SPAWN_WALL_MARGIN = 2;
+
+const SPAWN_WALL_MARGIN = 2; // Spawn tiles stay x tiles clear of the walls
 const SPAWN_ATTEMPTS = 30;
 
 // Returns null when the room is too cluttered/small
@@ -77,17 +77,12 @@ export const spawnBossRoom: RoomSpawnStrategy = ({ scene, map, room, config, bos
   return [{ enemy: boss, ai, combat, label }];
 };
 
-// 3-6 weak, fast enemies scattered across the room. Uses the regular enemy manifest and the same
-// door-sealing mechanic as boss rooms (RoomEncounter, via EnemySpawner) - the room seals when the
-// player steps in and reopens once the whole swarm is dead.
 export const spawnSwarmRoom: RoomSpawnStrategy = ({ scene, map, room, config, enemyManifest, stuffLayer, fontFamily, getPlayer, blocker, dashBlocker }) => {
   const count = SWARM_MIN_ENEMIES + Math.floor(Math.random() * (SWARM_MAX_ENEMIES - SWARM_MIN_ENEMIES + 1));
   const used = new Set<string>();
   const spawned: SpawnedEnemy[] = [];
 
   for (let i = 0; i < count; i++) {
-    // Fall back to the room center for the first enemy so a cluttered room still gets a real
-    // encounter - a zero-enemy room would count as instantly cleared (see RoomEncounter).
     const tile = pickSpawnTile(room, stuffLayer, used) ?? (i === 0 ? { x: room.centerX, y: room.centerY } : null);
     if (!tile) continue;
 

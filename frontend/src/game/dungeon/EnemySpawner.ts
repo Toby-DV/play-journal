@@ -9,7 +9,7 @@ import Enemy from "../entities/Enemy";
 import EnemyAI from "../entities/EnemyAI";
 import { DungeonRoom, RoomKind } from "./types";
 import RoomEncounter, { TileBounds } from "./RoomEncounter";
-import buildRoomDoors from "./buildRoomDoors";
+import { buildRoomDoors } from "./rooms";
 
 export interface SpawnedEnemy {
   enemy: Enemy;

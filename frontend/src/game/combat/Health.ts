@@ -1,6 +1,6 @@
 export interface RegenConfig {
-  delayMs: number; // time since last damage before regen kicks in
-  perSecond: number; // HP restored per second once regen is active
+  delayMs: number;
+  perSecond: number;
 }
 
 export default class Health {

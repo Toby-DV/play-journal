@@ -1,9 +1,7 @@
 import { WeaponAttackDefinition } from "./weaponAttacks";
 
-// An enemy attack is a weapon attack plus AI gating: how aggressive the enemy
-// must be to use it, and whether range/line-of-sight constrain it.
 export interface AttackDefinition extends WeaponAttackDefinition {
-  minAggression: number;
+  minAggression: number; // Only enemies of this aggression or higher can use the attack
   requiresLineOfSight?: boolean;
   maxRangeTiles?: number;
 }

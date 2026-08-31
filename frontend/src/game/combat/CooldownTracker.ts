@@ -1,5 +1,3 @@
-// Counts down named cooldowns. Shared by PlayerCombat (basic attack +
-// abilities) and EnemyCombat (attack cooldowns)
 export default class CooldownTracker {
   private remaining: Map<string, number> = new Map();
 

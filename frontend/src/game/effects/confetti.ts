@@ -3,9 +3,6 @@ import type Phaser from "phaser";
 const TEXTURE_KEY = "confetti-particle";
 const CONFETTI_COLORS = [0xfacc15, 0xfb7185, 0x34d399, 0x60a5fa, 0xf472b6, 0xffffff];
 
-// A gentle, continuous sprinkle of colored squares falling from the top of the screen, for happy
-// days. Screen-space (scrollFactor 0), so it drifts down over the whole level regardless of where
-// the camera is looking, like the mood tint and vignette.
 export function addConfetti(scene: Phaser.Scene, width: number) {
   if (!scene.textures.exists(TEXTURE_KEY)) {
     const gfx = scene.make.graphics({ x: 0, y: 0 }, false);

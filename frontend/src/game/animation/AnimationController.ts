@@ -39,19 +39,17 @@ export default class AnimationController {
     if ((state === "hit" || state === "attack") && clip.repeat !== 0) return;
 
     this.currentState = state;
-    // Clears any listener left behind by a clip that got interrupted before it could complete
     this.sprite.off("animationcomplete");
     this.sprite.play(clip.textureKey);
 
     if (clip.repeat === 0) {
       this.sprite.once("animationcomplete", () => {
-        if (this.currentState === "death") return; // death latches even after its clip finishes
+        if (this.currentState === "death") return;
         this.playInternal(this.lastIsMoving ? "walk" : "idle");
       });
     }
   }
 
-  // Facing latches: standing still or moving straight up/down keeps the last horizontal direction
   update(healthRatio: number, isDead: boolean, isMoving: boolean, facingX = 0): void {
     this.lastIsMoving = isMoving;
     if (facingX !== 0) this.facingLeft = facingX < 0;

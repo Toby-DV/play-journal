@@ -33,7 +33,7 @@ export function hasLineOfSight(
   return true;
 }
 
-export function sweepUntilBlocked(
+export function sweepUntilBlocked( // Traces a path until it hits a wall
   blocker: LineOfSightBlocker,
   fromX: number,
   fromY: number,
@@ -45,7 +45,7 @@ export function sweepUntilBlocked(
   const steps = Math.ceil(Math.hypot(dx, dy) / (TILE_SIZE / 8));
   let clearX = fromX;
   let clearY = fromY;
-  // Endpoint included, unlike hasLineOfSight - stopping inside a wall is what this prevents
+
   for (let i = 1; i <= steps; i++) {
     const t = i / steps;
     const x = fromX + dx * t

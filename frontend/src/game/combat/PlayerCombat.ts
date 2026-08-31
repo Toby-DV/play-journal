@@ -4,8 +4,6 @@ import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
 import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "./AttackComponent";
 import CooldownTracker from "./CooldownTracker";
 import { TILE_SIZE } from "../constants";
-import { AttackDefinition } from "../data/enemyAttacks";
-import { NONE } from "phaser";
 import { findNearestTarget } from "./TargetFinders";
 
 export interface AttackInput {

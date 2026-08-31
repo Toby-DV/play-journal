@@ -1,7 +1,5 @@
 import type Phaser from "phaser";
 
-// A single doorway tile on a tilemap layer that can be sealed shut (colliding, closedTileIndex
-// drawn over it) or opened back up (tile removed, whatever was underneath shows through again).
 export default class Door {
   private opened = true;
 

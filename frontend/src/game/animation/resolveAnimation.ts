@@ -3,12 +3,11 @@ import { GENERIC_ENEMY_MANIFEST, SLICED_KNIGHT_MANIFEST } from "./SpriteProvider
 
 export type SpriteKind = "player" | "enemy";
 
-// A manifest is safe to resolve against only if it has an idle or walk state
 function hasFallbackBase(manifest: SpriteManifest): boolean {
   return manifest.clips.idle !== undefined || manifest.clips.walk !== undefined;
 }
 
-// Player fallback is the sliced knight (real art) rather than the generic placeholder humanoid;
+// Player fallback is the sliced knight
 export function pickManifest(spriteKind: SpriteKind, fetched: SpriteManifest | null): SpriteManifest {
   const fallback = spriteKind === "player" ? SLICED_KNIGHT_MANIFEST : GENERIC_ENEMY_MANIFEST;
   if (fetched && hasFallbackBase(fetched)) return fetched;

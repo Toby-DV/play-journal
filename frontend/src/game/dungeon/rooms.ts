@@ -1,4 +1,7 @@
-import { RoomKind } from "./types";
+import { RoomKind, DungeonRoom } from "./types";
+import type Phaser from "phaser";
+import Door from "./Door";
+import TILE_MAPPING from "../tileMapping";
 
 export interface RoomKindQuota {
   kind: RoomKind;
@@ -6,7 +9,7 @@ export interface RoomKindQuota {
 }
 
 // How many of a dungeon's rooms should get each special kind.
-export default function assignRoomKinds<T>(
+export function assignRoomKinds<T>(
   rooms: readonly T[],
   quotas: readonly RoomKindQuota[]
 ): Map<T, RoomKind> {
@@ -25,4 +28,15 @@ export default function assignRoomKinds<T>(
     }
   }
   return assignments;
+}
+
+
+export function buildRoomDoors(stuffLayer: Phaser.Tilemaps.TilemapLayer, room: DungeonRoom): Door[] {
+  return room.getDoorLocations().map((door) => {
+    const isHorizontalWall = door.y === 0 || door.y === room.height - 1;
+    const closedTileIndex = isHorizontalWall
+      ? TILE_MAPPING.DOOR.CLOSED.HORIZONTAL
+      : TILE_MAPPING.DOOR.CLOSED.VERTICAL;
+    return new Door(stuffLayer, room.x + door.x, room.y + door.y, closedTileIndex);
+  });
 }

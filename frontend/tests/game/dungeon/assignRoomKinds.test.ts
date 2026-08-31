@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
-import assignRoomKinds from "@/game/dungeon/assignRoomKinds";
+import { assignRoomKinds } from "@/game/dungeon/rooms";
 
 describe("assignRoomKinds", () => {
   afterEach(() => {

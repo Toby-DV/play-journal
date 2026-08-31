@@ -6,8 +6,7 @@ export interface Weapon {
   damage: number;
   attackSpeedMs: number;
   rangeTiles: number;
-  // Multiplier on Enemy's KNOCKBACK_SPEED. 0 disables the shove for this weapon entirely.
-  knockback: number;
+  knockback: number;  // Multiplier on Enemy's KNOCKBACK_SPEED
   attackIds: string[];
 }
 
