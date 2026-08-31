@@ -110,7 +110,6 @@ export function createDungeonScene(
 
       this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
       this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-      // Default 16 silently discards deeper overlaps, so dash-speed bodies pass into walls unseparated
       this.physics.world.TILE_BIAS = TILE_SIZE;
 
       const { player: playerManifest, enemy: enemyManifest, boss: bossManifest } = await loadEntityManifests(this, PhaserLib, config);
@@ -148,6 +147,10 @@ export function createDungeonScene(
           onAttack: (attackId) => {
             this.player.animationController.play("attack", { abilityId: attackId });
           },
+          onAbility: (abilityId) => {
+            this.player.animationController.play("attack", { abilityId: abilityId });
+            this.abilityOverlay.onCast(abilityId);
+          }
         }
       );
 

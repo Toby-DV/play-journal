@@ -3,8 +3,6 @@ import { Weapon } from "../data/weapons";
 import { WEAPON_ATTACKS, BASIC_ATTACK } from "../data/weaponAttacks";
 import { AttackComponent, CombatEntity, DelayedAttack, resolveAttackComponents } from "../combat/AttackComponent";
 import CooldownTracker from "../combat/CooldownTracker";
-import { TILE_SIZE } from "../constants";
-import { findNearestTarget } from "../combat/TargetFinders";
 
 export interface AttackInput {
   isBasicAttackJustPressed(): boolean;
@@ -22,7 +20,10 @@ export default class PlayerCombat {
     private blocker: LineOfSightBlocker,
     private dashBlocker: LineOfSightBlocker,
     private input: AttackInput,
-    private options: { onAttack?: (attackId: string) => void } = {}
+    private options: 
+    { onAttack?: (attackId: string) => void,
+      onAbility?: (abilId: string) => void,
+     } = {}
   ) {}
 
   get activeWeapon(): Weapon {return this.weapon}
@@ -67,18 +68,18 @@ export default class PlayerCombat {
   }
 
   private tryAbility(slot: 0 | 1 | 2): void {
-    const attackId = this.weapon.attackIds[slot];
-    if (!attackId || this.self.statusEffects.has(["suppressed", "stunned", "silenced"])) return;
-    if (!this.cooldowns.isReady(attackId)) return;
+    const abilityId = this.weapon.attackIds[slot];
+    if (!abilityId || this.self.statusEffects.has(["suppressed", "stunned", "silenced"])) return;
+    if (!this.cooldowns.isReady(abilityId)) return;
 
-    const definition = WEAPON_ATTACKS.find((a) => a.id === attackId);
+    const definition = WEAPON_ATTACKS.find((a) => a.id === abilityId);
     if (!definition) return;
 
-    this.cooldowns.start(attackId, definition.cooldownMs);
+    this.cooldowns.start(abilityId, definition.cooldownMs);
 
     const pending = this.resolveEffects(definition.effects);
     if (pending) this.pendingResolution.push(pending);
-    this.options.onAttack?.(attackId);
+    this.options.onAbility?.(abilityId);
   }
 
   // Runs immediate effects and returns a DelayedAttack for delayed ones

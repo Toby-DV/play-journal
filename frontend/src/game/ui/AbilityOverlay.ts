@@ -3,6 +3,7 @@ import type Phaser from "phaser";
 import { Weapon } from "../data/weapons";
 import PlayerCombat from "../entities/PlayerCombat";
 import CooldownTracker from "../combat/CooldownTracker";
+import { WEAPON_ATTACKS, WeaponAttackDefinition } from "../data/weaponAttacks";
 
 const DEPTH = 1000;
 const MARGIN = 120;
@@ -31,13 +32,15 @@ export default class AbilityOverlay {
     private label: Phaser.GameObjects.Text;
     private abilSlots: Phaser.GameObjects.Rectangle[];
     private abilSlotNums: Phaser.GameObjects.Text[];
+    private castingText: Phaser.GameObjects.Text;
+    private castHideTimer?: Phaser.Time.TimerEvent;
 
     constructor(scene: Phaser.Scene, player: CombatEntity, playerCombat: PlayerCombat, fontFamily: string) {
         this.scene = scene;
         this.player = player;
         this.playerCombat = playerCombat;
         this.cooldownTracker = playerCombat.cooldownTracker;
-
+        
         const x = scene.scale.width - MARGIN;
         const y = scene.scale.height - MARGIN;
 
@@ -48,7 +51,7 @@ export default class AbilityOverlay {
             .setDepth(DEPTH);
 
         this.label = scene.add
-            .text(x, y, "", {
+            .text((scene.scale.width), (scene.scale.height), "", {
                 fontFamily,
                 fontSize: "11px",
                 color: "#f8fafc",
@@ -65,7 +68,19 @@ export default class AbilityOverlay {
             .setScrollFactor(0)
             .setDepth(DEPTH)
             .setAlpha(0.5);
-        
+
+        // Sits just above the top edge of the ability box
+        this.castingText = scene.add
+            .text(this.abilBg.x, this.abilBg.y - RECT_HEIGHT / 2 - 10, "", {
+                fontFamily,
+                fontSize: "14px",
+                color: "#f8fafc",
+                align: "center",
+            })
+            .setOrigin(0.5, 1)
+            .setScrollFactor(0)
+            .setDepth(DEPTH + 1);
+
         const abil1 = scene.add
             .rectangle(this.abilBg.x - RECT_WIDTH/3, this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
             .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
@@ -134,6 +149,12 @@ export default class AbilityOverlay {
     updateWeapon() {
         this.weapon = this.playerCombat.activeWeapon;
         this.label.setText(this.weapon.id);
+    }
+
+    onCast(abilityId: string) {
+        this.castingText.setText(WEAPON_ATTACKS.find((a) => a.id === abilityId)?.name || "");
+        this.castHideTimer?.remove();
+        this.castHideTimer = this.scene.time.delayedCall(800, () => this.castingText.setText(""));
     }
 
     update() {

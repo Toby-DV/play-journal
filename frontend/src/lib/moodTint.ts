@@ -9,12 +9,6 @@ export interface MoodTint {
   rain: boolean;
 }
 
-// Maps the journal's mood (see backend/main.py's AVAILABLE_THEMES) to a full-screen overlay tint,
-// so a good day and a bad day visually feel different even on the same dungeon layout/tileset.
-// "reflective" gets a darkened-edges vignette (the moodiest/saddest tone in the backend's
-// vocabulary) plus light rain; "happy" gets the inverse - a warm glowing vignette.
-// Confetti (src/game/effects/confetti.ts) is disabled for now - it read as too much - but left
-// wired up behind this flag in case it's worth revisiting with lighter settings later.
 const MOOD_TINTS: Record<string, MoodTint> = {
   productive: { color: 0x38bdf8, alpha: 0.12, blendMode: "NORMAL", vignette: null, confetti: false, rain: false }, // cool, crisp
   happy: {
