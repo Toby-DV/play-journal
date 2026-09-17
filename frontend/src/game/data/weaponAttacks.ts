@@ -13,7 +13,7 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     name: "Test Ability",
     cooldownMs: 2000,
     effects: [
-      {kind: "delay", durationMs: 1000},
+      {kind: "dash", target: "self", distanceTiles: 3, durationMs: 200}
     ]
   },
   {
@@ -33,7 +33,6 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
       {kind: "status", effectId: "casting_rooted", durationMs: 500, targetFinder: {kind: "self"}},
       {kind: "delay", durationMs: 500},
       {kind: "damage", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true, ignoreWalls: true}},
-      // {kind: "delay", durationMs: 200},
       {kind: "status", targetFinder: {kind: "radius", rangeTiles: 3, aoe: true, ignoreWalls: true}, effectId: "stunned", durationMs: 700}
     ]
   },

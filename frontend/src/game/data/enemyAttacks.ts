@@ -40,4 +40,14 @@ export const ATTACKS: AttackDefinition[] = [
     requiresLineOfSight: true,
     maxRangeTiles: 8,
   },
+  {
+    id: "test_attack",
+    name: "Test Attack",
+    minAggression: 5,
+    cooldownMs: 5000,
+    effects: [
+      
+    ]
+  }
+  
 ];

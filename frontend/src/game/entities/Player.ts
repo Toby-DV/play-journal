@@ -8,7 +8,7 @@ import { resolveClip } from "../animation/resolveAnimation";
 import AnimationController from "../animation/AnimationController";
 
 // Modeled on: https://github.com/mikewesthad/phaser-3-tilemap-blog-posts
-const PLAYER_SPEED = 350;
+const PLAYER_SPEED = 300;
 const PLAYER_MAX_HP = 100;
 const PLAYER_REGEN_DELAY_MS = 5000;
 const PLAYER_REGEN_PER_SECOND = 5;

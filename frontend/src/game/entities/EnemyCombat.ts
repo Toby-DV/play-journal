@@ -57,19 +57,17 @@ export default class EnemyCombat {
     if (!this.trigger(this.self, this.getTarget(), this.timeSinceLastAttempt)) return;
     this.timeSinceLastAttempt = 0;
 
-    const byAggressionAndCooldown = getAvailableAttacks(this.self.aggressionLevel, (id) =>
-      this.cooldowns.isReady(id)
-    );
+    const byAggressionAndCooldown = getAvailableAttacks(this.self.aggressionLevel, (id) => this.cooldowns.isReady(id));
     const available = byAggressionAndCooldown.filter((attack) => {
-      if (
-        attack.maxRangeTiles !== undefined &&
-        !isWithinRange(this.self.x, this.self.y, target.x, target.y, attack.maxRangeTiles * TILE_SIZE)
+      // range check
+      if (attack.maxRangeTiles !== undefined &&
+          !isWithinRange(this.self.x, this.self.y, target.x, target.y, attack.maxRangeTiles * TILE_SIZE)
       ) {
         return false;
       }
-      if (
-        attack.requiresLineOfSight &&
-        !hasLineOfSight(this.blocker, this.self.x, this.self.y, target.x, target.y)
+      // LOS check
+      if (attack.requiresLineOfSight &&
+          !hasLineOfSight(this.blocker, this.self.x, this.self.y, target.x, target.y)
       ) {
         return false;
       }

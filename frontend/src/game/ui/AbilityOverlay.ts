@@ -13,12 +13,17 @@ const CIRCLE_ALPHA = 0.85;
 const BORDER_COLOR = 0xf8fafc;
 const BORDER_WIDTH = 2;
 
-const RECT_WIDTH = 650;
-const RECT_HEIGHT = 130;
-const RECT_COLOR = 0x1e293b;
-
 const ABIL_WIDTH = 50
 const ABIL_PADDING = 20
+const ABIL_COUNT = 3
+
+const BOX_PADDING_X = 35;
+const BOX_PADDING_Y = 20;
+const ABIL_ROW_WIDTH = ABIL_COUNT * ABIL_WIDTH + (ABIL_COUNT - 1) * ABIL_PADDING;
+
+const RECT_WIDTH = ABIL_ROW_WIDTH + BOX_PADDING_X * 2;
+const RECT_HEIGHT = ABIL_WIDTH + BOX_PADDING_Y * 2;
+const RECT_COLOR = 0x1e293b;
 
 const ROOT_BAR_MAX_WIDTH = RECT_WIDTH;
 const ROOT_BAR_HEIGHT = 6;
@@ -33,7 +38,7 @@ export default class AbilityOverlay {
     public abilMap = new Map<string, number>
 
     private abilBg: Phaser.GameObjects.Rectangle;
-    private label: Phaser.GameObjects.Text;
+    // private label: Phaser.GameObjects.Text;
     private abilSlots: Phaser.GameObjects.Rectangle[];
     private abilSlotNums: Phaser.GameObjects.Text[];
     private castingText: Phaser.GameObjects.Text;
@@ -46,25 +51,25 @@ export default class AbilityOverlay {
         this.playerCombat = playerCombat;
         this.cooldownTracker = playerCombat.cooldownTracker;
         
-        const x = scene.scale.width - MARGIN;
-        const y = scene.scale.height - MARGIN;
+        // const x = scene.scale.width - MARGIN;
+        // const y = scene.scale.height - MARGIN;
 
-        scene.add
-            .circle(x, y, RADIUS, CIRCLE_COLOR, CIRCLE_ALPHA)
-            .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
-            .setScrollFactor(0)
-            .setDepth(DEPTH);
+        // scene.add
+        //     .circle(x, y, RADIUS, CIRCLE_COLOR, CIRCLE_ALPHA)
+        //     .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
+        //     .setScrollFactor(0)
+        //     .setDepth(DEPTH);
 
-        this.label = scene.add
-            .text((scene.scale.width), (scene.scale.height), "", {
-                fontFamily,
-                fontSize: "11px",
-                color: "#f8fafc",
-                align: "center",
-            })
-            .setOrigin(0.5, 0.5)
-            .setScrollFactor(0)
-            .setDepth(DEPTH + 1);
+        // this.label = scene.add
+        //     .text((scene.scale.width), (scene.scale.height), "", {
+        //         fontFamily,
+        //         fontSize: "11px",
+        //         color: "#f8fafc",
+        //         align: "center",
+        //     })
+        //     .setOrigin(0.5, 0.5)
+        //     .setScrollFactor(0)
+        //     .setDepth(DEPTH + 1);
         
         this.abilBg = scene.add
             .rectangle((scene.scale.width) / 2, (scene.scale.height - RECT_HEIGHT/2),
@@ -94,22 +99,24 @@ export default class AbilityOverlay {
             .setDepth(DEPTH + 1)
             .setVisible(false);
 
+        const abilRowStart = this.abilBg.x - ABIL_ROW_WIDTH / 2 + ABIL_WIDTH / 2;
+
         const abil1 = scene.add
-            .rectangle(this.abilBg.x - RECT_WIDTH/3, this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
+            .rectangle(abilRowStart, this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
             .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
             .setScrollFactor(0)
             .setDepth(DEPTH + 1)
             .setAlpha(0.5);
 
         const abil2 = scene.add
-            .rectangle(this.abilBg.x - RECT_WIDTH/3 + ABIL_PADDING + ABIL_WIDTH, this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
+            .rectangle(abilRowStart + (ABIL_PADDING + ABIL_WIDTH), this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
             .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
             .setScrollFactor(0)
             .setDepth(DEPTH + 1)
             .setAlpha(0.5);
 
         const abil3 = scene.add
-            .rectangle(this.abilBg.x - RECT_WIDTH/3+ 2*(ABIL_PADDING + ABIL_WIDTH), this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
+            .rectangle(abilRowStart + 2 * (ABIL_PADDING + ABIL_WIDTH), this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
             .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
             .setScrollFactor(0)
             .setDepth(DEPTH + 1)
@@ -161,7 +168,7 @@ export default class AbilityOverlay {
 
     updateWeapon() {
         this.weapon = this.playerCombat.activeWeapon;
-        this.label.setText(this.weapon.id);
+        // this.label.setText(this.weapon.id);
     }
 
     onCast(abilityId: string) {
