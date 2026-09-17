@@ -123,7 +123,7 @@ export default function Book({ spreads, index, onIndexChange, isOpen, onOpenChan
         padding: !isOpen ? 0 : undefined,
       }}
       animate={{
-        x: isOpen ? ["0%", "12%", "-12%"] : "0%",
+        x: isOpen ? ["0%", "12%", "0%"] : "0%",
       }}
       whileHover={
         !isOpen
