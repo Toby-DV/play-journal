@@ -15,7 +15,7 @@
 
 ### The mood of the journal entry dictates how the level is generated. 
 
-<img width="220" height="340" alt="sad-demo2" src="https://github.com/user-attachments/assets/f6c4a6b5-a00c-4e0f-96fa-09d03e6d89ab" /> <img width="220" height="340" alt="happy-demo2" src="https://github.com/user-attachments/assets/d53321a4-9c67-44ff-86df-47f2270546ad" /> <img width="220" height="340" alt="productive-demo" src="https://github.com/user-attachments/assets/0685ae4b-a462-4dc2-a39a-66bc7e076f50" /> <img width="220" height="340" alt="balanced-demo" src="https://github.com/user-attachments/assets/77954678-ed49-4640-9a5e-9d5fe024295a" />
+<img width="200" height="310" alt="sad-demo2" src="https://github.com/user-attachments/assets/f6c4a6b5-a00c-4e0f-96fa-09d03e6d89ab" /> <img width="200" height="310" alt="happy-demo2" src="https://github.com/user-attachments/assets/d53321a4-9c67-44ff-86df-47f2270546ad" /> <img width="200" height="310" alt="productive-demo" src="https://github.com/user-attachments/assets/0685ae4b-a462-4dc2-a39a-66bc7e076f50" /> <img width="200" height="310" alt="balanced-demo" src="https://github.com/user-attachments/assets/77954678-ed49-4640-9a5e-9d5fe024295a" />
 
 
 ---
