@@ -12,7 +12,7 @@ export default class DebugOverlay {
   private text: Phaser.GameObjects.Text;
   private f3Key: Phaser.Input.Keyboard.Key;
   private wasF3Down = false;
-  private visible = true;
+  private visible = false;
 
   constructor(scene: Phaser.Scene, private player: Player, private playerCombat: PlayerCombat, private abilityOverlay: AbilityOverlay) {
     this.text = scene.add
@@ -25,7 +25,7 @@ export default class DebugOverlay {
       })
       .setScrollFactor(0)
       .setDepth(DEPTH)
-      .setVisible(true);
+      .setVisible(false);
 
     this.f3Key = scene.input.keyboard!.addKey("F3");
   }

@@ -41,6 +41,7 @@ export default class AbilityOverlay {
     // private label: Phaser.GameObjects.Text;
     private abilSlots: Phaser.GameObjects.Rectangle[];
     private abilSlotNums: Phaser.GameObjects.Text[];
+    private abilIcons: (Phaser.GameObjects.Image | undefined)[] = [];
     private castingText: Phaser.GameObjects.Text;
     private castHideTimer?: Phaser.Time.TimerEvent;
     private rootBar: Phaser.GameObjects.Rectangle;
@@ -105,22 +106,22 @@ export default class AbilityOverlay {
             .rectangle(abilRowStart, this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
             .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
             .setScrollFactor(0)
-            .setDepth(DEPTH + 1)
-            .setAlpha(0.5);
+            .setDepth(DEPTH + 2)
+            .setAlpha(0.1);
 
         const abil2 = scene.add
             .rectangle(abilRowStart + (ABIL_PADDING + ABIL_WIDTH), this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
             .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
             .setScrollFactor(0)
-            .setDepth(DEPTH + 1)
-            .setAlpha(0.5);
+            .setDepth(DEPTH + 2)
+            .setAlpha(0.1);
 
         const abil3 = scene.add
             .rectangle(abilRowStart + 2 * (ABIL_PADDING + ABIL_WIDTH), this.abilBg.y, ABIL_WIDTH, ABIL_WIDTH, RECT_COLOR)
             .setStrokeStyle(BORDER_WIDTH, BORDER_COLOR)
             .setScrollFactor(0)
-            .setDepth(DEPTH + 1)
-            .setAlpha(0.5);
+            .setDepth(DEPTH + 2)
+            .setAlpha(0.1);
         
         const abilNum1 = scene.add
             .text(abil1.x, abil1.y, "", {
@@ -131,7 +132,7 @@ export default class AbilityOverlay {
             })
             .setOrigin(0.5, 0.5)
             .setScrollFactor(0)
-            .setDepth(DEPTH + 1);
+            .setDepth(DEPTH + 2);
 
         const abilNum2 = scene.add
             .text(abil2.x, abil2.y, "", {
@@ -142,7 +143,7 @@ export default class AbilityOverlay {
             })
             .setOrigin(0.5, 0.5)
             .setScrollFactor(0)
-            .setDepth(DEPTH + 1);
+            .setDepth(DEPTH + 2);
 
         const abilNum3 = scene.add
             .text(abil3.x, abil3.y, "", {
@@ -153,7 +154,7 @@ export default class AbilityOverlay {
             })
             .setOrigin(0.5, 0.5)
             .setScrollFactor(0)
-            .setDepth(DEPTH + 1);
+            .setDepth(DEPTH + 2);
 
         this.updateWeapon();
         
@@ -164,6 +165,17 @@ export default class AbilityOverlay {
 
         this.abilSlots = [abil1, abil2, abil3]
         this.abilSlotNums = [abilNum1, abilNum2, abilNum3]
+
+        for (const [id, i] of this.abilMap) {
+            const key = `${id}-icon`;
+            if (!scene.textures.exists(key)) continue;
+            const slot = this.abilSlots[i];
+            this.abilIcons[i] = scene.add
+                .image(slot.x, slot.y, key)
+                .setDisplaySize(ABIL_WIDTH - 8, ABIL_WIDTH - 8)
+                .setScrollFactor(0)
+                .setDepth(DEPTH + 1);
+        }
     }
 
     updateWeapon() {
@@ -184,11 +196,11 @@ export default class AbilityOverlay {
         for (const [id, i] of this.abilMap) {
             const cooldownMs = cooldowns.get(id);
             if (cooldownMs) {
-                this.abilSlots[i].setAlpha(0.9);
+                this.abilSlots[i].setAlpha(0.6);
                 this.abilSlotNums[i].setText(`${Math.ceil(cooldownMs/1000)}`)
             }
             else {
-                this.abilSlots[i].setAlpha(0.5);
+                this.abilSlots[i].setAlpha(0.1);
                 this.abilSlotNums[i].setText("")
             }
         }

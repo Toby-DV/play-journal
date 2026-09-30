@@ -43,13 +43,11 @@ export function getMoodTint(mood: string): MoodTint {
   return MOOD_TINTS[mood] ?? DEFAULT_TINT;
 }
 
-// Plain (solid, no gradient/pattern) background color per mood - this is what shows through in
-// the blank space outside the generated rooms, not just a tint layered on top of the tiles.
 const MOOD_BACKGROUNDS: Record<string, string> = {
-  productive: "#0f172a", // slate-900, cool and crisp
-  happy: "#881337", // rose-900, lighter warm celebratory base to sit under the gold tint/vignette
+  productive: "#3a2be6", // slate-900, cool and crisp
+  happy: "#03aca9", // rose-900, lighter warm celebratory base to sit under the gold tint/vignette
   reflective: "#172554", // blue-950, moody
-  balanced: "#022c22", // emerald-950, neutral
+  balanced: "#018023", // emerald-950, neutral
 };
 
 const DEFAULT_BACKGROUND = "#0f172a";

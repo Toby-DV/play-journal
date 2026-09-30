@@ -48,3 +48,5 @@ pyrightconfig.json
 # MCP server config (may contain secrets)
 .mcp.json
 .mcp.json/
+.vercel
+.env*

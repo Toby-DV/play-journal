@@ -11,35 +11,31 @@ const DEFAULT_MOOD = "balanced";
 
 const MOOD_THEMES: Record<
   string,
-  { theme_id: string; theme_name: string; bosses: string[]; weapons: string[]; enemies: string[] }
+  { theme_id: string; bosses: string[]; weapons: string[]; enemies: string[] }
 > = {
   happy: {
     theme_id: "party_star",
-    theme_name: "Festival of Sparks",
     bosses: ["The Confetti King", "Big Grin"],
     weapons: ["Party Popper", "Glowstick"],
-    enemies: ["slime", "bat"],
+    enemies: ["slime"],
   },
   reflective: {
     theme_id: "rainy_day",
-    theme_name: "The Quiet Hours",
     bosses: ["The Hollow Echo", "Old Rain"],
     weapons: ["Umbrella Blade", "Worn Locket"],
-    enemies: ["skull", "skeleton"],
+    enemies: ["skeleton"],
   },
   productive: {
     theme_id: "coder_coffee",
-    theme_name: "Coder's Coffee Chase",
     bosses: ["The Merge Conflict", "Big John"],
     weapons: ["Mechanical Keyboard", "Debug Wand"],
-    enemies: ["rat", "pebble"],
+    enemies: ["pebble"],
   },
   balanced: {
     theme_id: "daily_quest",
-    theme_name: "An Ordinary Quest",
     bosses: ["The Routine", "Clockwork Warden"],
     weapons: ["Worn Sword", "Traveler's Staff"],
-    enemies: ["crab", "skeleton"],
+    enemies: ["bat"],
   },
 };
 
@@ -85,13 +81,11 @@ export function generateGameConfig(text: string): GameConfig {
   return {
     length_of_day: estimateLengthOfDay(text),
     theme_id: theme.theme_id,
-    theme_name: theme.theme_name,
     player_sprite: PLAYER_SPRITE,
     enemy_type: pick(theme.enemies),
     mood,
     game_rules: GAME_RULES,
     bosses: [pick(theme.bosses)],
-    weapon: pick(theme.weapons),
     weapon_no: 0 // TODO change at some point
   };
 }

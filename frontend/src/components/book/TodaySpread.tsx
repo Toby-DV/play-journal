@@ -11,8 +11,6 @@ interface TodaySpreadProps {
   onPreviewMock: () => void;
 }
 
-// The tome's final spread: a scribe's note on the left (doubles as onboarding
-// when the book is empty) and today's blank page on the right.
 export default function todaySpread({
   spreadIndex,
   journalText,
@@ -63,7 +61,7 @@ export default function todaySpread({
         >
           Relive this day
         </button>
-        <button
+        {/* <button
           className="tome-eyebrow"
           style={{
             background: "none",
@@ -75,7 +73,7 @@ export default function todaySpread({
           onClick={onPreviewMock}
         >
           Practice run (mock data)
-        </button>
+        </button> */}
       </div>
 
       <PageNo n={spreadIndex * 2 + 2} side="right" />

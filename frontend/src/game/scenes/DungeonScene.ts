@@ -28,6 +28,7 @@ import TutorialBanner from "../ui/TutorialBanner";
 import { hasSeenTutorial, markTutorialSeen } from "../tutorialSeen";
 import DebugOverlay from "../ui/DebugOverlay";
 import AbilityOverlay from "../ui/AbilityOverlay";
+import { WEAPON_ATTACKS } from "../data/weaponAttacks";
 
 // Room count scales with length_of_day (Min: 5, Max: 10)
 function getRoomCount(lengthOfDay: number): number {
@@ -81,6 +82,9 @@ export function createDungeonScene(
 
     preload() {
       this.load.image("tiles", "/tilesets/buch-tileset-48px.png");
+      for (const attack of WEAPON_ATTACKS) {
+        if (attack.icon) this.load.image(`${attack.id}-icon`, `/icons/${attack.icon}.png`)
+      }
     }
 
     async create() {
