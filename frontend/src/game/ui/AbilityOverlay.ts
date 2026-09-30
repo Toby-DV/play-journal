@@ -126,7 +126,7 @@ export default class AbilityOverlay {
         const abilNum1 = scene.add
             .text(abil1.x, abil1.y, "", {
                 fontFamily,
-                fontSize: "11px",
+                fontSize: "15px",
                 color: "#f8fafc",
                 align: "center",
             })
@@ -137,7 +137,7 @@ export default class AbilityOverlay {
         const abilNum2 = scene.add
             .text(abil2.x, abil2.y, "", {
                 fontFamily,
-                fontSize: "11px",
+                fontSize: "15px",
                 color: "#f8fafc",
                 align: "center",
             })
@@ -148,7 +148,7 @@ export default class AbilityOverlay {
         const abilNum3 = scene.add
             .text(abil3.x, abil3.y, "", {
                 fontFamily,
-                fontSize: "11px",
+                fontSize: "15px",
                 color: "#f8fafc",
                 align: "center",
             })

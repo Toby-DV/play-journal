@@ -24,6 +24,7 @@ export const WEAPON_ATTACKS: WeaponAttackDefinition[] = [
     id: "slowing_attack",
     name: "Slowing attack",
     description: "Deal extra damage and slow your enemy.",
+    icon: "slowing_attack-icon",
     cooldownMs: 5000,
     effects: [
         {kind: "status", effectId: "slow", durationMs: 2500, magnitude: 0.2, targetFinder: {kind: "radius", rangeTiles: 2.5, aoe: false}},

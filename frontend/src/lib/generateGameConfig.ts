@@ -42,7 +42,8 @@ const MOOD_THEMES: Record<
 const GAME_RULES = [
   "Use the ARROW keys to move.",
   "Press SPACE to attack nearby enemies.",
-  "Clear every room to reach the stairs.",
+  "Use your abilities with Q, W and E",
+  "Beat every boss and reach the stairs.",
 ];
 
 // Resolves through LocalSpriteProvider's local manifests (see game/animation/SpriteProvider.ts);

@@ -96,6 +96,7 @@ export default function todaySpread({
         style={{ marginTop: "1.1rem" }}
         value={journalText}
         onChange={(e) => onJournalTextChange(e.target.value)}
+        placeholder="Write about your day!"
         aria-label="Today's journal entry"
       />
 

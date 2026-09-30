@@ -8,7 +8,8 @@ export const mockGameConfig: GameConfig = {
   game_rules: [
     "Use the ARROW keys to move.",
     "Press SPACE to attack nearby enemies.",
-    "Clear every room to reach the stairs.",
+    "Use your abilities with Q, W and E",
+    "Beat the bosses to reach the stairs.",
   ],
   bosses: ["The Merge Conflict", "Big John"],
   length_of_day: 8,
