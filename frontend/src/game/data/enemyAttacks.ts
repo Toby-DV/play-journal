@@ -10,6 +10,7 @@ export const ATTACKS: AttackDefinition[] = [
   {
     id: "splash",
     name: "Splash",
+    description: "",
     minAggression: 1,
     cooldownMs: 5000,
     effects: [],
@@ -19,6 +20,7 @@ export const ATTACKS: AttackDefinition[] = [
   {
     id: "slowing_attack",
     name: "Slowing Attack",
+    description: "",
     minAggression: 2,
     cooldownMs: 4000,
     effects: [
@@ -31,6 +33,7 @@ export const ATTACKS: AttackDefinition[] = [
   {
     id: "silencing_glare",
     name: "Silencing Glare",
+    description: "",
     minAggression: 3,
     cooldownMs: 6000,
     effects: [
@@ -43,6 +46,7 @@ export const ATTACKS: AttackDefinition[] = [
   {
     id: "test_attack",
     name: "Test Attack",
+    description: "",
     minAggression: 5,
     cooldownMs: 5000,
     effects: [
