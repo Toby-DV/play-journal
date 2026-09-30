@@ -125,7 +125,7 @@ export default function Home() {
             className="text-xl font-extrabold uppercase tracking-tight text-center"
             style={{ color: "var(--torch)" }}
           >
-            Name your chronicle
+            What is your name?
           </h2>
           <input
             type="text"
