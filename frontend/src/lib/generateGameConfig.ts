@@ -73,6 +73,9 @@ function pick<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+// Index into WEAPONS for the weapon every new run uses. No picker yet, so it's fixed.
+export const SELECTED_WEAPON_NO = 0;
+
 // Deterministic mood detection with no network call.
 export function generateGameConfig(text: string): GameConfig {
   const mood = detectMood(text);
@@ -86,6 +89,6 @@ export function generateGameConfig(text: string): GameConfig {
     mood,
     game_rules: GAME_RULES,
     bosses: [pick(theme.bosses)],
-    weapon_no: 0 // TODO change at some point
+    weapon_no: SELECTED_WEAPON_NO // TODO change at some point
   };
 }

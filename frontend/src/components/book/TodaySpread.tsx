@@ -1,10 +1,15 @@
 import React from "react";
 import { Spread } from "./Book";
 import { PageNo } from "./chrome";
-import { formatDate } from "@/lib/format";
+import { formatDate, prettifyName } from "@/lib/format";
+import { WEAPONS } from "@/game/data/weapons";
+import { WEAPON_ATTACKS } from "@/game/data/weaponAttacks";
+
+const ICON_SIZE = 40;
 
 interface TodaySpreadProps {
   spreadIndex: number;
+  weaponNo: number;
   journalText: string;
   onJournalTextChange: (text: string) => void;
   onGenerate: () => void;
@@ -13,14 +18,63 @@ interface TodaySpreadProps {
 
 export default function todaySpread({
   spreadIndex,
+  weaponNo,
   journalText,
   onJournalTextChange,
   onGenerate,
   onPreviewMock,
 }: TodaySpreadProps): Spread {
+  const weapon = WEAPONS[weaponNo];
+  const abilities = (weapon?.attackIds ?? [])
+    .map((id) => WEAPON_ATTACKS.find((a) => a.id === id))
+    .filter((a) => a !== undefined);
+
   const left = (
     <div className="tome-page-inner">
-      {/* Completely empty */}
+      <span className="tome-eyebrow">Your weapon</span>
+      <h2 className="tome-heading">{weapon ? prettifyName(weapon.id) : "None"}</h2>
+
+      <ul
+        style={{
+          listStyle: "none",
+          padding: 0,
+          margin: "1.1rem 0 0",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.9rem",
+        }}
+      >
+        {abilities.map((ability) => (
+          <li key={ability.id} style={{ display: "flex", gap: "0.8rem", alignItems: "flex-start" }}>
+            {ability.icon ? (
+              // eslint-disable-next-line @next/next/no-img-element -- tiny pixel-art sprite, next/image adds nothing
+              <img
+                src={`/icons/${ability.icon}.png`}
+                alt=""
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+                style={{ imageRendering: "pixelated", flexShrink: 0 }}
+              />
+            ) : (
+              // Same footprint as an icon so descriptions stay aligned
+              <span
+                aria-hidden
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                  flexShrink: 0,
+                  boxShadow: "inset 0 0 0 2px var(--ink-faded)",
+                  opacity: 0.5,
+                }}
+              />
+            )}
+            <div>
+              <div className="tome-eyebrow" style={{ color: "var(--ink)" }}>{ability.name}</div>
+              <div className="tome-hand">{ability.description}</div>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 

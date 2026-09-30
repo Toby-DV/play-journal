@@ -12,7 +12,7 @@ export interface Weapon {
 
 export const WEAPONS: Weapon[] = [
   {
-    id: "tobys_sword",
+    id: "knights_sword",
     category: "melee",
     damage: 25,
     attackSpeedMs: 1000,

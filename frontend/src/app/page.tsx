@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { mockGameConfig } from "@/lib/mockGameConfig";
-import { generateGameConfig } from "@/lib/generateGameConfig";
+import { SELECTED_WEAPON_NO, generateGameConfig } from "@/lib/generateGameConfig";
 import { saveGameConfig } from "@/lib/gameSession";
 import { MemoryEntry, loadMemories, saveMemory } from "@/lib/journal";
 import Book, { Spread } from "@/components/book/Book";
@@ -86,6 +86,7 @@ export default function Home() {
       ...filled,
       todaySpread({
         spreadIndex: memories.length,
+        weaponNo: SELECTED_WEAPON_NO,
         journalText,
         onJournalTextChange: setJournalText,
         onGenerate: handleGenerateGame,
